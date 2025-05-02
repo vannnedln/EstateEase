@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateEase", "EstateEase\EstateEase.csproj", "{17313EAA-2B64-4B35-9D61-C9C96DAC3839}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{17313EAA-2B64-4B35-9D61-C9C96DAC3839}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17313EAA-2B64-4B35-9D61-C9C96DAC3839}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17313EAA-2B64-4B35-9D61-C9C96DAC3839}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17313EAA-2B64-4B35-9D61-C9C96DAC3839}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {994BB25B-0BF8-4556-97D1-0D4D9C5B83E8}
+	EndGlobalSection
+EndGlobal
