@@ -80,7 +80,7 @@ namespace EstateEase.Areas.Identity.Pages.Account
             [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
             public string LastName { get; set; }
 
-            [Required]
+
             [Phone]
             [Display(Name = "Phone Number")]
             public string PhoneNumber { get; set; }
@@ -127,11 +127,11 @@ namespace EstateEase.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                
+
                 // Add these lines to set the additional properties
                 user.PhoneNumber = Input.PhoneNumber;
                 ((IdentityUser)user).PhoneNumberConfirmed = false; // Will be confirmed later with SMS
-                
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)

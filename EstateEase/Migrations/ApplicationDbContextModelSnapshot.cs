@@ -30,14 +30,7 @@ namespace EstateEase.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AdditionalImagePaths")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BHK")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -59,13 +52,6 @@ namespace EstateEase.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Features")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Floor")
-                        .HasColumnType("int");
 
                     b.Property<string>("FloorPlanImagePath")
                         .HasColumnType("nvarchar(max)");
@@ -100,11 +86,11 @@ namespace EstateEase.Migrations
                     b.Property<int>("Kitchen")
                         .HasColumnType("int");
 
-                    b.Property<string>("MainImagePath")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PropertyImagePaths")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PropertyType")
                         .IsRequired()

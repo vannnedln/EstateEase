@@ -7,6 +7,8 @@ namespace EstateEase.Models.ViewModels
 {
     public class PropertyViewModel
     {
+        public int Id { get; set; }
+
         [Required]
         [StringLength(200)]
         public string Title { get; set; }
@@ -18,25 +20,27 @@ namespace EstateEase.Models.ViewModels
         [Display(Name = "Property Type")]
         public string PropertyType { get; set; }
 
-        [Required]
-        [Display(Name = "BHK")]
-        public string BHK { get; set; }
+
 
         [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Number of bedrooms must be at least 1")]
         public int Bedrooms { get; set; }
 
         [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Number of bathrooms must be at least 1")]
         public int Bathrooms { get; set; }
 
         [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "Number of balconies cannot be negative")]
         public int Balcony { get; set; }
 
         [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Number of kitchens must be at least 1")]
         public int Kitchen { get; set; }
 
         [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Number of halls must be at least 1")]
         public int Hall { get; set; }
-
 
         [Required]
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
@@ -55,17 +59,13 @@ namespace EstateEase.Models.ViewModels
         public string Status { get; set; }
 
         [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Total floors must be at least 1")]
         [Display(Name = "Total Floors")]
         public int TotalFloors { get; set; }
 
         [Display(Name = "Featured Property")]
         public bool IsFeatured { get; set; }
 
-        [Display(Name = "Main Image")]
-        public IFormFile? MainImage { get; set; }
-
-        [Display(Name = "Additional Images")]
-        public List<IFormFile>? AdditionalImages { get; set; }
 
         [Required]
         [Display(Name = "Selling Type")]
@@ -98,6 +98,13 @@ namespace EstateEase.Models.ViewModels
         [Display(Name = "CCTV")]
         public bool HasCCTV { get; set; }
 
-      
+        [Display(Name = "Property Images")]
+        public List<IFormFile>? PropertyImages { get; set; }
+
+ 
+        public string? PropertyImagePaths { get; set; }
+        public string? FloorPlanImagePath { get; set; }
+        public string? BasementPlanImagePath { get; set; }
+        public string? GroundFloorPlanImagePath { get; set; }
     }
 }

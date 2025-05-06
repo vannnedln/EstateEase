@@ -1,6 +1,7 @@
 using EstateEase.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using EstateEase.Services;  // Add this for IFileService
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,9 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 builder.Services.AddControllersWithViews();
+
+// Add this line before building the application
+builder.Services.AddScoped<IFileService, FileService>();
 
 var app = builder.Build();
 

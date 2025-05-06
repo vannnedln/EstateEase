@@ -30,6 +30,12 @@
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
     <Folder Include="Migrations\" />
+    <Folder Include="Views\Shared\" />
+    <Folder Include="wwwroot\fonts\poppins\" />
+    <Folder Include="wwwroot\uploads\floor-plans\" />
+    <Folder Include="wwwroot\uploads\basement-plans\" />
+    <Folder Include="wwwroot\uploads\ground-floor-plans\" />
+    <Folder Include="wwwroot\uploads\property-images\" />
   </ItemGroup>
 
 </Project>

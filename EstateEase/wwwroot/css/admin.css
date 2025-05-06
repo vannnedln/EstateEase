@@ -1,6 +1,6 @@
 /* Layout */
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
     background: #f8f9fa;
     overflow-x: hidden;
     margin: 0;
@@ -49,7 +49,7 @@ body {
 
 #toggle_btn:hover,
 .mobile_btn:hover {
-    color: #2563eb;
+    color: #000000;
 }
 
 .mobile_btn {
@@ -76,12 +76,96 @@ body {
     bottom: 0;
     width: 240px;
     background: #ffffff;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     z-index: 999;
     transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
 }
+
+.menu-title {
+    padding: 12px 20px;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #333333;
+    font-weight: 600;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+}
+
+.sidebar-menu>ul>li>a {
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    color: #333333;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-menu>ul>li>a:hover,
+.sidebar-menu>ul>li>a.active {
+    background: rgba(0, 0, 0, 0.1);
+    color: #000000;
+    border-left: 5px solid #000000;
+}
+
+.sidebar-menu>ul>li>a i {
+    margin-right: 10px;
+    font-size: 18px;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-controls {
+    position: fixed;
+    left: 300px;
+    top: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+}
+
+.submenu>a {
+    position: relative;
+}
+
+.menu-arrow {
+    display: inline-block;
+    margin-left: auto;
+    transition: transform 0.3s;
+}
+
+.menu-arrow i {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.submenu.active .menu-arrow {
+    transform: rotate(90deg);
+}
+
+.submenu ul {
+    display: none;
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.submenu ul li a {
+    padding: 10px 20px 10px 50px;
+    display: block;
+    color: #333333;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.submenu ul li a:hover {
+    color: #000000;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+
 
 .sidebar.show-sidebar {
     transform: translateX(0);
@@ -110,7 +194,7 @@ body {
     padding: 12px 20px;
     font-size: 12px;
     text-transform: uppercase;
-    color: #8896b5;
+    color: #000000;
     font-weight: 600;
     margin-top: 10px;
 }
@@ -125,15 +209,16 @@ body {
     padding: 8px 20px;
     display: flex;
     align-items: center;
-    color: #5c6c8c;
+    color: #202122;
     transition: all 0.3s ease;
     text-decoration: none;
 }
 
 .sidebar-menu>ul>li>a:hover,
 .sidebar-menu>ul>li>a.active {
-    background: #f0f4f8;
-    color: #2563eb;
+    background: rgba(0, 0, 0, 0.1);
+    color: #000000;
+    border-left: 3px solid #000000;
 }
 
 .sidebar-menu>ul>li>a i {
@@ -171,13 +256,20 @@ body {
 .submenu ul li a {
     padding: 6px 20px;
     display: block;
-    color: #5c6c8c;
+    color: #202122;
     text-decoration: none;
     font-size: 14px;
 }
 
+.submenu ul li a:hover,
+.submenu ul li a.active {
+    color: #000000;
+    background: rgba(0, 0, 0, 0.1);
+
+}
+
 .submenu ul li a:hover {
-    color: #2563eb;
+    color: #000000;
 }
 
 /* User Menu */
@@ -234,8 +326,8 @@ body {
 }
 
 .dropdown-item:hover {
-    background: #f0f4f8;
-    color: #2563eb;
+    background: rgba(0, 0, 0, 0.1);
+    color: #000000;
 }
 
 .dropdown-item i {
@@ -332,4 +424,39 @@ body {
     .page-wrapper {
         margin-left: 0;
     }
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('../fonts/poppins/Poppins-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('../fonts/poppins/Poppins-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('../fonts/poppins/Poppins-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('../fonts/poppins/Poppins-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('../fonts/poppins/Poppins-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
 }
