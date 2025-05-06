@@ -9,13 +9,13 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="card shadow-sm">
+        <div class="card shadow-sm mb-4">
             <div class="card-header py-4 bg-dark text-white">
-                <h5 class="card-title mb-0 fw-bold">Add Property Details</h5>
+                <h5 class="card-title mb-0 fw-bold">Add Property</h5>
             </div>
 
             <div class="card-body p-5">
-                <h5 class="card-title mb-5 fw-bold">Property Detail</h5>
+                <h5 class="card-title mb-5 fw-bold">Property Details</h5>
                 @if (TempData["Error"] != null)
                 {
                     <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
@@ -62,7 +62,8 @@
                                 <div class="col-lg-9">
                                     <select asp-for="PropertyType" class="form-control">
                                         <option value="" disabled selected>Select Type</option>
-                                        <option value="Single-Family Detached House">Single-Family Detached House
+                                        <option value="Single-Family Detached House">
+                                            Single-Family Detached House
                                         </option>
                                         <option value="Townhouse ">Townhouse </option>
                                         <option value="Duplex ">Duplex </option>
@@ -74,24 +75,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row mb-3">
-                                <label asp-for="BHK" class="col-lg-3 col-form-label">BHK</label>
-                                <div class="col-lg-9">
-                                    <select asp-for="BHK" class="form-control">
-                                        <option value="" disabled selected>Select BHK</option>
-                                        <option value="1 BHK">1 BHK</option>
-                                        <option value="2 BHK">2 BHK</option>
-                                        <option value="3 BHK">3 BHK</option>
-                                        <option value="4 BHK">4 BHK</option>
-                                        <option value="5 BHK">5 BHK</option>
-                                        <option value="1,2 BHK">1,2 BHK</option>
-                                        <option value="2,3 BHK">2,3 BHK</option>
-                                        <option value="2,3,4 BHK">2,3,4 BHK</option>
 
-                                    </select>
-                                    <span asp-validation-for="BHK" class="text-danger"></span>
-                                </div>
-                            </div>
 
                             <div class="form-group row mb-3">
                                 <label asp-for="Bedrooms" class="col-lg-3 col-form-label">Bedrooms</label>
@@ -115,7 +99,7 @@
                                 <label asp-for="SellingType" class="col-lg-3 col-form-label">Selling Type</label>
                                 <div class="col-lg-9">
                                     <select asp-for="SellingType" class="form-control">
-                                        <option value="">Select Type</option>
+                                        <option value="" disabled selected>Select Type</option>
                                         <option value="Rent">Rent</option>
                                         <option value="Sale">Sale</option>
 
@@ -174,10 +158,10 @@
                             </div>
 
                             <div class="form-group row mb-3">
-                                <label asp-for="Price" class="col-lg-3 col-form-label">Price</label>
+                                <label asp-for="Price" class="col-lg-3 col-form-label">Price (₱)</label>
                                 <div class="col-lg-9">
                                     <input asp-for="Price" class="form-control" type="number" placeholder="Enter Price"
-                                        step="100">
+                                        min="0" step="any">
                                     <span asp-validation-for="Price" class="text-danger"></span>
                                 </div>
                             </div>
@@ -238,35 +222,22 @@
                     </div>
 
                     <div class="col-xl-12">
+                        <hr class="section-divider my-4" style="height: 2px;">
                         <h5 class="card-title mt-4 mb-4 fw-bold">Image & Status</h5>
                         <div class="row">
                             <div class="col-xl-6">
                                 <div class="form-group row mb-3">
-                                    <label class="col-lg-3 col-form-label">Image</label>
+                                    <label class="col-lg-3 col-form-label">Property Images</label>
                                     <div class="col-lg-9">
-                                        <input type="file" asp-for="MainImage" class="form-control">
-                                        <span asp-validation-for="MainImage" class="text-danger"></span>
-                                    </div>
-                                </div>
-
-                                <div class="form-group row mb-3">
-                                    <label class="col-lg-3 col-form-label">Image 2</label>
-                                    <div class="col-lg-9">
-                                        <input type="file" class="form-control" name="AdditionalImages">
-                                    </div>
-                                </div>
-
-                                <div class="form-group row mb-3">
-                                    <label class="col-lg-3 col-form-label">Image 4</label>
-                                    <div class="col-lg-9">
-                                        <input type="file" class="form-control" name="AdditionalImages">
+                                        <input type="file" asp-for="PropertyImages" class="form-control mb-2" multiple>
+                                        <span asp-validation-for="PropertyImages" class="text-danger"></span>
                                     </div>
                                 </div>
 
                                 <div class="form-group row mb-3">
                                     <label class="col-lg-3 col-form-label">Floor Plan Image</label>
                                     <div class="col-lg-9">
-                                        <input type="file" asp-for="FloorPlanImage" class="form-control">
+                                        <input type="file" asp-for="FloorPlanImage" class="form-control mb-2">
                                     </div>
                                 </div>
 
@@ -274,78 +245,56 @@
                                     <label asp-for="Status" class="col-lg-3 col-form-label">Status</label>
                                     <div class="col-lg-9">
                                         <select asp-for="Status" class="form-control">
-                                            <option value="" disabled>Select Status</option>
-                                            <option value="Available" selected>Available</option>
+                                            <option value="" disabled selected>Select Status</option>
+                                            <option value="Available">Available</option>
                                             <option value="Sold">Sold</option>
                                             <option value="Rented">Rented</option>
                                         </select>
                                         <span asp-validation-for="Status" class="text-danger"></span>
                                     </div>
                                 </div>
-
-                                <div class="form-group row mb-3">
-
-                                    <label asp-for="IsFeatured" class="col-lg-3 col-form-label">Featured
-                                        Property</label>
-                                    <div class="col-lg-9">
-                                        <select asp-for="IsFeatured" class="form-control">
-                                            <option value="" disabled>Select</option>
-                                            <option value="true">Yes</option>
-                                            <option value="false">No</option>
-                                        </select>
-                                    </div>
-                                </div>
                             </div>
 
                             <div class="col-xl-6">
                                 <div class="form-group row mb-3">
-                                    <label class="col-lg-3 col-form-label">Image 1</label>
-                                    <div class="col-lg-9">
-                                        <input type="file" class="form-control" name="AdditionalImages">
-                                    </div>
-                                </div>
-
-                                <div class="form-group row mb-3">
-                                    <label class="col-lg-3 col-form-label">Image 3</label>
-                                    <div class="col-lg-9">
-                                        <input type="file" class="form-control" name="AdditionalImages">
-                                    </div>
-                                </div>
-
-                                <div class="form-group row mb-3">
-                                    <label class="col-lg-3 col-form-label">Additional Images</label>
-                                    <div class="col-lg-9">
-                                        <input type="file" asp-for="AdditionalImages" multiple class="form-control">
-                                        <span asp-validation-for="AdditionalImages" class="text-danger"></span>
-                                    </div>
-                                </div>
-
-                                <div class="form-group row mb-3">
                                     <label class="col-lg-3 col-form-label">Ground Floor Plan</label>
                                     <div class="col-lg-9">
-                                        <input type="file" asp-for="GroundFloorPlanImage" class="form-control">
+                                        <input type="file" asp-for="GroundFloorPlanImage" class="form-control mb-2">
                                     </div>
                                 </div>
 
                                 <div class="form-group row mb-3">
                                     <label class="col-lg-3 col-form-label">Basement Floor Plan</label>
                                     <div class="col-lg-9">
-                                        <input type="file" asp-for="BasementPlanImage" class="form-control">
+                                        <input type="file" asp-for="BasementPlanImage" class="form-control mb-2">
                                     </div>
                                 </div>
 
+                                <div class="form-group row mb-3">
+                                    <label asp-for="IsFeatured" class="col-lg-3 col-form-label">
+                                        Featured
+                                        Property
+                                    </label>
+                                    <div class="col-lg-9">
+                                        <select asp-for="IsFeatured" class="form-control">
+                                            <option value="" disabled selected>Select...</option>
+                                            <option value="true">Yes</option>
+                                            <option value="false">No</option>
+                                        </select>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
                     </div>
 
                     <div class="col-xl-12">
-                        <hr class="section-divider my-5" style="height: 2px;">
+                        <hr class="section-divider my-4" style="height: 2px;">
                         <div class="form-group row">
                             <div class="col-lg-9 offset-lg-5">
                                 <button type="submit" class="btn btn-dark px-5 custom-rounded">Add Property</button>
                                 <a asp-controller="Property" asp-action="ViewProperty"
-                                    class="btn btn-outline-secondary ms-2 custom-rounded">Cancel</a>
+                                    class="btn btn-outline-danger ms-2 custom-rounded">Cancel</a>
                             </div>
                         </div>
                     </div>
@@ -357,6 +306,10 @@
 
 
 <style>
+    * {
+        font-family: 'Poppins', sans-serif;
+    }
+
     .content.container-fluid {
         padding-top: 0 !important;
     }
@@ -408,7 +361,6 @@
 
     h5.card-title {
         font-size: 1.25rem;
-
     }
 
     .section-divider {
@@ -486,12 +438,17 @@
                             window.location.href = '@Url.Action("ViewProperty", "Property", new { area = "Admin" })';
                         } else {
                             $('#loadingAlert').addClass('d-none');
-                            alert(response.message || 'Error occurred while adding property');
+                            // Show the actual error message from the server
+                            alert(response.message || 'An error occurred while processing your request');
                         }
                     },
-                    error: function () {
+                    error: function (xhr, status, error) {
                         $('#loadingAlert').addClass('d-none');
-                        alert('Error occurred while adding property');
+                        // Log the error details for debugging
+                        console.log('Status:', status);
+                        console.log('Error:', error);
+                        console.log('Response:', xhr.responseText);
+                        alert('An error occurred while processing your request. Please try again.');
                     }
                 });
             });
@@ -504,12 +461,7 @@
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
 }
 
-<!-- Add this alert div after your form's opening tag -->
-<div id="loadingAlert" class="alert alert-info alert-dismissible fade show mb-4 d-none" role="alert">
-    <i class="bi bi-info-circle me-2"></i>
-    Adding property... Please wait.
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
+
 
 
 
