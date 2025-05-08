@@ -1,327 +1,377 @@
 @using EstateEase.Models.ViewModels
+@inject IConfiguration Configuration
 @model PropertyViewModel
 @{
     ViewData["Title"] = "View Property";
     Layout = "_AdminLayout";
 }
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header py-4 bg-dark text-white">
-                <h5 class="card-title mb-0 fw-bold">View Property</h5>
-            </div>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header position-relative overflow-hidden py-4"
+                     style="background: linear-gradient(45deg, #4f5aff, #9f1ae2);">
+                    <h5 class="card-title mb-0 fw-bold ps-2 text-white">
+                        View Property Details
+                    </h5>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-building display-1 text-white"></i>
+                    </div>
+                </div>
 
-            <div class="card-body p-5">
-                <h5 class="card-title mb-5 fw-bold">Property Details</h5>
-
-                <div class="row g-5">
-                    <div class="col-xl-12">
-                        <div class="form-group row mb-3">
-                            <label class="col-lg-2 col-form-label">Title</label>
-                            <div class="col-lg-9">
-                                <input class="form-control" value="@Model.Title" readonly>
+                <div class="card-body p-4">
+                    <!-- Basic Information -->
+                    <div class="section mb-5">
+                        <h6 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-info-circle me-2"></i>Basic Information
+                        </h6>
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Title" readonly>
+                                    <label>Property Title</label>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group row mb-3">
-                            <label class="col-lg-2 col-form-label">Content</label>
-                            <div class="col-lg-9">
-                                <div class="form-control" style="min-height: 200px; overflow-y: auto;">
-                                    @Html.Raw(Model.Content)
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <div class="form-control" style="min-height: 200px; overflow-y: auto; height: auto;">
+                                        @Html.Raw(Model.Content)
+                                    </div>
+                                    <label>Description</label>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-xl-6">
-                        <div class="form-group row mb-3">
-                            <label class="col-lg-3 col-form-label">Property Type</label>
-                            <div class="col-lg-9">
-                                <input class="form-control" value="@Model.PropertyType" readonly>
+                    <!-- Property Details -->
+                    <div class="section mb-5">
+                        <h6 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-house-gear me-2"></i>Property Details
+                        </h6>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.PropertyType" readonly>
+                                    <label>Property Type</label>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group row mb-3">
-                            <label class="col-lg-3 col-form-label">Bedrooms</label>
-                            <div class="col-lg-9">
-                                <input class="form-control" value="@Model.Bedrooms" readonly>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.SellingType" readonly>
+                                    <label>Selling Type</label>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group row mb-3">
-                            <label class="col-lg-3 col-form-label">Bathrooms</label>
-                            <div class="col-lg-9">
-                                <input class="form-control" value="@Model.Bathrooms" readonly>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Bedrooms" readonly>
+                                    <label>Bedrooms</label>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group row mb-3">
-                            <label class="col-lg-3 col-form-label">Selling Type</label>
-                            <div class="col-lg-9">
-                                <input class="form-control" value="@Model.SellingType" readonly>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Bathrooms" readonly>
+                                    <label>Bathrooms</label>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group row mb-3">
-                            <label class="col-lg-3 col-form-label">Address</label>
-                            <div class="col-lg-9">
-                                <textarea class="form-control" rows="4" readonly>@Model.Address</textarea>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Kitchen" readonly>
+                                    <label>Kitchen</label>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-6">
-                        <div class="form-group row mb-3">
-                            <label class="col-lg-3 col-form-label">Balcony</label>
-                            <div class="col-lg-9">
-                                <input class="form-control" value="@Model.Balcony" readonly>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Balcony" readonly>
+                                    <label>Balcony</label>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group row mb-3">
-                            <label class="col-lg-3 col-form-label">Kitchen</label>
-                            <div class="col-lg-9">
-                                <input class="form-control" value="@Model.Kitchen" readonly>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Hall" readonly>
+                                    <label>Hall</label>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group row mb-3">
-                            <label class="col-lg-3 col-form-label">Hall</label>
-                            <div class="col-lg-9">
-                                <input class="form-control" value="@Model.Hall" readonly>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.TotalFloors" readonly>
+                                    <label>Total Floors</label>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group row mb-3">
-                            <label class="col-lg-3 col-form-label">Total Floors</label>
-                            <div class="col-lg-9">
-                                <input class="form-control" value="@Model.TotalFloors" readonly>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Size.ToString("N2")" readonly>
+                                    <label>Area (sq m)</label>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group row mb-3">
-                            <label class="col-lg-3 col-form-label">Price (₱)</label>
-                            <div class="col-lg-9">
-                                <input class="form-control" value="@Model.Price.ToString("N2")" readonly>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" style="height: 100px" readonly>@Model.Address</textarea>
+                                    <label>Address</label>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group row mb-3">
-                            <label class="col-lg-3 col-form-label">Area (sq m)</label>
-                            <div class="col-lg-9">
-                                <input class="form-control" value="@Model.Size.ToString("N2")" readonly>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Price.ToString("N2")" readonly>
+                                    <label>Price (₱)</label>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-12">
-                        <hr class="section-divider my-4" style="height: 2px;">
-                        <h5 class="card-title mt-4 mb-4 fw-bold">Property Features</h5>
-
-                        <div class="form-group row mb-3">
-                            <div class="col-lg-9 offset-lg-2">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="feature-item mb-3">
-                                            <i
-                                                class="bi @(Model.HasSwimmingPool ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger")"></i>
-                                            <span class="ms-2">Swimming Pool</span>
-                                        </div>
-                                        <div class="feature-item mb-3">
-                                            <i
-                                                class="bi @(Model.HasParking ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger")"></i>
-                                            <span class="ms-2">Parking</span>
-                                        </div>
-                                        <div class="feature-item mb-3">
-                                            <i
-                                                class="bi @(Model.HasGym ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger")"></i>
-                                            <span class="ms-2">Gym</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="feature-item mb-3">
-                                            <i
-                                                class="bi @(Model.HasSecurity ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger")"></i>
-                                            <span class="ms-2">Security</span>
-                                        </div>
-                                        <div class="feature-item mb-3">
-                                            <i
-                                                class="bi @(Model.HasElevator ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger")"></i>
-                                            <span class="ms-2">Elevator</span>
-                                        </div>
-                                        <div class="feature-item mb-3">
-                                            <i
-                                                class="bi @(Model.HasCCTV ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger")"></i>
-                                            <span class="ms-2">CCTV</span>
-                                        </div>
-                                    </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Status" readonly>
+                                    <label>Status</label>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <hr class="section-divider my-4" style="height: 2px;">
-                    <h5 class="card-title mb-4 mt-4 fw-bold">Property Images</h5>
 
-                    @if (!string.IsNullOrEmpty(Model.PropertyImagePaths))
-                    {
-                        <div class="row mb-4">
-                            @foreach (var imagePath in Model.PropertyImagePaths.Split(',').Where(x =>
-                           !string.IsNullOrEmpty(x)))
+                    <!-- Property Features -->
+                    <div class="section mb-5">
+                        <h6 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-list-check me-2"></i>Property Features
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasSwimmingPool ? "checked" : "") disabled>
+                                    <label class="form-check-label">Swimming Pool</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasParking ? "checked" : "") disabled>
+                                    <label class="form-check-label">Parking</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasGym ? "checked" : "") disabled>
+                                    <label class="form-check-label">Gym</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasSecurity ? "checked" : "") disabled>
+                                    <label class="form-check-label">Security</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasElevator ? "checked" : "") disabled>
+                                    <label class="form-check-label">Elevator</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasCCTV ? "checked" : "") disabled>
+                                    <label class="form-check-label">CCTV</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Images & Plans -->
+                    <div class="section mb-5">
+                        <h6 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-images me-2"></i>Property Images
+                        </h6>
+                        <div class="row g-4">
+                            @if (!string.IsNullOrEmpty(Model.PropertyImagePaths))
                             {
-                                <div class="col-md-4 mb-3">
-                                    <div class="image-container">
-                                        <img src="~/uploads/property-images/@imagePath" class="img-fluid rounded shadow"
-                                            alt="Property Image">
+                                @foreach (var imagePath in Model.PropertyImagePaths.Split(',').Where(x => !string.IsNullOrEmpty(x)))
+                                {
+                                    <div class="col-md-4">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="image-container" style="height: 250px;">
+                                                <img src="~/uploads/property-images/@imagePath"
+                                                     class="img-fluid w-100 h-100 rounded" style="object-fit: cover;"
+                                                     asp-append-version="true" alt="Property Image">
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                }
                             }
                         </div>
-                    }
-
-                    <div class="row mb-4">
-                        @if (!string.IsNullOrEmpty(Model.FloorPlanImagePath))
-                        {
-                            <div class="col-md-4 mb-3">
-                                <h6 class="mb-2">Floor Plan</h6>
-                                <div class="image-container">
-                                    <img src="~/uploads/floor-plans/@Model.FloorPlanImagePath"
-                                        class="img-fluid rounded shadow" alt="Floor Plan">
-                                </div>
-                            </div>
-                        }
-
-                        @if (!string.IsNullOrEmpty(Model.BasementPlanImagePath))
-                        {
-                            <div class="col-md-4 mb-3">
-                                <h6 class="mb-2">Basement Plan</h6>
-                                <div class="image-container">
-                                    <img src="~/uploads/basement-plans/@Model.BasementPlanImagePath"
-                                        class="img-fluid rounded shadow" alt="Basement Plan">
-                                </div>
-                            </div>
-                        }
-
-                        @if (!string.IsNullOrEmpty(Model.GroundFloorPlanImagePath))
-                        {
-                            <div class="col-md-4 mb-3">
-                                <h6 class="mb-2">Ground Floor Plan</h6>
-                                <div class="image-container">
-                                    <img src="~/uploads/ground-floor-plans/@Model.GroundFloorPlanImagePath"
-                                        class="img-fluid rounded shadow" alt="Ground Floor Plan">
-                                </div>
-                            </div>
-                        }
                     </div>
-                </div>
 
-                <style>
-                    .image-container {
-                        aspect-ratio: 16/9;
-                        overflow: hidden;
-                        border-radius: 8px;
-                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                    }
-
-                    .image-container img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                        transition: transform 0.3s ease;
-                    }
-
-                    .image-container:hover img {
-                        transform: scale(1.05);
-                    }
-                </style>
-                <div class="col-xl-12">
-                    <hr class="section-divider my-4" style="height: 2px;">
-                    <h5 class="card-title mb-4 mt-4 fw-bold">Status</h5>
-                    <div class="row">
-                        <div class="col-xl-6">
-                            <div class="form-group row mb-3">
-                                <label class="col-lg-3 col-form-label">Status</label>
-                                <div class="col-lg-9">
-                                    <input class="form-control" value="@Model.Status" readonly>
-                                </div>
-                            </div>
-
-                            <div class="form-group row mb-3">
-                                <label class="col-lg-3 col-form-label">Featured Property</label>
-                                <div class="col-lg-9">
-                                    <input class="form-control" value="@(Model.IsFeatured ? "Yes" : "No")" readonly>
-                                </div>
-                            </div>
+                    <!-- Featured Status -->
+                    <div class="section mb-5">
+                        <h6 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-star me-2"></i>Featured Status
+                        </h6>
+                        <div class="form-floating">
+                            <input class="form-control" value="@(Model.IsFeatured ? "Yes" : "No")" readonly>
+                            <label>Featured Property</label>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-xl-12">
-                    <hr class="section-divider my-4" style="height: 2px;">
-                    <div class="form-group row">
-                        <div class="col-lg-9 offset-lg-5">
-                            <a asp-controller="Property" asp-action="Edit" asp-route-id="@Model.Id"
-                                class="btn btn-dark px-5 custom-rounded">Edit Property</a>
-                            <a asp-controller="Property" asp-action="ViewProperty"
-                                class="btn btn-outline-primary ms-2 custom-rounded">Back to List</a>
-                        </div>
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-controller="Property" asp-action="ViewProperty" class="btn btn-light btn-lg px-5">
+                            <i class="bi bi-arrow-left me-2"></i>Back to List
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-</div>
-</div>
 
 <style>
-    .content.container-fluid {
-        padding-top: 0 !important;
+    :root {
+        --primary-gradient: linear-gradient(45deg, #4f5aff, #9f1ae2);
     }
 
-    .form-group {
-        margin-bottom: 2rem;
-    }
-
-    .custom-rounded {
-        border-radius: 12px;
-    }
-
-    .form-control {
-        padding: 0.75rem 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid #e3e3e3;
-        background-color: #f8f9fa;
-    }
-
-    .col-form-label {
-        padding-top: calc(0.75rem + 1px);
-        padding-bottom: calc(0.75rem + 1px);
-    }
-
+    /* Base Animation States */
     .card {
-        margin-bottom: 2rem;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s ease-out;
     }
 
-    .card-header {
-        border-bottom: 1px solid rgba(0, 0, 0, .1);
+    .section {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.5s ease-out;
     }
 
-    .btn {
-        padding: 0.75rem 1.5rem;
-        font-weight: 500;
+    /* Animation Classes */
+    .card.animate {
+        opacity: 1;
+        transform: translateY(0);
     }
 
-    h4.card-title {
-        font-size: 1.5rem;
+    .section.animate {
+        opacity: 1;
+        transform: translateY(0);
     }
 
-    h5.card-title {
-        font-size: 1.25rem;
+    /* Staggered Animations for Sections */
+    .section:nth-child(1) {
+        transition-delay: 0.2s;
     }
 
-    .section-divider {
-        margin: 3rem 0;
-        border-top: 1px solid #e9ecef;
+    .section:nth-child(2) {
+        transition-delay: 0.3s;
     }
+
+    .section:nth-child(3) {
+        transition-delay: 0.4s;
+    }
+
+    .section:nth-child(4) {
+        transition-delay: 0.5s;
+    }
+
+    .section:nth-child(5) {
+        transition-delay: 0.6s;
+    }
+
+    /* Form Styles */
+    .form-floating > .form-control,
+    .form-floating > .form-select {
+        height: calc(3.5rem + 2px);
+        line-height: 1.25;
+    }
+
+    .form-floating > label {
+        padding: 1rem 0.75rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #9f1ae2;
+        box-shadow: 0 0 0 0.25rem rgba(159, 26, 226, 0.25);
+    }
+
+    .btn-primary {
+        background: var(--primary-gradient);
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #4f5aff, #8516bd);
+        }
+
+    .form-check-input:checked {
+        background-color: #9f1ae2;
+        border-color: #9f1ae2;
+    }
+
+    .text-primary {
+        color: #4f5aff !important;
+    }
+
+    .section {
+        background: #fff;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .form-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .alert {
+        border-left: 4px solid;
+    }
+
+    .alert-danger {
+        border-left-color: #dc3545;
+    }
+
+    .alert-success {
+        border-left-color: #198754;
+    }
+
+    .form-check.form-switch {
+        padding-left: 3rem;
+    }
+
+    .form-switch .form-check-input {
+        width: 2.5em;
+        margin-left: -3rem;
+    }
+
+    /* Section Headers */
+    .section h6 {
+        position: relative;
+        padding-left: 1rem;
+    }
+
+        .section h6::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 1rem;
+            background: var(--primary-gradient);
+            border-radius: 3px;
+        }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Trigger card animation
+        const card = document.querySelector('.card');
+        requestAnimationFrame(() => {
+            card.classList.add('animate');
+        });
+
+        // Trigger section animations
+        const sections = document.querySelectorAll('.section');
+        sections.forEach(section => {
+            requestAnimationFrame(() => {
+                section.classList.add('animate');
+            });
+        });
+    });
+</script>
+</div>
+</div>
+</div>
