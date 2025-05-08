@@ -1,0 +1,435 @@
+@{
+    ViewData["Title"] = "Manage Payments";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid py-4 rounded-4">
+    <!-- Header Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header position-relative overflow-hidden py-4"
+                    style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
+                    <h5 class="card-title mb-0 fw-bold ps-2 text-white">
+                        Payment Management
+                    </h5>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-currency-exchange display-1 text-white"></i>
+                    </div>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-5">
+                        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
+                            <i class="bi bi-plus-circle me-1"></i> Record Payment
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">Pending Approvals</h6>
+                                    <div class="list-group list-group-flush">
+                                        <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center border-0 border-bottom">
+                                            <div>
+                                                <h6 class="mb-1">Bank Transfer #BT-3421</h6>
+                                                <p class="text-muted small mb-0">Robert Johnson • $3,200.00</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <button class="btn btn-sm btn-success me-1" title="Approve"><i class="bi bi-check-lg"></i></button>
+                                                <button class="btn btn-sm btn-danger" title="Reject"><i class="bi bi-x-lg"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center border-0 border-bottom">
+                                            <div>
+                                                <h6 class="mb-1">PayPal #PP-8932</h6>
+                                                <p class="text-muted small mb-0">Emily Davis • $1,750.00</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <button class="btn btn-sm btn-success me-1" title="Approve"><i class="bi bi-check-lg"></i></button>
+                                                <button class="btn btn-sm btn-danger" title="Reject"><i class="bi bi-x-lg"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center border-0">
+                                            <div>
+                                                <h6 class="mb-1">Check #CH-5673</h6>
+                                                <p class="text-muted small mb-0">Michael Wilson • $2,350.00</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <button class="btn btn-sm btn-success me-1" title="Approve"><i class="bi bi-check-lg"></i></button>
+                                                <button class="btn btn-sm btn-danger" title="Reject"><i class="bi bi-x-lg"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">Payment Refunds</h6>
+                                    <div class="list-group list-group-flush">
+                                        <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center border-0 border-bottom">
+                                            <div>
+                                                <h6 class="mb-1">Refund Request #RF-1289</h6>
+                                                <p class="text-muted small mb-0">Sarah Adams • $950.00</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <button class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center border-0 border-bottom">
+                                            <div>
+                                                <h6 class="mb-1">Refund Request #RF-1290</h6>
+                                                <p class="text-muted small mb-0">James Miller • $1,200.00</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <button class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center border-0">
+                                            <div>
+                                                <h6 class="mb-1">Refund Request #RF-1291</h6>
+                                                <p class="text-muted small mb-0">Lisa Brown • $750.00</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <button class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">Failed Payments</h6>
+                                    <div class="list-group list-group-flush">
+                                        <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center border-0 border-bottom">
+                                            <div>
+                                                <h6 class="mb-1">Credit Card #CC-7654</h6>
+                                                <p class="text-muted small mb-0">Mary Williams • $1,950.00</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <button class="btn btn-sm btn-warning"><i class="bi bi-arrow-repeat"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center border-0 border-bottom">
+                                            <div>
+                                                <h6 class="mb-1">PayPal #PP-8853</h6>
+                                                <p class="text-muted small mb-0">John Smith • $850.00</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <button class="btn btn-sm btn-warning"><i class="bi bi-arrow-repeat"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center border-0">
+                                            <div>
+                                                <h6 class="mb-1">Bank Transfer #BT-3390</h6>
+                                                <p class="text-muted small mb-0">David Clark • $2,150.00</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <button class="btn btn-sm btn-warning"><i class="bi bi-arrow-repeat"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payment Processing Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header position-relative overflow-hidden py-4"
+                    style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
+                    <h5 class="card-title mb-0 fw-bold ps-2 text-white">
+                        Payment Processing Queue
+                    </h5>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-arrow-repeat display-1 text-white"></i>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <table id="paymentsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Client</th>
+                                <th>Property</th>
+                                <th>Payment Method</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#PAY-2023-042</td>
+                                <td>Robert Johnson</td>
+                                <td>Mountain Retreat</td>
+                                <td>Bank Transfer</td>
+                                <td>$3,200.00</td>
+                                <td><span class="badge bg-warning rounded-pill">Pending</span></td>
+                                <td>Dec 13, 2023</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></button>
+                                        <button class="btn btn-sm btn-success"><i class="bi bi-check-lg"></i></button>
+                                        <button class="btn btn-sm btn-danger"><i class="bi bi-x-lg"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#PAY-2023-043</td>
+                                <td>Emily Davis</td>
+                                <td>Riverside Condo</td>
+                                <td>PayPal</td>
+                                <td>$1,750.00</td>
+                                <td><span class="badge bg-warning rounded-pill">Pending</span></td>
+                                <td>Dec 13, 2023</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></button>
+                                        <button class="btn btn-sm btn-success"><i class="bi bi-check-lg"></i></button>
+                                        <button class="btn btn-sm btn-danger"><i class="bi bi-x-lg"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#PAY-2023-044</td>
+                                <td>Michael Wilson</td>
+                                <td>Highland House</td>
+                                <td>Check</td>
+                                <td>$2,350.00</td>
+                                <td><span class="badge bg-warning rounded-pill">Pending</span></td>
+                                <td>Dec 12, 2023</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></button>
+                                        <button class="btn btn-sm btn-success"><i class="bi bi-check-lg"></i></button>
+                                        <button class="btn btn-sm btn-danger"><i class="bi bi-x-lg"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#PAY-2023-045</td>
+                                <td>Sarah Adams</td>
+                                <td>Maple Court Apartment</td>
+                                <td>Credit Card</td>
+                                <td>$950.00</td>
+                                <td><span class="badge bg-danger rounded-pill">Refund Requested</span></td>
+                                <td>Dec 11, 2023</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></button>
+                                        <button class="btn btn-sm btn-info"><i class="bi bi-arrow-left-right"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#PAY-2023-046</td>
+                                <td>James Miller</td>
+                                <td>Beachfront Villa</td>
+                                <td>Bank Transfer</td>
+                                <td>$1,200.00</td>
+                                <td><span class="badge bg-danger rounded-pill">Refund Requested</span></td>
+                                <td>Dec 10, 2023</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></button>
+                                        <button class="btn btn-sm btn-info"><i class="bi bi-arrow-left-right"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Payment Modal -->
+<div class="modal fade" id="addPaymentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header" style="background: linear-gradient(45deg, #2937f0, #9f1ae2); color: white;">
+                <h5 class="modal-title">Record New Payment</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form>
+                    <div class="mb-3">
+                        <label for="clientSelect" class="form-label">Client</label>
+                        <select class="form-select" id="clientSelect">
+                            <option selected disabled>Select a client</option>
+                            <option>John Doe</option>
+                            <option>Alice Smith</option>
+                            <option>Robert Johnson</option>
+                            <option>Mary Williams</option>
+                            <option>Thomas Parker</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="propertySelect" class="form-label">Property</label>
+                        <select class="form-select" id="propertySelect">
+                            <option selected disabled>Select a property</option>
+                            <option>Sunset Villa</option>
+                            <option>Ocean View Apartment</option>
+                            <option>Mountain Retreat</option>
+                            <option>City Loft</option>
+                            <option>Lakeside Cottage</option>
+                        </select>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="paymentAmount" class="form-label">Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="paymentAmount" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="paymentMethod" class="form-label">Payment Method</label>
+                            <select class="form-select" id="paymentMethod">
+                                <option selected disabled>Select method</option>
+                                <option>Credit Card</option>
+                                <option>Bank Transfer</option>
+                                <option>PayPal</option>
+                                <option>Digital Wallet</option>
+                                <option>Check</option>
+                                <option>Cash</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="paymentNotes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="paymentNotes" rows="3" placeholder="Enter payment details or notes"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Record Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/lib/datatables/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        /* Animation styles */
+        .card {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+        }
+        
+        .card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Table styles */
+        .table {
+            font-size: 14px;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .table thead th {
+            color: black;
+            font-weight: 600;
+            border: none;
+            padding: 1rem;
+        }
+        
+        .table td {
+            vertical-align: middle;
+            padding: 0.75rem 1rem;
+            border-color: #f1f1f1;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* Badge styles */
+        .badge {
+            padding: 0.5em 0.75em;
+            font-weight: 500;
+        }
+        
+        .badge.rounded-pill {
+            padding-right: 0.8em;
+            padding-left: 0.8em;
+        }
+        
+        /* Button styles */
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #2937f0, #9f1ae2);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #232cc5, #8516bd);
+        }
+        
+        /* List group */
+        .list-group-item {
+            transition: all 0.2s ease-out;
+        }
+        
+        .list-group-item:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable
+            $('#paymentsTable').DataTable({
+                dom: '<"row align-items-center"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                    '<"row"<"col-sm-12"tr>>' +
+                    '<"row align-items-center"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search payments...",
+                    lengthMenu: "_MENU_ payments per page"
+                },
+                pageLength: 10,
+                responsive: true
+            });
+            
+            // Add animations
+            setTimeout(function () {
+                $('.card').each(function (index) {
+                    var $card = $(this);
+                    setTimeout(function () {
+                        $card.addClass('show');
+                    }, 100 + (index * 100));
+                });
+            }, 100);
+        });
+    </script>
+} 

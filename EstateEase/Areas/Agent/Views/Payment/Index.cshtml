@@ -1,0 +1,256 @@
+@model IEnumerable<PaymentViewModel>
+@{
+    ViewData["Title"] = "Payment History";
+    Layout = "_AgentLayout";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1 fw-bold">Payment History</h4>
+                    <p class="text-muted">View your commission earnings and transaction history</p>
+                </div>
+                <div>
+                    <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#filterModal">
+                        <i class="bi bi-funnel me-2"></i>Filter
+                    </button>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-file-earmark-arrow-down me-2"></i>Export
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-excel me-2"></i>Excel</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-pdf me-2"></i>PDF</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-printer me-2"></i>Print</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100 fade-in">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3">
+                            <div class="avatar-sm rounded-circle bg-primary bg-opacity-10 p-3">
+                                <i class="bi bi-currency-dollar text-primary fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="fw-semibold mb-1">$24,568.00</h5>
+                            <p class="text-muted mb-0">Total Earnings</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100 fade-in">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3">
+                            <div class="avatar-sm rounded-circle bg-success bg-opacity-10 p-3">
+                                <i class="bi bi-calendar-check text-success fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="fw-semibold mb-1">$5,245.00</h5>
+                            <p class="text-muted mb-0">This Month</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100 fade-in">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3">
+                            <div class="avatar-sm rounded-circle bg-info bg-opacity-10 p-3">
+                                <i class="bi bi-house-check text-info fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="fw-semibold mb-1">12</h5>
+                            <p class="text-muted mb-0">Completed Transactions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100 fade-in">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3">
+                            <div class="avatar-sm rounded-circle bg-warning bg-opacity-10 p-3">
+                                <i class="bi bi-percent text-warning fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="fw-semibold mb-1">2.5%</h5>
+                            <p class="text-muted mb-0">Average Commission</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm fade-in">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table id="paymentTable" class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th style="width: 60px;">ID</th>
+                                    <th>Property</th>
+                                    <th>Transaction Type</th>
+                                    <th>Amount</th>
+                                    <th>Commission</th>
+                                    <th>Client</th>
+                                    <th>Date</th>
+                                    <th style="width: 100px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    @foreach (var payment in Model)
+                                    {
+                                        string typeClass = payment.TransactionType == "Sale" ? "badge bg-success bg-opacity-10 text-success" :
+                                            payment.TransactionType == "Rental" ? "badge bg-info bg-opacity-10 text-info" :
+                                            "badge bg-secondary bg-opacity-10 text-secondary";
+                                        
+                                        <tr>
+                                            <td>@payment.Id</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-light rounded" style="width: 40px; height: 40px; overflow: hidden;">
+                                                        <img src="@(string.IsNullOrEmpty(payment.PropertyImageUrl) ? "/images/property-placeholder.jpg" : payment.PropertyImageUrl)" 
+                                                            alt="Property" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    </div>
+                                                    <div class="ms-3">
+                                                        <h6 class="mb-1 fw-semibold text-truncate" style="max-width: 200px;">@payment.PropertyTitle</h6>
+                                                        <p class="text-muted small mb-0 text-truncate" style="max-width: 200px;">@payment.PropertyAddress</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><span class="@typeClass">@payment.TransactionType</span></td>
+                                            <td>@payment.Amount.ToString("C2")</td>
+                                            <td>@payment.Commission.ToString("C2") (@payment.CommissionPercentage%)</td>
+                                            <td>@payment.ClientName</td>
+                                            <td>@payment.TransactionDate.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                <div class="d-flex gap-1">
+                                                    <a asp-action="Details" asp-route-id="@payment.Id" class="btn btn-sm btn-outline-info">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                    <a asp-action="Download" asp-route-id="@payment.Id" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-download"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="8" class="text-center py-5">
+                                            <div class="d-flex flex-column align-items-center">
+                                                <i class="bi bi-cash-coin text-muted mb-3" style="font-size: 3rem;"></i>
+                                                <h5 class="fw-normal text-muted mb-2">No payment history found</h5>
+                                                <p class="text-muted mb-3">You don't have any completed transactions yet.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Modal -->
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="filterModalLabel">Filter Payments</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="dateRangeFilter" class="form-label">Date Range</label>
+                        <select class="form-select" id="dateRangeFilter">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month" selected>This Month</option>
+                            <option value="year">This Year</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="transactionTypeFilter" class="form-label">Transaction Type</label>
+                        <select class="form-select" id="transactionTypeFilter">
+                            <option value="all" selected>All Types</option>
+                            <option value="sale">Sale</option>
+                            <option value="rental">Rental</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amountMinFilter" class="form-label">Amount Range</label>
+                        <div class="row g-2">
+                            <div class="col">
+                                <input type="number" class="form-control" id="amountMinFilter" placeholder="Min">
+                            </div>
+                            <div class="col">
+                                <input type="number" class="form-control" id="amountMaxFilter" placeholder="Max">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#paymentTable').DataTable({
+                "responsive": true,
+                "lengthMenu": [10, 25, 50, 100],
+                "language": {
+                    "search": "_INPUT_",
+                    "searchPlaceholder": "Search transactions...",
+                    "lengthMenu": "_MENU_ transactions per page"
+                }
+            });
+
+            // Animation
+            setTimeout(function() {
+                $('.fade-in').addClass('show');
+            }, 100);
+        });
+    </script>
+} 

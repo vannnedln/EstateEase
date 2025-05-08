@@ -1,17 +1,31 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white py-3 shadow-sm" style="font-family: 'Poppins', sans-serif;">
+<nav class="navbar navbar-expand-lg navbar-light navbar-estateease py-3">
     <div class="container">
-        <a class="navbar-brand fw-bold d-flex align-items-center" asp-controller="Home" asp-action="Index">
-            <img src="~/images/estate-ease_IT15_LOGO.png" alt="EstateEase Logo" class="me-2 navbar-logo"
-                style="width: 32px; height: 32px;">
-            <span class="fs-4" style="font-weight: 700; letter-spacing: 0.5px;">EstateEase</span>
+        <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+            <img src="~/images/estate-ease_IT15_LOGO.png" alt="EstateEase Logo" class="me-2">
+            <span>EstateEase</span>
         </a>
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <div class="d-flex gap-3 ms-auto">
-                <a class="btn btn-outline-dark px-4" asp-area="Identity" asp-page="/Account/Login">Login</a>
-                <a class="btn btn-dark px-4" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            <ul class="navbar-nav ms-auto me-auto">
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values.ContainsKey("Action") && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values.ContainsKey("Action") && ViewContext.RouteData.Values["Action"]?.ToString() == "Properties" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Properties">Properties</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values.ContainsKey("Action") && ViewContext.RouteData.Values["Action"]?.ToString() == "About" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="About">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values.ContainsKey("Action") && ViewContext.RouteData.Values["Action"]?.ToString() == "Contact" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Contact">Contact</a>
+                </li>
+            </ul>
+            <div class="navbar-auth-buttons d-flex gap-3">
+                <a class="btn btn-outline-primary" asp-area="Identity" asp-page="/Account/Login">Sign In</a>
+                <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Register">Register</a>
             </div>
         </div>
     </div>

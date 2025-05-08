@@ -3,71 +3,485 @@
     Layout = "_AdminLayout";
 }
 
-<div class="page-header">
-    <div class="row">
-        <div class="col">
-            <h3 class="page-title">Dashboard</h3>
-            <ul class="breadcrumb">
-                <li class="breadcrumb-item active">Dashboard</li>
-            </ul>
+<div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="page-title fw-bold">Dashboard</h3>
+        <p class="text-muted mb-0">Welcome to EstateEase Admin Dashboard</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-light border" id="daterange">
+            <i class="bi bi-calendar3 me-2"></i>
+            <span>Last 30 days</span>
+            <i class="bi bi-chevron-down ms-1"></i>
+        </button>
+        <button class="btn btn-sm btn-primary">
+            <i class="bi bi-download me-2"></i>Export
+        </button>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 col-12 mb-4">
+        <div class="card border-0 shadow-sm h-100 hover-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">Total Properties</h6>
+                        <h3 class="mb-2 fw-bold">12</h3>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-success-subtle text-success me-2">
+                                <i class="bi bi-arrow-up-short"></i>8.5%
+                            </span>
+                            <span class="text-muted small">Since last month</span>
+                        </div>
+                    </div>
+                    <div class="dashboard-icon-container bg-primary-subtle">
+                        <i class="bi bi-building text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 col-12 mb-4">
+        <div class="card border-0 shadow-sm h-100 hover-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">Registered Users</h6>
+                        <h3 class="mb-2 fw-bold">48</h3>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-success-subtle text-success me-2">
+                                <i class="bi bi-arrow-up-short"></i>12.3%
+                            </span>
+                            <span class="text-muted small">Since last month</span>
+                        </div>
+                    </div>
+                    <div class="dashboard-icon-container bg-success-subtle">
+                        <i class="bi bi-people text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 col-12 mb-4">
+        <div class="card border-0 shadow-sm h-100 hover-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">Total Inquiries</h6>
+                        <h3 class="mb-2 fw-bold">34</h3>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-danger-subtle text-danger me-2">
+                                <i class="bi bi-arrow-down-short"></i>3.2%
+                            </span>
+                            <span class="text-muted small">Since last month</span>
+                        </div>
+                    </div>
+                    <div class="dashboard-icon-container bg-warning-subtle">
+                        <i class="bi bi-chat-dots text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 col-12 mb-4">
+        <div class="card border-0 shadow-sm h-100 hover-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-muted fw-normal mb-1">Revenue</h6>
+                        <h3 class="mb-2 fw-bold">$9,582</h3>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-success-subtle text-success me-2">
+                                <i class="bi bi-arrow-up-short"></i>18.7%
+                            </span>
+                            <span class="text-muted small">Since last month</span>
+                        </div>
+                    </div>
+                    <div class="dashboard-icon-container bg-info-subtle">
+                        <i class="bi bi-cash-stack text-info"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- Recent Activity and Properties -->
 <div class="row">
-    <div class="col-xl-3 col-sm-6 col-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="dash-widget-header">
-                    <span class="dash-widget-icon bg-primary">
-                        <i class="bi bi-building text-white"></i>
-                    </span>
-                    <div class="dash-count">
-                        <h3>0</h3>
-                    </div>
-                </div>
-                <div class="dash-widget-info">
-                    <h6 class="text-muted">Properties</h6>
+    <!-- Recent Properties -->
+    <div class="col-lg-8 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center py-3">
+                <h5 class="card-title mb-0">Recent Properties</h5>
+                <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Property</th>
+                                <th>Location</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="property-img-sm me-3 bg-light rounded">
+                                            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=50&h=50&fit=crop" 
+                                                alt="Property" class="rounded" width="40" height="40">
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">Luxury Villa</h6>
+                                            <small class="text-muted">ID: #P5421</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Makati City</td>
+                                <td>Residential</td>
+                                <td>₱25,500,000</td>
+                                <td><span class="badge bg-success">For Sale</span></td>
+                                <td>
+                                    <div class="d-flex">
+                                        <button class="btn btn-sm btn-icon btn-light me-1" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-icon btn-light" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="property-img-sm me-3 bg-light rounded">
+                                            <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=50&h=50&fit=crop" 
+                                                alt="Property" class="rounded" width="40" height="40">
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">Modern Apartment</h6>
+                                            <small class="text-muted">ID: #P5420</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>BGC, Taguig</td>
+                                <td>Apartment</td>
+                                <td>₱45,000/mo</td>
+                                <td><span class="badge bg-primary">For Rent</span></td>
+                                <td>
+                                    <div class="d-flex">
+                                        <button class="btn btn-sm btn-icon btn-light me-1" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-icon btn-light" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="property-img-sm me-3 bg-light rounded">
+                                            <img src="https://images.unsplash.com/photo-1584738766473-61c083514bf4?w=50&h=50&fit=crop" 
+                                                alt="Property" class="rounded" width="40" height="40">
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">Beach House</h6>
+                                            <small class="text-muted">ID: #P5419</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Batangas</td>
+                                <td>Vacation</td>
+                                <td>₱18,500,000</td>
+                                <td><span class="badge bg-success">For Sale</span></td>
+                                <td>
+                                    <div class="d-flex">
+                                        <button class="btn btn-sm btn-icon btn-light me-1" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-icon btn-light" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-xl-3 col-sm-6 col-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="dash-widget-header">
-                    <span class="dash-widget-icon bg-success">
-                        <i class="bi bi-people text-white"></i>
-                    </span>
-                    <div class="dash-count">
-                        <h3>0</h3>
+    <!-- Recent Activity -->
+    <div class="col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom-0 py-3">
+                <h5 class="card-title mb-0">Recent Activity</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="timeline p-3">
+                    <div class="timeline-item pb-3">
+                        <div class="d-flex">
+                            <div class="timeline-icon bg-primary-subtle rounded-circle d-flex align-items-center justify-content-center me-3">
+                                <i class="bi bi-person-plus text-primary"></i>
+                            </div>
+                            <div>
+                                <p class="mb-1">New agent <strong>John Smith</strong> registered</p>
+                                <small class="text-muted">2 hours ago</small>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="dash-widget-info">
-                    <h6 class="text-muted">Users</h6>
+                    <div class="timeline-item pb-3">
+                        <div class="d-flex">
+                            <div class="timeline-icon bg-success-subtle rounded-circle d-flex align-items-center justify-content-center me-3">
+                                <i class="bi bi-house-add text-success"></i>
+                            </div>
+                            <div>
+                                <p class="mb-1">New property <strong>Modern Apartment</strong> added</p>
+                                <small class="text-muted">5 hours ago</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item pb-3">
+                        <div class="d-flex">
+                            <div class="timeline-icon bg-warning-subtle rounded-circle d-flex align-items-center justify-content-center me-3">
+                                <i class="bi bi-chat text-warning"></i>
+                            </div>
+                            <div>
+                                <p class="mb-1">New inquiry from <strong>Maria Garcia</strong></p>
+                                <small class="text-muted">Yesterday</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="d-flex">
+                            <div class="timeline-icon bg-info-subtle rounded-circle d-flex align-items-center justify-content-center me-3">
+                                <i class="bi bi-currency-dollar text-info"></i>
+                            </div>
+                            <div>
+                                <p class="mb-1">Payment received for <strong>Beach House</strong></p>
+                                <small class="text-muted">2 days ago</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-
-
-    <div class="col-xl-3 col-sm-6 col-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="dash-widget-header">
-                    <span class="dash-widget-icon bg-warning">
-                        <i class="bi bi-house-check text-white"></i>
-                    </span>
-                    <div class="dash-count">
-                        <h3>0</h3>
-                    </div>
-                </div>
-                <div class="dash-widget-info">
-                    <h6 class="text-muted">Featured Properties</h6>
-                </div>
+            <div class="card-footer bg-white text-center border-top-0">
+                <a href="#" class="text-decoration-none">View All Activities</a>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Analytics Row -->
+<div class="row">
+    <!-- User Chart -->
+    <div class="col-lg-6 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center py-3">
+                <h5 class="card-title mb-0">User Growth</h5>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        This Year
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">This Month</a></li>
+                        <li><a class="dropdown-item" href="#">This Quarter</a></li>
+                        <li><a class="dropdown-item" href="#">This Year</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="userChart" style="height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Listings Analytics -->
+    <div class="col-lg-6 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center py-3">
+                <h5 class="card-title mb-0">Property Distribution</h5>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        By Type
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">By Location</a></li>
+                        <li><a class="dropdown-item" href="#">By Status</a></li>
+                        <li><a class="dropdown-item" href="#">By Type</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="propertyChart" style="height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.40.0/dist/apexcharts.min.css">
+    <style>
+        .hover-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+        
+        .dashboard-icon-container {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .dashboard-icon-container i {
+            font-size: 24px;
+        }
+        
+        .timeline-icon {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+        }
+        
+        .timeline-item {
+            position: relative;
+        }
+        
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 36px;
+            bottom: 0;
+            width: 1px;
+            background-color: #e9ecef;
+        }
+        
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .property-img-sm {
+            width: 40px;
+            height: 40px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.40.0/dist/apexcharts.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // User Growth Chart
+            var userChartOptions = {
+                series: [{
+                    name: 'Users',
+                    data: [10, 15, 12, 20, 18, 26, 28, 30, 26, 32, 36, 40]
+                }],
+                chart: {
+                    height: 300,
+                    type: 'area',
+                    fontFamily: 'Poppins, sans-serif',
+                    toolbar: {
+                        show: false
+                    }
+                },
+                colors: ['#2937f0'],
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shade: 'light',
+                        type: 'vertical',
+                        shadeIntensity: 0.4,
+                        opacityFrom: 0.5,
+                        opacityTo: 0.1,
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 3
+                },
+                xaxis: {
+                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                },
+                tooltip: {
+                    x: {
+                        format: 'dd/MM/yy HH:mm'
+                    },
+                }
+            };
+
+            var userChart = new ApexCharts(document.querySelector("#userChart"), userChartOptions);
+            userChart.render();
+
+            // Property Distribution Chart
+            var propertyChartOptions = {
+                series: [44, 30, 20, 6],
+                chart: {
+                    type: 'donut',
+                    height: 300,
+                    fontFamily: 'Poppins, sans-serif',
+                },
+                labels: ['Residential', 'Commercial', 'Apartment', 'Land'],
+                colors: ['#2937f0', '#9f1ae2', '#ffab00', '#00d09c'],
+                legend: {
+                    position: 'bottom'
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '65%'
+                        }
+                    }
+                },
+                responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            height: 250
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }]
+            };
+
+            var propertyChart = new ApexCharts(document.querySelector("#propertyChart"), propertyChartOptions);
+            propertyChart.render();
+        });
+    </script>
+}

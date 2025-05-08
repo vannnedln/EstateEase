@@ -1,0 +1,258 @@
+/* EstateEase Authentication Pages Styles */
+:root {
+    --primary-gradient: linear-gradient(45deg, #2937f0, #9f1ae2);
+    --primary-color: #2937f0;
+    --primary-hover: #232cc5;
+    --secondary-color: #9f1ae2;
+    --secondary-hover: #8516bd;
+    --text-dark: #1a1a1a;
+    --text-muted: #6c757d;
+    --light-bg: #f8fafc;
+    --white: #ffffff;
+    --border-radius: 0.75rem;
+    --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --card-shadow-hover: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    --transition: all 0.3s ease;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+    background-image: linear-gradient(135deg, rgba(41, 55, 240, 0.05) 0%, rgba(159, 26, 226, 0.05) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+/* Fix for navbar logo and styling */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand img {
+    width: 36px !important;
+    height: 36px !important;
+    object-fit: contain !important;
+    max-width: 100%;
+}
+
+.navbar-brand span {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    font-size: 1.5rem !important;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.navbar-estateease {
+    background-color: var(--white);
+    padding: 0.75rem 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Custom navbar styling for auth pages */
+.navbar-auth-buttons .btn-outline-primary {
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    background: transparent;
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1.5rem;
+}
+
+.navbar-auth-buttons .btn-outline-primary:hover {
+    background-color: rgba(41, 55, 240, 0.1);
+}
+
+.navbar-auth-buttons .btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+    color: var(--white);
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1.5rem;
+}
+
+.navbar-auth-buttons .btn-primary:hover {
+    background: linear-gradient(45deg, var(--primary-hover), var(--secondary-hover));
+}
+
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Auth Card Styles */
+.auth-card {
+    border: none;
+    border-radius: 20px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    padding: 2.5rem;
+    transition: var(--transition);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+}
+
+.auth-card:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(-5px);
+}
+
+.auth-title {
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 2rem;
+}
+
+.form-floating .form-control {
+    border-radius: 15px;
+    border: 1.5px solid #e0e0e0;
+    padding: 1rem 1.25rem;
+    height: calc(3.5rem + 2px);
+    transition: var(--transition);
+}
+
+.form-floating .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(41, 55, 240, 0.15);
+}
+
+.form-floating>label {
+    padding: 1rem 1.25rem;
+}
+
+.form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    margin-top: 0.15em;
+    vertical-align: top;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    appearance: none;
+    color-adjust: exact;
+    transition: background-color 0.2s ease-in-out, background-position 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.auth-submit-btn {
+    background: var(--primary-gradient);
+    border: none;
+    border-radius: 15px;
+    color: var(--white);
+    font-weight: 600;
+    padding: 0.75rem 0;
+    text-transform: none;
+    letter-spacing: 0.5px;
+    transition: var(--transition);
+}
+
+.auth-submit-btn:hover {
+    background: linear-gradient(45deg, var(--primary-hover), var(--secondary-hover));
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.auth-alt-link {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.auth-alt-link:hover {
+    color: var(--secondary-color);
+}
+
+.social-auth-btn {
+    border-radius: 12px;
+    border: 1.5px solid #e0e0e0;
+    padding: 0.75rem 0;
+    font-weight: 500;
+    transition: var(--transition);
+    background-color: var(--white);
+}
+
+.social-auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.forgot-password {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.forgot-password:hover {
+    color: var(--primary-color);
+}
+
+.auth-card hr {
+    opacity: 0.1;
+}
+
+/* Form Validation Styles */
+.text-danger {
+    color: #dc3545 !important;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.validation-summary-errors ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 1rem;
+    background-color: rgba(220, 53, 69, 0.1);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .auth-card {
+        padding: 1.5rem;
+    }
+
+    .auth-title {
+        font-size: 1.75rem;
+    }
+
+    .navbar-brand img {
+        width: 30px !important;
+        height: 30px !important;
+    }
+
+    .navbar-brand span {
+        font-size: 1.2rem !important;
+    }
+}

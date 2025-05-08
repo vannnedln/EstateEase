@@ -1,0 +1,308 @@
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true">
+}
+
+<!-- Contact Hero Section -->
+<section class="hero-section" style="min-height: 40vh; padding: 4rem 0 2rem;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 fade-in" style="animation-delay: 0.1s;">
+                <h1 class="hero-title">Get in <span style="background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; color: transparent;">Touch</span></h1>
+                <p class="hero-text">We're here to help you with any questions you might have. Reach out to us, and our team will get back to you as soon as possible.</p>
+            </div>
+            <div class="col-lg-6 fade-in" style="animation-delay: 0.3s;">
+                <img src="https://images.unsplash.com/photo-1570126618953-d437176e8c79" alt="Contact" class="hero-image" style="height: 400px;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Info Section -->
+<section class="property-section bg-white">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4 fade-in" style="animation-delay: 0.2s;">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center h-100">
+                    <div class="mb-4 mx-auto" style="width: 80px; height: 80px; background: var(--light-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-geo-alt-fill" style="font-size: 2rem; background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; color: transparent;"></i>
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 600;">Our Office</h3>
+                    <p class="text-muted">123 Real Estate Street<br>Davao City, Davao del Sur<br>Philippines 8000</p>
+                    <a href="https://goo.gl/maps/123" target="_blank" class="text-primary mt-auto">View on Map</a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 fade-in" style="animation-delay: 0.3s;">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center h-100">
+                    <div class="mb-4 mx-auto" style="width: 80px; height: 80px; background: var(--light-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-telephone-fill" style="font-size: 2rem; background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; color: transparent;"></i>
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 600;">Call Us</h3>
+                    <p class="text-muted">We're available Monday to Friday<br>8:00 AM - 6:00 PM</p>
+                    <p class="text-muted">(02) 8123-4567<br>+63 918 123 4567</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 fade-in" style="animation-delay: 0.4s;">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center h-100">
+                    <div class="mb-4 mx-auto" style="width: 80px; height: 80px; background: var(--light-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-envelope-fill" style="font-size: 2rem; background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; color: transparent;"></i>
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 600;">Email Us</h3>
+                    <p class="text-muted">Send us an email and we'll respond within 24 hours</p>
+                    <a href="mailto:info@estateease.com" class="text-primary">info@estateease.com</a><br>
+                    <a href="mailto:support@estateease.com" class="text-primary">support@estateease.com</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Form Section -->
+<section class="property-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mb-4 mb-lg-0 fade-in" style="animation-delay: 0.2s;">
+                <h2 class="section-title mb-4">Send us a Message</h2>
+                <p class="mb-4 text-muted">Fill out the form below, and our team will get back to you as soon as possible. We value your inquiries and look forward to serving you.</p>
+                
+                <form>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="firstName" placeholder="First Name">
+                                <label for="firstName">First Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="lastName" placeholder="Last Name">
+                                <label for="lastName">Last Name</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="email" placeholder="Email address">
+                        <label for="email">Email address</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input type="tel" class="form-control" id="phone" placeholder="Phone Number">
+                        <label for="phone">Phone Number</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="inquiryType">
+                            <option selected disabled value="">Select an option</option>
+                            <option>Property Search</option>
+                            <option>Property Selling</option>
+                            <option>Property Valuation</option>
+                            <option>Investment Consultation</option>
+                            <option>Other</option>
+                        </select>
+                        <label for="inquiryType">Inquiry Type</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="message" style="height: 150px" placeholder="Your message"></textarea>
+                        <label for="message">Your message</label>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="termsCheck">
+                        <label class="form-check-label text-muted" for="termsCheck">
+                            I agree to the <a href="#" class="text-primary">privacy policy</a> and <a href="#" class="text-primary">terms of service</a>.
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg px-4 py-2">
+                        <i class="bi bi-send me-2"></i> Send Message
+                    </button>
+                </form>
+            </div>
+            
+            <div class="col-lg-6 fade-in" style="animation-delay: 0.4s;">
+                <div class="position-relative h-100">
+                    <!-- Map container with placeholder -->
+                    <div class="rounded-4 shadow-sm overflow-hidden h-100" style="min-height: 500px;">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d254888.2889153189!2d125.4263918346602!3d7.197988930290685!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x32f96d9f519e327f%3A0xfb26307fa868c3e1!2sDavao%20City%2C%20Davao%20del%20Sur!5e0!3m2!1sen!2sph!4v1697034567890!5m2!1sen!2sph" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                
+                    <!-- Floating card on the map -->
+                    <div class="position-absolute start-0 bottom-0 m-4 p-4 bg-white rounded-4 shadow" style="max-width: 280px;">
+                        <h4 class="mb-3" style="font-weight: 600; font-size: 1.2rem;">Visit Our Office</h4>
+                        <p class="text-muted mb-2"><i class="bi bi-clock me-2"></i> Mon-Fri: 8AM - 6PM</p>
+                        <p class="text-muted mb-2"><i class="bi bi-clock me-2"></i> Sat: 9AM - 1PM</p>
+                        <p class="text-muted mb-0"><i class="bi bi-clock me-2"></i> Sun: Closed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="property-section bg-white">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title fade-in">Frequently Asked Questions</h2>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="accordion fade-in" id="contactFAQ">
+                    <div class="accordion-item border-0 mb-3 shadow-sm rounded">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                How quickly can I expect a response to my inquiry?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#contactFAQ">
+                            <div class="accordion-body">
+                                We typically respond to all inquiries within 24 hours during business days. For urgent matters, we recommend calling our office directly for immediate assistance.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border-0 mb-3 shadow-sm rounded">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Can I schedule a property viewing through the contact form?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#contactFAQ">
+                            <div class="accordion-body">
+                                Yes, you can request a property viewing through our contact form. Please mention the property you're interested in and your preferred date and time in the message field. Our team will confirm the viewing appointment based on availability.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border-0 mb-3 shadow-sm rounded">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                How can I join the EstateEase team as an agent?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#contactFAQ">
+                            <div class="accordion-body">
+                                We're always looking for talented real estate professionals to join our team. Please use the contact form and select "Other" as the inquiry type, then specify your interest in joining as an agent in the message. Our HR team will reach out with more information about the application process.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border-0 mb-3 shadow-sm rounded">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                Do you offer virtual property tours?
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#contactFAQ">
+                            <div class="accordion-body">
+                                Yes, we offer virtual property tours for many of our listings. Please mention in your inquiry that you're interested in a virtual tour, and our agents will arrange an online viewing experience that fits your schedule.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Social Media Section -->
+<section class="property-section">
+    <div class="container">
+        <div class="text-center mb-5 fade-in">
+            <h2 class="section-title" style="display: inline-block;">Connect With Us</h2>
+            <p class="mt-4 text-muted">Follow us on social media to stay updated with the latest properties and real estate news</p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="row g-4 text-center fade-in">
+                    <div class="col-md-3 col-6">
+                        <a href="#" class="text-decoration-none">
+                            <div class="p-4 rounded-4 shadow-sm" style="background: linear-gradient(45deg, #3b5998, #4267B2);">
+                                <i class="bi bi-facebook text-white" style="font-size: 2.5rem;"></i>
+                                <h5 class="text-white mt-3 mb-0">Facebook</h5>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="#" class="text-decoration-none">
+                            <div class="p-4 rounded-4 shadow-sm" style="background: linear-gradient(45deg, #1DA1F2, #0084b4);">
+                                <i class="bi bi-twitter text-white" style="font-size: 2.5rem;"></i>
+                                <h5 class="text-white mt-3 mb-0">Twitter</h5>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="#" class="text-decoration-none">
+                            <div class="p-4 rounded-4 shadow-sm" style="background: linear-gradient(45deg, #833AB4, #C13584, #E1306C);">
+                                <i class="bi bi-instagram text-white" style="font-size: 2.5rem;"></i>
+                                <h5 class="text-white mt-3 mb-0">Instagram</h5>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="#" class="text-decoration-none">
+                            <div class="p-4 rounded-4 shadow-sm" style="background: linear-gradient(45deg, #0077B5, #00a0dc);">
+                                <i class="bi bi-linkedin text-white" style="font-size: 2.5rem;"></i>
+                                <h5 class="text-white mt-3 mb-0">LinkedIn</h5>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Subscribe Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center fade-in">
+                <h2 class="cta-title">Subscribe to Our Newsletter</h2>
+                <p class="cta-text mb-4">Stay updated with the latest properties, market trends, and real estate tips</p>
+                
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <input type="email" class="form-control form-control-lg" placeholder="Your email address" aria-label="Email address">
+                            <button class="btn btn-light px-4" type="button" style="color: var(--primary-color); font-weight: 600;">Subscribe</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add 'show' class to all fade-in elements with a staggered delay
+            const fadeElements = document.querySelectorAll('.fade-in');
+            fadeElements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                }, 100 + (index * 100));
+            });
+            
+            // Form validation could be added here
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    // Show success message (in a real application)
+                    alert('Thank you for your message! We will contact you soon.');
+                    form.reset();
+                });
+            }
+        });
+    </script>
+} 

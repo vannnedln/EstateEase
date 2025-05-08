@@ -1,0 +1,235 @@
+@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser>
+@{
+    ViewData["Title"] = "View Agents";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid py-4 rounded-4">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-end">
+            <a asp-action="CreateAgent" class="btn gradient-primary-btn btn-lg">
+                <i class="bi bi-person-plus-fill me-2"></i>Create New Agent
+            </a>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header position-relative overflow-hidden py-4"
+                    style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
+                    <h5 class="card-title mb-0 fw-bold ps-2 text-white">
+                        Agent List
+                    </h5>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-people display-1 text-white"></i>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 shadow-sm"
+                            role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-circle-fill fs-4 me-2"></i>
+                                <div>@TempData["Error"]</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 shadow-sm"
+                            role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill fs-4 me-2"></i>
+                                <div>@TempData["Success"]</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <table id="myTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Email Confirmed</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.Id</td>
+                                    <td>@item.UserName</td>
+                                    <td>@item.Email</td>
+                                    <td>@(item.EmailConfirmed ? "Yes" : "No")</td>
+                                    <td class="text-nowrap">
+                                        <div class="d-flex gap-2">
+                                            <a asp-action="EditAgent" asp-route-id="@item.Id" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-pencil"></i> Edit
+                                            </a>
+                                            <a asp-action="ViewAgent" asp-route-id="@item.Id" class="btn btn-dark btn-sm">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                            <a asp-action="DeleteAgent" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/lib/datatables/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Gradient button style */
+        .gradient-primary-btn {
+            background: linear-gradient(45deg, #2937f0, #9f1ae2);
+            border: none;
+            color: white;
+            border-radius: 0.75rem;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(41, 55, 240, 0.3);
+        }
+
+        .gradient-primary-btn:hover {
+            background: linear-gradient(45deg, #232cc5, #8516bd);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(41, 55, 240, 0.4);
+            color: white;
+        }
+
+        /* Animation styles */
+        .card {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+        }
+
+        .card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #myTable tbody tr {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.3s ease-out;
+        }
+
+        #myTable tbody tr.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .table {
+            font-size: 14px;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            color: black;
+            font-weight: 600;
+            border: none;
+            padding: 1rem;
+        }
+
+        .table td {
+            vertical-align: middle;
+            padding: 0.75rem 1rem;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.875rem;
+            border-radius: 0.5rem;
+            margin: 0 0.2rem;
+        }
+
+        /* DataTables Custom Styling */
+        .dataTables_wrapper .dataTables_length select {
+            border-radius: 0.5rem;
+            padding: 0.375rem 2rem 0.375rem 0.75rem;
+            border: 1px solid #dee2e6;
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            border-radius: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #dee2e6;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            border-radius: 0.5rem;
+            margin: 0 0.2rem;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: linear-gradient(45deg, #2937f0, #9f1ae2);
+            border: none;
+            color: white !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: linear-gradient(45deg, #232cc5, #8516bd);
+            border: none;
+            color: white !important;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable
+            $('#myTable').DataTable({
+                dom: '<"row align-items-center"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                    '<"row"<"col-sm-12"tr>>' +
+                    '<"row align-items-center"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search...",
+                    lengthMenu: "_MENU_ records per page"
+                },
+                pageLength: 10,
+                responsive: true
+            });
+
+            // Add animations
+            setTimeout(function () {
+                $('.card').addClass('show');
+
+                $('#myTable tbody tr').each(function (index) {
+                    var $row = $(this);
+                    setTimeout(function () {
+                        $row.addClass('show');
+                    }, 100 + (index * 50));
+                });
+            }, 100);
+        });
+    </script>
+} 

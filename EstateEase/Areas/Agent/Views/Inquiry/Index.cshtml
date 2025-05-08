@@ -1,0 +1,214 @@
+@model IEnumerable<InquiryViewModel>
+@{
+    ViewData["Title"] = "Client Inquiries";
+    Layout = "_AgentLayout";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1 fw-bold">Client Inquiries</h4>
+                    <p class="text-muted">Manage customer questions and property inquiries</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
+                <strong>@TempData["Success"]</strong>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-circle-fill fs-5 me-2"></i>
+                <strong>@TempData["Error"]</strong>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Status Filter Tabs -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <ul class="nav nav-pills" id="inquiryTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-tab" data-bs-toggle="pill" data-bs-target="#all-inquiries" type="button">
+                        All Inquiries
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="new-tab" data-bs-toggle="pill" data-bs-target="#new-inquiries" type="button">
+                        New <span class="badge bg-danger ms-1">5</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="inprogress-tab" data-bs-toggle="pill" data-bs-target="#inprogress-inquiries" type="button">
+                        In Progress
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="resolved-tab" data-bs-toggle="pill" data-bs-target="#resolved-inquiries" type="button">
+                        Resolved
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm fade-in">
+                <div class="card-body p-0">
+                    <div class="tab-content" id="inquiryTabsContent">
+                        <div class="tab-pane fade show active" id="all-inquiries" role="tabpanel">
+                            <div class="table-responsive">
+                                <table id="inquiryTable" class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th style="width: 60px;">ID</th>
+                                            <th>Client</th>
+                                            <th>Property</th>
+                                            <th>Subject</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th style="width: 120px;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model != null && Model.Any())
+                                        {
+                                            @foreach (var inquiry in Model)
+                                            {
+                                                string statusClass = inquiry.Status == "New" ? "badge bg-danger bg-opacity-10 text-danger" :
+                                                    inquiry.Status == "In Progress" ? "badge bg-warning bg-opacity-10 text-warning" :
+                                                    "badge bg-success bg-opacity-10 text-success";
+                                                
+                                                <tr>
+                                                    <td>@inquiry.Id</td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle text-center p-2 me-2">
+                                                                <i class="bi bi-person text-primary"></i>
+                                                            </div>
+                                                            <div>
+                                                                <h6 class="mb-1 fw-semibold">@inquiry.ClientName</h6>
+                                                                <p class="text-muted small mb-0">@inquiry.ClientEmail</p>
+                                                                <p class="text-muted small mb-0">@inquiry.ClientPhone</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        @if (!string.IsNullOrEmpty(inquiry.PropertyTitle))
+                                                        {
+                                                            <h6 class="mb-1 fw-semibold text-truncate" style="max-width: 150px;">@inquiry.PropertyTitle</h6>
+                                                            <p class="text-muted small mb-0 text-truncate" style="max-width: 150px;">@inquiry.PropertyAddress</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">General Inquiry</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-truncate mb-0" style="max-width: 200px;" data-bs-toggle="tooltip" title="@inquiry.Subject">
+                                                            @inquiry.Subject
+                                                        </p>
+                                                    </td>
+                                                    <td>@inquiry.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                                    <td><span class="@statusClass">@inquiry.Status</span></td>
+                                                    <td>
+                                                        <div class="d-flex gap-1">
+                                                            <a asp-action="Details" asp-route-id="@inquiry.Id" class="btn btn-sm btn-outline-info">
+                                                                <i class="bi bi-eye"></i>
+                                                            </a>
+                                                            @if (inquiry.Status != "Resolved")
+                                                            {
+                                                                <a asp-action="Reply" asp-route-id="@inquiry.Id" class="btn btn-sm btn-outline-primary">
+                                                                    <i class="bi bi-reply"></i>
+                                                                </a>
+                                                                <form asp-action="MarkAsResolved" asp-route-id="@inquiry.Id" method="post">
+                                                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Mark as Resolved">
+                                                                        <i class="bi bi-check-circle"></i>
+                                                                    </button>
+                                                                </form>
+                                                            }
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="7" class="text-center py-5">
+                                                    <div class="d-flex flex-column align-items-center">
+                                                        <i class="bi bi-chat-dots text-muted mb-3" style="font-size: 3rem;"></i>
+                                                        <h5 class="fw-normal text-muted mb-2">No inquiries found</h5>
+                                                        <p class="text-muted mb-3">You don't have any client inquiries yet.</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Other tabs would be populated with filtered data -->
+                        <div class="tab-pane fade" id="new-inquiries" role="tabpanel">
+                            <!-- Same table structure but filtered for new inquiries -->
+                        </div>
+                        <div class="tab-pane fade" id="inprogress-inquiries" role="tabpanel">
+                            <!-- Same table structure but filtered for in-progress inquiries -->
+                        </div>
+                        <div class="tab-pane fade" id="resolved-inquiries" role="tabpanel">
+                            <!-- Same table structure but filtered for resolved inquiries -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+            
+            $('#inquiryTable').DataTable({
+                "responsive": true,
+                "lengthMenu": [10, 25, 50, 100],
+                "language": {
+                    "search": "_INPUT_",
+                    "searchPlaceholder": "Search inquiries...",
+                    "lengthMenu": "_MENU_ inquiries per page"
+                }
+            });
+
+            // Animation
+            setTimeout(function() {
+                $('.fade-in').addClass('show');
+            }, 100);
+
+            // Fix for tabs + datatable
+            $('button[data-bs-toggle="pill"]').on('shown.bs.tab', function (e) {
+                $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+            });
+        });
+    </script>
+} 

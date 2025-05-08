@@ -91,6 +91,12 @@ using (var scope = app.Services.CreateScope())
         await roleManager.CreateAsync(new IdentityRole("Admin"));
     }
 
+    // Create Agent role if it doesn't exist
+    if (!await roleManager.RoleExistsAsync("Agent"))
+    {
+        await roleManager.CreateAsync(new IdentityRole("Agent"));
+    }
+
     // Create User role if it doesn't exist
     if (!await roleManager.RoleExistsAsync("User"))
     {

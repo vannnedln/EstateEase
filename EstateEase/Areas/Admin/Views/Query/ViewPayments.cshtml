@@ -1,0 +1,645 @@
+@{
+    ViewData["Title"] = "View Payments";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid py-4 rounded-4">
+    <!-- Dashboard Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-12 col-md-6 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3">
+                            <div class="avatar-sm rounded-circle bg-soft-primary">
+                                <i class="bi bi-currency-dollar fs-4 text-primary position-absolute top-50 start-50 translate-middle"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 text-muted">Total Revenue</h6>
+                            <h3 class="mb-0 fw-bold">$124,563.00</h3>
+                            <span class="badge bg-soft-success text-success">
+                                <i class="bi bi-arrow-up me-1"></i>8.5%
+                            </span>
+                            <span class="text-muted small">vs last month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3">
+                            <div class="avatar-sm rounded-circle bg-soft-success">
+                                <i class="bi bi-check-circle fs-4 text-success position-absolute top-50 start-50 translate-middle"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 text-muted">Successful Payments</h6>
+                            <h3 class="mb-0 fw-bold">1,849</h3>
+                            <span class="badge bg-soft-success text-success">
+                                <i class="bi bi-arrow-up me-1"></i>12.3%
+                            </span>
+                            <span class="text-muted small">vs last month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3">
+                            <div class="avatar-sm rounded-circle bg-soft-warning">
+                                <i class="bi bi-exclamation-triangle fs-4 text-warning position-absolute top-50 start-50 translate-middle"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 text-muted">Pending Payments</h6>
+                            <h3 class="mb-0 fw-bold">42</h3>
+                            <span class="badge bg-soft-danger text-danger">
+                                <i class="bi bi-arrow-up me-1"></i>5.1%
+                            </span>
+                            <span class="text-muted small">vs last month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3">
+                            <div class="avatar-sm rounded-circle bg-soft-danger">
+                                <i class="bi bi-x-circle fs-4 text-danger position-absolute top-50 start-50 translate-middle"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 text-muted">Failed Payments</h6>
+                            <h3 class="mb-0 fw-bold">18</h3>
+                            <span class="badge bg-soft-success text-success">
+                                <i class="bi bi-arrow-down me-1"></i>3.2%
+                            </span>
+                            <span class="text-muted small">vs last month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chart Row -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mb-3">
+            <div class="card border-0 shadow-lg h-100">
+                <div class="card-header position-relative overflow-hidden py-4"
+                    style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
+                    <h5 class="card-title mb-0 fw-bold ps-2 text-white">
+                        Payment Trends
+                    </h5>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-graph-up display-1 text-white"></i>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Chart placeholder -->
+                    <div class="chart-container" style="position: relative; height:320px; width:100%">
+                        <canvas id="paymentsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-3">
+            <div class="card border-0 shadow-lg h-100">
+                <div class="card-header position-relative overflow-hidden py-4"
+                    style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
+                    <h5 class="card-title mb-0 fw-bold ps-2 text-white">
+                        Payment Methods
+                    </h5>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-pie-chart display-1 text-white"></i>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="chart-container d-flex justify-content-center align-items-center" style="height:320px; width:100%">
+                        <canvas id="paymentMethodChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Transactions Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header position-relative overflow-hidden py-4"
+                    style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
+                    <h5 class="card-title mb-0 fw-bold ps-2 text-white">
+                        Recent Transactions
+                    </h5>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-cash-stack display-1 text-white"></i>
+                    </div>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-5">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-funnel me-1"></i> Filter
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#">All Transactions</a></li>
+                                <li><a class="dropdown-item" href="#">Successful Only</a></li>
+                                <li><a class="dropdown-item" href="#">Pending Only</a></li>
+                                <li><a class="dropdown-item" href="#">Failed Only</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">Last 7 days</a></li>
+                                <li><a class="dropdown-item" href="#">Last 30 days</a></li>
+                                <li><a class="dropdown-item" href="#">Last 90 days</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <table id="transactionsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Client</th>
+                                <th>Property</th>
+                                <th>Payment Method</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sample data -->
+                            <tr>
+                                <td>#PAY-2023-001</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-xs me-2 bg-soft-primary rounded-circle">
+                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">JD</span>
+                                        </div>
+                                        <span>John Doe</span>
+                                    </div>
+                                </td>
+                                <td>Sunset Villa</td>
+                                <td><i class="bi bi-credit-card me-1"></i> Credit Card</td>
+                                <td class="fw-bold">$2,500.00</td>
+                                <td>Dec 15, 2023</td>
+                                <td><span class="badge bg-success rounded-pill">Successful</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>View Details</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-printer me-2"></i>Print Receipt</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-envelope me-2"></i>Email Receipt</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#PAY-2023-002</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-xs me-2 bg-soft-info rounded-circle">
+                                            <span class="avatar-title rounded-circle bg-soft-info text-info">AS</span>
+                                        </div>
+                                        <span>Alice Smith</span>
+                                    </div>
+                                </td>
+                                <td>Ocean View Apartment</td>
+                                <td><i class="bi bi-paypal me-1"></i> PayPal</td>
+                                <td class="fw-bold">$1,800.00</td>
+                                <td>Dec 14, 2023</td>
+                                <td><span class="badge bg-success rounded-pill">Successful</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>View Details</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-printer me-2"></i>Print Receipt</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-envelope me-2"></i>Email Receipt</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#PAY-2023-003</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-xs me-2 bg-soft-success rounded-circle">
+                                            <span class="avatar-title rounded-circle bg-soft-success text-success">RJ</span>
+                                        </div>
+                                        <span>Robert Johnson</span>
+                                    </div>
+                                </td>
+                                <td>Mountain Retreat</td>
+                                <td><i class="bi bi-bank me-1"></i> Bank Transfer</td>
+                                <td class="fw-bold">$3,200.00</td>
+                                <td>Dec 13, 2023</td>
+                                <td><span class="badge bg-warning rounded-pill">Pending</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>View Details</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-check-circle me-2"></i>Approve</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-x-circle me-2"></i>Reject</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#PAY-2023-004</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-xs me-2 bg-soft-danger rounded-circle">
+                                            <span class="avatar-title rounded-circle bg-soft-danger text-danger">MW</span>
+                                        </div>
+                                        <span>Mary Williams</span>
+                                    </div>
+                                </td>
+                                <td>City Loft</td>
+                                <td><i class="bi bi-credit-card me-1"></i> Credit Card</td>
+                                <td class="fw-bold">$1,950.00</td>
+                                <td>Dec 12, 2023</td>
+                                <td><span class="badge bg-danger rounded-pill">Failed</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>View Details</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-arrow-repeat me-2"></i>Retry Payment</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-envelope me-2"></i>Contact Client</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#PAY-2023-005</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-xs me-2 bg-soft-warning rounded-circle">
+                                            <span class="avatar-title rounded-circle bg-soft-warning text-warning">TP</span>
+                                        </div>
+                                        <span>Thomas Parker</span>
+                                    </div>
+                                </td>
+                                <td>Lakeside Cottage</td>
+                                <td><i class="bi bi-wallet2 me-1"></i> Digital Wallet</td>
+                                <td class="fw-bold">$2,100.00</td>
+                                <td>Dec 11, 2023</td>
+                                <td><span class="badge bg-success rounded-pill">Successful</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>View Details</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-printer me-2"></i>Print Receipt</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-envelope me-2"></i>Email Receipt</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/lib/datatables/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        /* Animation styles */
+        .card {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+        }
+        
+        .card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Dashboard summary cards */
+        .avatar-sm {
+            height: 3rem;
+            width: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .bg-soft-primary {
+            background-color: rgba(41, 55, 240, 0.1) !important;
+        }
+        
+        .bg-soft-success {
+            background-color: rgba(10, 187, 135, 0.1) !important;
+        }
+        
+        .bg-soft-warning {
+            background-color: rgba(255, 159, 67, 0.1) !important;
+        }
+        
+        .bg-soft-danger {
+            background-color: rgba(250, 92, 124, 0.1) !important;
+        }
+        
+        .bg-soft-info {
+            background-color: rgba(57, 175, 209, 0.1) !important;
+        }
+        
+        .text-primary {
+            color: #2937f0 !important;
+        }
+        
+        .text-success {
+            color: #0abb87 !important;
+        }
+        
+        .text-warning {
+            color: #ff9f43 !important;
+        }
+        
+        .text-danger {
+            color: #fa5c7c !important;
+        }
+        
+        .text-info {
+            color: #39afd1 !important;
+        }
+        
+        /* Avatar initials */
+        .avatar-xs {
+            height: 2rem;
+            width: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .avatar-title {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Table styles */
+        .table {
+            font-size: 14px;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .table thead th {
+            color: black;
+            font-weight: 600;
+            border: none;
+            padding: 1rem;
+        }
+        
+        .table td {
+            vertical-align: middle;
+            padding: 0.75rem 1rem;
+            border-color: #f1f1f1;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* DataTables Custom Styling */
+        .dataTables_wrapper .dataTables_length select {
+            border-radius: 0.5rem;
+            padding: 0.375rem 2rem 0.375rem 0.75rem;
+            border: 1px solid #dee2e6;
+        }
+        
+        .dataTables_wrapper .dataTables_filter input {
+            border-radius: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #dee2e6;
+        }
+        
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            border-radius: 0.5rem;
+            margin: 0 0.2rem;
+        }
+        
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: linear-gradient(45deg, #2937f0, #9f1ae2);
+            border: none;
+            color: white !important;
+        }
+        
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: linear-gradient(45deg, #232cc5, #8516bd);
+            border: none;
+            color: white !important;
+        }
+        
+        /* Badge styles */
+        .badge {
+            padding: 0.5em 0.75em;
+            font-weight: 500;
+        }
+        
+        .badge.rounded-pill {
+            padding-right: 0.8em;
+            padding-left: 0.8em;
+        }
+        
+        /* Dropdown button */
+        .btn-icon {
+            width: 2rem;
+            height: 2rem;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .btn-icon:hover {
+            background-color: #f1f5fa;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable
+            $('#transactionsTable').DataTable({
+                dom: '<"row align-items-center"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                    '<"row"<"col-sm-12"tr>>' +
+                    '<"row align-items-center"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search transactions...",
+                    lengthMenu: "_MENU_ transactions per page"
+                },
+                pageLength: 10,
+                responsive: true
+            });
+            
+            // Add animations
+            setTimeout(function () {
+                $('.card').each(function (index) {
+                    var $card = $(this);
+                    setTimeout(function () {
+                        $card.addClass('show');
+                    }, 100 + (index * 100));
+                });
+            }, 100);
+            
+            // Payments Chart
+            var ctx = document.getElementById('paymentsChart').getContext('2d');
+            var paymentsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Total Payments',
+                        data: [12500, 15000, 14200, 16800, 19500, 21200, 22500, 24100, 25800, 27500, 28900, 32500],
+                        backgroundColor: 'rgba(41, 55, 240, 0.1)',
+                        borderColor: '#2937f0',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#2937f0',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false,
+                                color: "#f1f1f1",
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                drawBorder: false,
+                                display: false,
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#ffffff',
+                            titleColor: '#000000',
+                            bodyColor: '#000000',
+                            borderColor: '#e3e3e3',
+                            borderWidth: 1,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return '$' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Payment Method Chart
+            var pmCtx = document.getElementById('paymentMethodChart').getContext('2d');
+            var paymentMethodChart = new Chart(pmCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Credit Card', 'Bank Transfer', 'PayPal', 'Digital Wallet', 'Other'],
+                    datasets: [{
+                        data: [45, 25, 15, 10, 5],
+                        backgroundColor: [
+                            '#2937f0',
+                            '#9f1ae2',
+                            '#0abb87',
+                            '#ff9f43',
+                            '#fa5c7c'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 15,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#ffffff',
+                            titleColor: '#000000',
+                            bodyColor: '#000000',
+                            borderColor: '#e3e3e3',
+                            borderWidth: 1,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+} 

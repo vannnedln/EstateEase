@@ -117,6 +117,11 @@ namespace EstateEase.Areas.Identity.Pages.Account
                     {
                         return RedirectToAction("Index", "Home", new { area = "Admin" });
                     }
+                    // Check if user is in Agent role
+                    else if (await _signInManager.UserManager.IsInRoleAsync(user, "Agent"))
+                    {
+                        return RedirectToAction("Index", "Home", new { area = "Agent" });
+                    }
 
                     return LocalRedirect(returnUrl);
                 }

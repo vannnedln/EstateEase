@@ -106,5 +106,10 @@ namespace EstateEase.Models.ViewModels
         public string? FloorPlanImagePath { get; set; }
         public string? BasementPlanImagePath { get; set; }
         public string? GroundFloorPlanImagePath { get; set; }
+        
+        [Display(Name = "Main Image")]
+        public string? MainImageUrl { get; set; }
+        
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }
