@@ -1,0 +1,269 @@
+@model EstateEase.Models.ViewModels.UserDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_UserLayout";
+}
+
+<div class="container-fluid p-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">My Dashboard</h2>
+        <div>
+            <a href="#" class="btn btn-primary">
+                <i class="bi bi-building-add me-2"></i>Browse Properties
+            </a>
+        </div>
+    </div>
+
+    <!-- Overview Stats -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="dashboard-stat">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h3 class="h1 mb-0 fw-bold">@Model.OwnedPropertiesCount</h3>
+                        <p class="mb-0 text-white-50">Properties Owned</p>
+                    </div>
+                    <div class="rounded-circle bg-white bg-opacity-25 p-3">
+                        <i class="bi bi-house-check fs-3 text-white"></i>
+                    </div>
+                </div>
+                <a href="#" class="text-white text-decoration-none d-flex align-items-center fw-medium">
+                    <span>View all</span>
+                    <i class="bi bi-chevron-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-stat" style="background: linear-gradient(45deg, #9f1ae2, #4f5aff)">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h3 class="h1 mb-0 fw-bold">@Model.RentedPropertiesCount</h3>
+                        <p class="mb-0 text-white-50">Properties Rented</p>
+                    </div>
+                    <div class="rounded-circle bg-white bg-opacity-25 p-3">
+                        <i class="bi bi-house-gear fs-3 text-white"></i>
+                    </div>
+                </div>
+                <a href="#" class="text-white text-decoration-none d-flex align-items-center fw-medium">
+                    <span>View all</span>
+                    <i class="bi bi-chevron-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-stat" style="background: linear-gradient(45deg, #10b981, #3b82f6)">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h3 class="h1 mb-0 fw-bold">@(Model.UpcomingAppointments?.Count ?? 0)</h3>
+                        <p class="mb-0 text-white-50">Upcoming Appointments</p>
+                    </div>
+                    <div class="rounded-circle bg-white bg-opacity-25 p-3">
+                        <i class="bi bi-calendar-check fs-3 text-white"></i>
+                    </div>
+                </div>
+                <a href="#" class="text-white text-decoration-none d-flex align-items-center fw-medium">
+                    <span>View all</span>
+                    <i class="bi bi-chevron-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-stat" style="background: linear-gradient(45deg, #f97316, #ec4899)">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h3 class="h1 mb-0 fw-bold">@Model.FavoritesCount</h3>
+                        <p class="mb-0 text-white-50">Favorites</p>
+                    </div>
+                    <div class="rounded-circle bg-white bg-opacity-25 p-3">
+                        <i class="bi bi-heart fs-3 text-white"></i>
+                    </div>
+                </div>
+                <a href="#" class="text-white text-decoration-none d-flex align-items-center fw-medium">
+                    <span>View all</span>
+                    <i class="bi bi-chevron-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Properties Section -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0">My Properties</h3>
+            <a href="#" class="btn btn-outline-primary btn-sm">View All</a>
+        </div>
+
+        @if (Model.RecentProperties?.Any() == true)
+        {
+            <div class="row g-4">
+                @foreach (var property in Model.RecentProperties)
+                {
+                    <div class="col-md-4">
+                        <div class="dashboard-card h-100">
+                            <img src="@Url.Content(property.ImageUrl)" class="property-thumbnail" alt="@property.Title">
+                            <div class="p-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="fw-bold text-truncate mb-0">@property.Title</h5>
+                                    <span class="badge @(property.OwnershipType == "Bought" ? "bg-success" : "bg-primary")">
+                                        @property.OwnershipType
+                                    </span>
+                                </div>
+                                <p class="text-muted mb-2 small">
+                                    <i class="bi bi-geo-alt me-1"></i>@property.Address
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="text-muted small">
+                                        <i class="bi bi-calendar3 me-1"></i>
+                                        Acquired: @property.AcquisitionDate.ToString("MMM dd, yyyy")
+                                    </div>
+                                    <div class="fw-semibold text-primary">₱@property.Price.ToString("N0")</div>
+                                </div>
+                                <a href="#" class="btn btn-sm btn-primary w-100">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                You don't have any properties yet. Browse our listings to find your perfect home!
+            </div>
+            <a href="#" class="btn btn-primary">Browse Properties</a>
+        }
+    </div>
+
+    <!-- Upcoming Appointments -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0">Upcoming Appointments</h3>
+            <a href="#" class="btn btn-outline-primary btn-sm">View All</a>
+        </div>
+
+        @if (Model.UpcomingAppointments?.Any() == true)
+        {
+            <div class="dashboard-card table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var appointment in Model.UpcomingAppointments)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <div class="fw-medium mb-1">@appointment.PropertyTitle</div>
+                                            <div class="text-muted small">@appointment.PropertyAddress</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-medium">@appointment.AppointmentDate.ToString("MMM dd, yyyy")</span>
+                                        <span class="text-muted small">@appointment.AppointmentDate.ToString("h:mm tt")</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    @{
+                                        string statusClass = appointment.Status.ToLower() switch
+                                        {
+                                            "confirmed" => "confirmed",
+                                            "pending" => "pending",
+                                            "cancelled" => "cancelled",
+                                            _ => "pending"
+                                        };
+                                    }
+                                    <span class="appointment-status @statusClass">@appointment.Status</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary">View</button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger">Cancel</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                You don't have any upcoming appointments. Schedule a property viewing today!
+            </div>
+            <a href="#" class="btn btn-primary">Schedule Viewing</a>
+        }
+    </div>
+
+    <!-- Recent Offers -->
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0">Recent Offers</h3>
+            <a href="#" class="btn btn-outline-primary btn-sm">View All</a>
+        </div>
+
+        @if (Model.RecentOffers?.Any() == true)
+        {
+            <div class="dashboard-card table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var offer in Model.RecentOffers)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="fw-medium">@offer.PropertyTitle</div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">₱@offer.OfferAmount.ToString("N0")</div>
+                                </td>
+                                <td>@offer.OfferDate.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    @{
+                                        var badgeClass = offer.Status.ToLower() switch
+                                        {
+                                            "accepted" => "bg-success",
+                                            "rejected" => "bg-danger",
+                                            _ => "bg-warning"
+                                        };
+                                    }
+                                    <span class="badge @badgeClass">@offer.Status</span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-primary">View Details</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                You haven't made any offers yet. Browse properties and make an offer today!
+            </div>
+            <a href="#" class="btn btn-primary">Browse Properties</a>
+        }
+    </div>
+</div> 

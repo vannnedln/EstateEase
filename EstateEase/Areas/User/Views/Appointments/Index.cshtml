@@ -1,0 +1,213 @@
+@model EstateEase.Models.ViewModels.AppointmentsViewModel
+@{
+    ViewData["Title"] = "My Appointments";
+    Layout = "_UserLayout";
+}
+
+<div class="container-fluid p-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">My Appointments</h2>
+        <div>
+            <a href="#" class="btn btn-primary">
+                <i class="bi bi-calendar-plus me-2"></i>Schedule New Appointment
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter and Stats -->
+    <div class="dashboard-card p-4 mb-4">
+        <div class="row g-4 align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex gap-2 flex-wrap">
+                    <a asp-action="Index" asp-route-statusFilter="All" 
+                       class="btn @(Model.StatusFilter == "All" ? "btn-primary" : "btn-outline-primary")">
+                        All (@Model.TotalCount)
+                    </a>
+                    <a asp-action="Index" asp-route-statusFilter="Confirmed" 
+                       class="btn @(Model.StatusFilter == "Confirmed" ? "btn-primary" : "btn-outline-primary")">
+                        Upcoming (@Model.UpcomingCount)
+                    </a>
+                    <a asp-action="Index" asp-route-statusFilter="Pending" 
+                       class="btn @(Model.StatusFilter == "Pending" ? "btn-primary" : "btn-outline-primary")">
+                        Pending (@Model.PendingCount)
+                    </a>
+                    <a asp-action="Index" asp-route-statusFilter="Completed" 
+                       class="btn @(Model.StatusFilter == "Completed" ? "btn-primary" : "btn-outline-primary")">
+                        Completed (@Model.CompletedCount)
+                    </a>
+                    <a asp-action="Index" asp-route-statusFilter="Cancelled" 
+                       class="btn @(Model.StatusFilter == "Cancelled" ? "btn-primary" : "btn-outline-primary")">
+                        Cancelled (@Model.CancelledCount)
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex justify-content-md-end">
+                    <div class="input-group" style="max-width: 300px;">
+                        <input type="text" class="form-control" placeholder="Search appointments...">
+                        <button class="btn btn-outline-primary" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointments List -->
+    @if (Model.Appointments?.Any() == true)
+    {
+        <div class="dashboard-card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Agent</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var appointment in Model.Appointments)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3" style="width: 60px; height: 60px;">
+                                            <img src="@Url.Content(appointment.PropertyImage)" class="img-fluid rounded" 
+                                                 style="width: 100%; height: 100%; object-fit: cover;"
+                                                 alt="@appointment.PropertyTitle">
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium mb-1">@appointment.PropertyTitle</div>
+                                            <div class="text-muted small">@appointment.PropertyAddress</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-medium">@appointment.AgentName</div>
+                                    <div class="text-muted small">@appointment.AgentEmail</div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-medium">@appointment.AppointmentDate.ToString("MMM dd, yyyy")</span>
+                                        <span class="text-muted small">@appointment.AppointmentDate.ToString("h:mm tt")</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    @{
+                                        string statusClass = appointment.Status.ToLower() switch
+                                        {
+                                            "confirmed" => "confirmed",
+                                            "pending" => "pending",
+                                            "completed" => "text-bg-success",
+                                            "cancelled" => "cancelled",
+                                            _ => "pending"
+                                        };
+                                    }
+                                    <span class="appointment-status @statusClass">@appointment.Status</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a asp-action="Details" asp-route-id="@appointment.Id" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye me-1"></i> View
+                                        </a>
+                                        @if (appointment.Status != "Cancelled" && appointment.Status != "Completed")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    data-bs-toggle="modal" data-bs-target="#cancelModal-@appointment.Id">
+                                                <i class="bi bi-x-circle me-1"></i> Cancel
+                                            </button>
+                                            
+                                            <!-- Cancel Modal -->
+                                            <div class="modal fade" id="cancelModal-@appointment.Id" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Cancel Appointment</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Are you sure you want to cancel your appointment for:</p>
+                                                            <p class="fw-bold">@appointment.PropertyTitle</p>
+                                                            <p>on @appointment.AppointmentDate.ToString("MMMM dd, yyyy") at @appointment.AppointmentDate.ToString("h:mm tt")?</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            <form asp-action="Cancel" method="post">
+                                                                <input type="hidden" name="id" value="@appointment.Id" />
+                                                                <button type="submit" class="btn btn-danger">Cancel Appointment</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="dashboard-card p-5 text-center">
+            <div class="mb-4">
+                <i class="bi bi-calendar-x fs-1 text-muted"></i>
+            </div>
+            <h4>No Appointments Found</h4>
+            <p class="text-muted mb-4">You don't have any appointments in this category.</p>
+            <a href="#" class="btn btn-primary">Schedule an Appointment</a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const toast = new bootstrap.Toast(document.getElementById('successToast'));
+                toast.show();
+            });
+        </script>
+        
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
+            <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi bi-check-circle me-2"></i> @TempData["Success"]
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    }
+    
+    @if (TempData["Error"] != null)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const toast = new bootstrap.Toast(document.getElementById('errorToast'));
+                toast.show();
+            });
+        </script>
+        
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
+            <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi bi-exclamation-circle me-2"></i> @TempData["Error"]
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    }
+} 

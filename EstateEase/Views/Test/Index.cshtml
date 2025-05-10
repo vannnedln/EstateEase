@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "Database Test";
+}
+
+<div class="container mt-5">
+    <h1>Database Test</h1>
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Entity Counts</h5>
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Properties
+                    <span class="badge bg-primary rounded-pill">@ViewBag.Properties</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Agents
+                    <span class="badge bg-primary rounded-pill">@ViewBag.Agents</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    UserProperties
+                    <span class="badge bg-primary rounded-pill">@ViewBag.UserProperties</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Appointments
+                    <span class="badge bg-primary rounded-pill">@ViewBag.Appointments</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Offers
+                    <span class="badge bg-primary rounded-pill">@ViewBag.Offers</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Favorites
+                    <span class="badge bg-primary rounded-pill">@ViewBag.Favorites</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Back to Home</a>
+    </div>
+</div> 

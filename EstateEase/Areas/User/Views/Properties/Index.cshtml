@@ -1,0 +1,128 @@
+@model EstateEase.Models.ViewModels.UserPropertiesViewModel
+@{
+    ViewData["Title"] = "My Properties";
+    Layout = "_UserLayout";
+}
+
+<div class="container-fluid p-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">My Properties</h2>
+    </div>
+
+    <!-- Filter and Stats -->
+    <div class="dashboard-card p-4 mb-4">
+        <div class="row g-4 align-items-center">
+            <div class="col-md-6">
+                <div class="d-flex gap-2">
+                    <a asp-action="Index" asp-route-ownershipFilter="All" 
+                       class="btn @(Model.OwnershipFilter == "All" ? "btn-primary" : "btn-outline-primary")">
+                        All (@Model.TotalCount)
+                    </a>
+                    <a asp-action="Index" asp-route-ownershipFilter="Bought" 
+                       class="btn @(Model.OwnershipFilter == "Bought" ? "btn-primary" : "btn-outline-primary")">
+                        Owned (@Model.OwnedCount)
+                    </a>
+                    <a asp-action="Index" asp-route-ownershipFilter="Rented" 
+                       class="btn @(Model.OwnershipFilter == "Rented" ? "btn-primary" : "btn-outline-primary")">
+                        Rented (@Model.RentedCount)
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex justify-content-md-end">
+                    <div class="input-group" style="max-width: 300px;">
+                        <input type="text" class="form-control" placeholder="Search properties...">
+                        <button class="btn btn-outline-primary" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Properties List -->
+    @if (Model.Properties?.Any() == true)
+    {
+        <div class="row g-4">
+            @foreach (var property in Model.Properties)
+            {
+                <div class="col-md-4">
+                    <div class="dashboard-card h-100">
+                        <div class="position-relative">
+                            <img src="@Url.Content(property.ImageUrl)" class="property-thumbnail" alt="@property.Title">
+                            <span class="badge position-absolute top-0 end-0 m-3 @(property.OwnershipType == "Bought" ? "bg-success" : "bg-primary")">
+                                @property.OwnershipType
+                            </span>
+                        </div>
+                        <div class="p-3">
+                            <h5 class="fw-bold mb-2">@property.Title</h5>
+                            <p class="text-muted mb-3 small">
+                                <i class="bi bi-geo-alt me-1"></i>@property.Address
+                            </p>
+                            
+                            <div class="row mb-3 g-2 text-center">
+                                <div class="col-4">
+                                    <div class="p-2 rounded bg-light">
+                                        <div class="small text-muted">Beds</div>
+                                        <div class="fw-medium">@property.Bedrooms</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 rounded bg-light">
+                                        <div class="small text-muted">Baths</div>
+                                        <div class="fw-medium">@property.Bathrooms</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 rounded bg-light">
+                                        <div class="small text-muted">Size</div>
+                                        <div class="fw-medium">@property.Size m²</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="text-muted small">
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    @if (property.OwnershipType == "Bought")
+                                    {
+                                        <span>Purchased: @property.AcquisitionDate.ToString("MMM dd, yyyy")</span>
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            Rented: @property.AcquisitionDate.ToString("MMM dd, yyyy")
+                                            @if (property.ExpiryDate.HasValue)
+                                            {
+                                                <span>- @property.ExpiryDate.Value.ToString("MMM dd, yyyy")</span>
+                                            }
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="fw-semibold text-primary fs-5">₱@property.Price.ToString("N0")</div>
+                                <a asp-action="Details" asp-route-id="@property.Id" class="btn btn-sm btn-primary">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="dashboard-card p-5 text-center">
+            <div class="mb-4">
+                <i class="bi bi-house-x fs-1 text-muted"></i>
+            </div>
+            <h4>No Properties Found</h4>
+            <p class="text-muted mb-4">You don't have any properties in this category yet.</p>
+            <a href="#" class="btn btn-primary">Browse Properties</a>
+        </div>
+    }
+</div> 
