@@ -7,7 +7,7 @@ namespace EstateEase.Models.ViewModels
 {
     public class PropertyViewModel
     {
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         [Required]
         [StringLength(200)]
@@ -110,7 +110,7 @@ namespace EstateEase.Models.ViewModels
 
     public class PropertyImageViewModel
     {
-        public string Id { get; set; }
+        public string? Id { get; set; }
         public string ImagePath { get; set; }
         public bool IsMain { get; set; }
         public string ImageType { get; set; }

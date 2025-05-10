@@ -197,9 +197,17 @@
                             <i class="bi bi-images me-2"></i>Property Images
                         </h5>
                         <div class="row g-4">
-                            @if (Model.ExistingImages != null && Model.ExistingImages.Any())
+                            @if (Model.ExistingImages != null && Model.ExistingImages.Any(i => 
+                                i.ImageType != "FloorPlan" && 
+                                !i.ImageType.Contains("floor", StringComparison.OrdinalIgnoreCase) && 
+                                !i.ImageType.Contains("ground", StringComparison.OrdinalIgnoreCase) && 
+                                !i.ImageType.Contains("basement", StringComparison.OrdinalIgnoreCase)))
                             {
-                                @foreach (var image in Model.ExistingImages)
+                                @foreach (var image in Model.ExistingImages.Where(i => 
+                                    i.ImageType != "FloorPlan" && 
+                                    !i.ImageType.Contains("floor", StringComparison.OrdinalIgnoreCase) && 
+                                    !i.ImageType.Contains("ground", StringComparison.OrdinalIgnoreCase) && 
+                                    !i.ImageType.Contains("basement", StringComparison.OrdinalIgnoreCase)))
                                 {
                                     <div class="col-md-4">
                                         <div class="card h-100 border-0 shadow-sm">
@@ -225,7 +233,50 @@
                             {
                                 <div class="col-12">
                                     <div class="alert alert-info">
-                                        No images available for this property.
+                                        No property images available.
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Floor Plans -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-layers me-2"></i>Floor Plans
+                        </h5>
+                        <div class="row g-4">
+                            @if (Model.ExistingImages != null && Model.ExistingImages.Any(i => 
+                                i.ImageType == "FloorPlan" || 
+                                i.ImageType.Contains("floor", StringComparison.OrdinalIgnoreCase) || 
+                                i.ImageType.Contains("ground", StringComparison.OrdinalIgnoreCase) || 
+                                i.ImageType.Contains("basement", StringComparison.OrdinalIgnoreCase)))
+                            {
+                                @foreach (var image in Model.ExistingImages.Where(i => 
+                                    i.ImageType == "FloorPlan" || 
+                                    i.ImageType.Contains("floor", StringComparison.OrdinalIgnoreCase) || 
+                                    i.ImageType.Contains("ground", StringComparison.OrdinalIgnoreCase) || 
+                                    i.ImageType.Contains("basement", StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    <div class="col-md-4">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="image-container" style="height: 250px;">
+                                                <img src="@image.ImagePath"
+                                                     class="img-fluid w-100 h-100 rounded" style="object-fit: cover;"
+                                                     asp-append-version="true" alt="@image.ImageType">
+                                            </div>
+                                            <div class="card-footer bg-transparent border-0">
+                                                <small class="text-muted">@image.ImageType</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        No floor plans available for this property.
                                     </div>
                                 </div>
                             }

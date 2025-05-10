@@ -9,7 +9,6 @@ namespace EstateEase.Models.Entities
         public string Id { get; set; }
         public string ImagePath { get; set; }
         public bool IsMain { get; set; }
-        public bool IsMainImage { get; set; }
         public string PropertyId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public string ImageType { get; set; }

@@ -35,23 +35,23 @@
                         
                         <!-- Profile Picture -->
                         <div class="section mb-5">
-                            <h5 class="text-primary fw-bold mb-4">
-                                <i class="bi bi-image me-2"></i>Profile Picture
-                            </h5>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="profile-picture-upload">
-                                        <div class="preview-container mb-3">
-                                            <img id="profilePreview" src="/images/avatar-01.png" class="img-thumbnail rounded-circle" style="width: 200px; height: 200px; object-fit: cover;" />
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="file" asp-for="ProfilePicture" class="form-control" accept="image/*" onchange="previewImage(this)" />
-                                            <span asp-validation-for="ProfilePicture" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <h5 class="text-primary fw-bold mb-4">
+        <i class="bi bi-image me-2"></i>Profile Picture
+    </h5>
+    <div class="row justify-content-center">
+        <div class="col-md-6 d-flex flex-column align-items-center">
+            <div class="profile-picture-upload w-100">
+                <div class="preview-container mb-3 d-flex justify-content-center">
+                    <img id="profilePreview" src="/images/avatar-01.png" class="img-thumbnail rounded-circle" style="width: 200px; height: 200px; object-fit: cover;" />
+                </div>
+                <div class="form-group w-100 text-center">
+                    <input type="file" asp-for="ProfilePicture" class="form-control" accept="image/*" onchange="previewImage(this)" />
+                    <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
                         <!-- Personal Information -->
                         <div class="section mb-5">
