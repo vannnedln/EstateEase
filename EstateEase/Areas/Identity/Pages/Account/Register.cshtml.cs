@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace EstateEase.Areas.Identity.Pages.Account
 {
@@ -136,6 +137,13 @@ namespace EstateEase.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+                    // Add FirstName and LastName as claims
+                    await _userManager.AddClaimAsync(user, new Claim("FirstName", Input.FirstName));
+                    await _userManager.AddClaimAsync(user, new Claim("LastName", Input.LastName));
+
+                    // Add user to "User" role
+                    await _userManager.AddToRoleAsync(user, "User");
+
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);

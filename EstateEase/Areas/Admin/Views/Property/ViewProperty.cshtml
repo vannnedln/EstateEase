@@ -1,17 +1,17 @@
-@model IEnumerable<EstateEase.Models.ViewModels.PropertyViewModel>
+@model EstateEase.Models.ViewModels.PropertyViewModel
 @{
-    ViewData["Title"] = "View Properties";
+    ViewData["Title"] = "View Property";
     Layout = "_AdminLayout";
 }
 
-<div class="container-fluid py-4 rounded-4">
+<div class="container-fluid py-4">
     <div class="row justify-content-center">
         <div class="col-12">
             <div class="card border-0 shadow-lg">
                 <div class="card-header position-relative overflow-hidden py-4"
-                    style="background: linear-gradient(45deg,  #4f5aff, #9f1ae2);">
+                     style="background: linear-gradient(45deg, #4f5aff, #9f1ae2);">
                     <h5 class="card-title mb-0 fw-bold ps-2 text-white">
-                        Property List
+                        View Property Details
                     </h5>
                     <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
                         <i class="bi bi-building display-1 text-white"></i>
@@ -22,7 +22,7 @@
                     @if (TempData["Error"] != null)
                     {
                         <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 shadow-sm"
-                            role="alert">
+                             role="alert">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-exclamation-circle-fill fs-4 me-2"></i>
                                 <div>@TempData["Error"]</div>
@@ -33,7 +33,7 @@
                     @if (TempData["Success"] != null)
                     {
                         <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 shadow-sm"
-                            role="alert">
+                             role="alert">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-check-circle-fill fs-4 me-2"></i>
                                 <div>@TempData["Success"]</div>
@@ -42,47 +42,213 @@
                         </div>
                     }
 
-                    <table id="myTable" class="table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Title</th>
-                                <th>Property Type</th>
-                                <th>Selling Type</th>
-                                <th>Price (₱)</th>
-                                <th>Area (sq m)</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
+                    <!-- Basic Information -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-info-circle me-2"></i>Basic Information
+                        </h5>
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Title" readonly>
+                                    <label>Property Title</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <div class="form-control" style="min-height: 200px; overflow-y: auto; height: auto;">
+                                        @Html.Raw(Model.Content)
+                                    </div>
+                                    <label>Description</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Property Details -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-house-gear me-2"></i>Property Details
+                        </h5>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.PropertyType" readonly>
+                                    <label>Property Type</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.SellingType" readonly>
+                                    <label>Selling Type</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Bedrooms" readonly>
+                                    <label>Bedrooms</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Bathrooms" readonly>
+                                    <label>Bathrooms</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Kitchen" readonly>
+                                    <label>Kitchen</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Balcony" readonly>
+                                    <label>Balcony</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Hall" readonly>
+                                    <label>Hall</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.TotalFloors" readonly>
+                                    <label>Total Floors</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Size.ToString("N2")" readonly>
+                                    <label>Area (sq m)</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" style="height: 100px" readonly>@Model.Address</textarea>
+                                    <label>Address</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Price.ToString("N2")" readonly>
+                                    <label>Price (₱)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Status" readonly>
+                                    <label>Status</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Property Features -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-list-check me-2"></i>Property Features
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasSwimmingPool ? "checked" : "") disabled>
+                                    <label class="form-check-label">Swimming Pool</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasParking ? "checked" : "") disabled>
+                                    <label class="form-check-label">Parking</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasGym ? "checked" : "") disabled>
+                                    <label class="form-check-label">Gym</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasSecurity ? "checked" : "") disabled>
+                                    <label class="form-check-label">Security</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasElevator ? "checked" : "") disabled>
+                                    <label class="form-check-label">Elevator</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasCCTV ? "checked" : "") disabled>
+                                    <label class="form-check-label">CCTV</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Images & Plans -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-images me-2"></i>Property Images
+                        </h5>
+                        <div class="row g-4">
+                            @if (Model.ExistingImages != null && Model.ExistingImages.Any())
                             {
-                                <tr>
-                                    <td>@item.Id</td>
-                                    <td>@item.Title</td>
-                                    <td>@item.PropertyType</td>
-                                    <td>@item.SellingType</td>
-                                    <td>@item.Price</td>
-                                    <td>@item.Size</td>
-                                    <td>@item.Status</td>
-                                    <td class="text-nowrap">
-                                        <div class="d-flex gap-2">
-                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm">
-                                                <i class="bi bi-pencil"></i> Edit
-                                            </a>
-                                            <a asp-action="View" asp-route-id="@item.Id" class="btn btn-dark btn-sm">
-                                                <i class="bi bi-eye"></i> View
-                                            </a>
-                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
-                                                <i class="bi bi-trash"></i> Delete
-                                            </a>
+                                @foreach (var image in Model.ExistingImages)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="image-container" style="height: 250px;">
+                                                <img src="@image.ImagePath"
+                                                     class="img-fluid w-100 h-100 rounded" style="object-fit: cover;"
+                                                     asp-append-version="true" alt="@image.ImageType">
+                                                @if (image.IsMain)
+                                                {
+                                                    <div class="position-absolute top-0 end-0 m-2">
+                                                        <span class="badge bg-primary">Main</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="card-footer bg-transparent border-0">
+                                                <small class="text-muted">@image.ImageType</small>
+                                            </div>
                                         </div>
-                                    </td>
-                                </tr>
+                                    </div>
+                                }
                             }
-                        </tbody>
-                    </table>
+                            else
+                            {
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        No images available for this property.
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Featured Status -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-star me-2"></i>Featured Status
+                        </h5>
+                        <div class="form-floating">
+                            <input class="form-control" value="@(Model.IsFeatured ? "Yes" : "No")" readonly>
+                            <label>Featured Property</label>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="ViewPropertyList" class="btn btn-light btn-lg px-5">
+                            <i class="bi bi-arrow-left me-2"></i>Back to List
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -90,129 +256,48 @@
 </div>
 
 @section Styles {
-    <link href="~/lib/datatables/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
     <style>
-        * {
-            font-family: 'Poppins', sans-serif;
+        .section {
+            background: #fff;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
         }
 
-        /* Animation styles */
-        .card {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease-out;
+        .form-floating > .form-control,
+        .form-floating > .form-select {
+            height: calc(3.5rem + 2px);
+            line-height: 1.25;
         }
 
-        .card.show {
-            opacity: 1;
-            transform: translateY(0);
+        .form-floating > label {
+            padding: 1rem 0.75rem;
         }
 
-        #myTable tbody tr {
-            opacity: 1;
-            /* Changed from 0 to 1 */
-            transform: translateY(0);
-            /* Changed from translateY(15px) to 0 */
-            transition: all 0.3s ease-out;
+        .form-check.form-switch {
+            padding-left: 3rem;
         }
 
-        #myTable tbody tr.show {
-            opacity: 1;
-            transform: translateY(0);
+        .form-switch .form-check-input {
+            width: 2.5em;
+            margin-left: -3rem;
         }
 
-        .table {
-            font-size: 14px;
-            border-radius: 0.5rem;
-            overflow: hidden;
+        .section h5 {
+            position: relative;
+            padding-left: 1rem;
         }
 
-        .table thead th {
-
-            color: black;
-            font-weight: 600;
-            border: none;
-            padding: 1rem;
-        }
-
-        .table td {
-            vertical-align: middle;
-            padding: 0.75rem 1rem;
-        }
-
-        .table tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        .btn-sm {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.875rem;
-            border-radius: 0.5rem;
-            margin: 0 0.2rem;
-        }
-
-        /* DataTables Custom Styling */
-        .dataTables_wrapper .dataTables_length select {
-            border-radius: 0.5rem;
-            padding: 0.375rem 2rem 0.375rem 0.75rem;
-            border: 1px solid #dee2e6;
-        }
-
-        .dataTables_wrapper .dataTables_filter input {
-            border-radius: 0.5rem;
-            padding: 0.375rem 0.75rem;
-            border: 1px solid #dee2e6;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            border-radius: 0.5rem;
-            margin: 0 0.2rem;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        .section h5::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 1rem;
             background: linear-gradient(45deg, #4f5aff, #9f1ae2);
-            border: none;
-            color: white !important;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background: linear-gradient(45deg, #4f5aff, #8516bd);
-            border: none;
-            color: white !important;
+            border-radius: 3px;
         }
     </style>
-}
-
-@section Scripts {
-    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="~/lib/datatables/js/dataTables.bootstrap5.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            // Initialize DataTable
-            $('#myTable').DataTable({
-                dom: '<"row align-items-center"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
-                    '<"row"<"col-sm-12"tr>>' +
-                    '<"row align-items-center"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
-                language: {
-                    search: "_INPUT_",
-                    searchPlaceholder: "Search...",
-                    lengthMenu: "_MENU_ records per page"
-                },
-                pageLength: 10,
-                responsive: true
-            });
-
-            // Add animations
-            setTimeout(function () {
-                $('.card').addClass('show');
-
-                $('#myTable tbody tr').each(function (index) {
-                    var $row = $(this);
-                    setTimeout(function () {
-                        $row.addClass('show');
-                    }, 100 + (index * 50));
-                });
-            }, 100);
-        });
-    </script>
 }

@@ -14,6 +14,10 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using System.Net.Http;
+using Microsoft.Extensions.Configuration;
+using System.Text.Json;
+using EstateEase.Services;
 
 namespace EstateEase.Areas.Identity.Pages.Account
 {
@@ -21,11 +25,19 @@ namespace EstateEase.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly IConfiguration _configuration;
+        private readonly IReCaptchaService _recaptchaService;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(
+            SignInManager<IdentityUser> signInManager, 
+            ILogger<LoginModel> logger,
+            IConfiguration configuration,
+            IReCaptchaService recaptchaService)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _configuration = configuration;
+            _recaptchaService = recaptchaService;
         }
 
         /// <summary>
@@ -82,6 +94,12 @@ namespace EstateEase.Areas.Identity.Pages.Account
             /// </summary>
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
+
+            /// <summary>
+            ///     reCAPTCHA response token
+            /// </summary>
+            [Required]
+            public string RecaptchaResponse { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -105,40 +123,79 @@ namespace EstateEase.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
 
-            if (ModelState.IsValid)
+            try
             {
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
+                // Verify reCAPTCHA first
+                var remoteIp = HttpContext.Connection.RemoteIpAddress?.ToString();
+                var recaptchaResult = await _recaptchaService.VerifyAsync(Input.RecaptchaResponse, remoteIp);
+                
+                if (!recaptchaResult.Success)
                 {
-                    // Get the logged-in user
-                    var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
-                    // Check if user is in Admin role
-                    if (await _signInManager.UserManager.IsInRoleAsync(user, "Admin"))
-                    {
-                        return RedirectToAction("Index", "Home", new { area = "Admin" });
-                    }
-                    // Check if user is in Agent role
-                    else if (await _signInManager.UserManager.IsInRoleAsync(user, "Agent"))
-                    {
-                        return RedirectToAction("Index", "Home", new { area = "Agent" });
-                    }
+                    _logger.LogWarning($"reCAPTCHA verification failed. Hostname: {recaptchaResult.Hostname}, " +
+                                     $"Challenge Time: {recaptchaResult.ChallengeTimestamp}, " +
+                                     $"Errors: {string.Join(", ", recaptchaResult.ErrorCodes ?? Array.Empty<string>())}");
+                    
+                    ModelState.AddModelError(string.Empty, "reCAPTCHA verification failed. Please try again.");
+                    return Page();
+                }
 
-                    return LocalRedirect(returnUrl);
-                }
-                if (result.RequiresTwoFactor)
+                // Log successful verification
+                _logger.LogInformation($"reCAPTCHA verified successfully. Hostname: {recaptchaResult.Hostname}, " +
+                                     $"Challenge Time: {recaptchaResult.ChallengeTimestamp}");
+
+                // Only validate email/password if reCAPTCHA passes
+                if (ModelState.IsValid)
                 {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
-                }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out.");
-                    return RedirectToPage("./Lockout");
+                    _logger.LogInformation("Attempting to sign in user");
+                    var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                    
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation("User signed in successfully");
+                        // Get the logged-in user
+                        var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+                        // Check if user is in Admin role
+                        if (await _signInManager.UserManager.IsInRoleAsync(user, "Admin"))
+                        {
+                            _logger.LogInformation("User is in Admin role, redirecting to Admin area");
+                            return RedirectToAction("Index", "Home", new { area = "Admin" });
+                        }
+                        // Check if user is in Agent role
+                        else if (await _signInManager.UserManager.IsInRoleAsync(user, "Agent"))
+                        {
+                            _logger.LogInformation("User is in Agent role, redirecting to Agent area");
+                            return RedirectToAction("Index", "Home", new { area = "Agent" });
+                        }
+
+                        return LocalRedirect(returnUrl);
+                    }
+                    if (result.RequiresTwoFactor)
+                    {
+                        _logger.LogInformation("User requires two-factor authentication");
+                        return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                    }
+                    if (result.IsLockedOut)
+                    {
+                        _logger.LogWarning("User account locked out.");
+                        return RedirectToPage("./Lockout");
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Invalid login attempt");
+                        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                        return Page();
+                    }
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
+                    _logger.LogWarning($"Model state is invalid: {string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage))}");
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during login process");
+                ModelState.AddModelError(string.Empty, "An error occurred during login. Please try again.");
+                return Page();
             }
 
             // If we got this far, something failed, redisplay form

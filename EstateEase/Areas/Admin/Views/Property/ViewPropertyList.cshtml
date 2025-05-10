@@ -1,20 +1,28 @@
-@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser>
+@model IEnumerable<EstateEase.Models.ViewModels.PropertyViewModel>
 @{
-    ViewData["Title"] = "View Users";
+    ViewData["Title"] = "Property List";
     Layout = "_AdminLayout";
 }
 
 <div class="container-fluid py-4 rounded-4">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-end">
+            <a asp-action="Add" class="btn gradient-primary-btn btn-lg">
+                <i class="bi bi-plus-lg me-2"></i>Add New Property
+            </a>
+        </div>
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-12">
             <div class="card border-0 shadow-lg">
                 <div class="card-header position-relative overflow-hidden py-4"
-                    style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
+                     style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
                     <h5 class="card-title mb-0 fw-bold ps-2 text-white">
-                        <i class=" me-2"></i>User List
+                        <i class= me-2"></i>Property List
                     </h5>
                     <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
-                        <i class="bi bi-people display-1 text-white"></i>
+                        <i class="bi bi-building display-1 text-white"></i>
                     </div>
                 </div>
 
@@ -22,7 +30,7 @@
                     @if (TempData["Error"] != null)
                     {
                         <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 shadow-sm"
-                            role="alert">
+                             role="alert">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-exclamation-circle-fill fs-4 me-2"></i>
                                 <div>@TempData["Error"]</div>
@@ -33,7 +41,7 @@
                     @if (TempData["Success"] != null)
                     {
                         <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 shadow-sm"
-                            role="alert">
+                             role="alert">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-check-circle-fill fs-4 me-2"></i>
                                 <div>@TempData["Success"]</div>
@@ -46,9 +54,12 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Role</th>
+                                <th>Title</th>
+                                <th>Property Type</th>
+                                <th>Selling Type</th>
+                                <th>Price (₱)</th>
+                                <th>Area (sq m)</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -57,15 +68,22 @@
                             {
                                 <tr>
                                     <td>@item.Id</td>
-                                    <td>@item.UserName</td>
-                                    <td>@item.Email</td>
-                                    <td>User</td>
+                                    <td>@item.Title</td>
+                                    <td>@item.PropertyType</td>
+                                    <td>@item.SellingType</td>
+                                    <td>@item.Price.ToString("N2")</td>
+                                    <td>@item.Size.ToString("N2")</td>
+                                    <td>
+                                        <span class="badge bg-@(item.Status.ToLower() == "available" ? "success" : "warning")">
+                                            @item.Status
+                                        </span>
+                                    </td>
                                     <td class="text-nowrap">
                                         <div class="d-flex gap-2">
                                             <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm">
                                                 <i class="bi bi-pencil"></i> Edit
                                             </a>
-                                            <a asp-action="View" asp-route-id="@item.Id" class="btn btn-dark btn-sm">
+                                            <a asp-action="ViewProperty" asp-route-id="@item.Id" class="btn btn-dark btn-sm">
                                                 <i class="bi bi-eye"></i> View
                                             </a>
                                             <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
@@ -142,6 +160,19 @@
             margin: 0 0.2rem;
         }
 
+        .gradient-primary-btn {
+            background: linear-gradient(45deg, #2937f0, #9f1ae2);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .gradient-primary-btn:hover {
+            background: linear-gradient(45deg, #232cc5, #8516bd);
+            transform: translateY(-2px);
+            color: white;
+        }
+
         /* DataTables Custom Styling */
         .dataTables_wrapper .dataTables_length select {
             border-radius: 0.5rem;
@@ -186,14 +217,14 @@
                     '<"row align-items-center"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
                 language: {
                     search: "_INPUT_",
-                    searchPlaceholder: "Search users...",
+                    searchPlaceholder: "Search properties...",
                     lengthMenu: "_MENU_ records per page"
                 },
                 pageLength: 10,
                 responsive: true,
-                order: [[1, "asc"]], // Sort by Username by default
+                order: [[1, "asc"]], // Sort by Title by default
                 columnDefs: [
-                    { "orderable": false, "targets": [4] } // Disable sorting on Actions column
+                    { "orderable": false, "targets": [7] } // Disable sorting on Actions column
                 ]
             });
 
@@ -210,4 +241,4 @@
             }, 100);
         });
     </script>
-}
+} 

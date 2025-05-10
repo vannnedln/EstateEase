@@ -7,7 +7,7 @@ namespace EstateEase.Models.ViewModels
 {
     public class PropertyViewModel
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [Required]
         [StringLength(200)]
@@ -19,8 +19,6 @@ namespace EstateEase.Models.ViewModels
         [Required]
         [Display(Name = "Property Type")]
         public string PropertyType { get; set; }
-
-
 
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Number of bedrooms must be at least 1")]
@@ -66,19 +64,9 @@ namespace EstateEase.Models.ViewModels
         [Display(Name = "Featured Property")]
         public bool IsFeatured { get; set; }
 
-
         [Required]
         [Display(Name = "Selling Type")]
         public string SellingType { get; set; }
-
-        [Display(Name = "Floor Plan")]
-        public IFormFile? FloorPlanImage { get; set; }
-
-        [Display(Name = "Basement Plan")]
-        public IFormFile? BasementPlanImage { get; set; }
-
-        [Display(Name = "Ground Floor Plan")]
-        public IFormFile? GroundFloorPlanImage { get; set; }
 
         [Display(Name = "Swimming Pool")]
         public bool HasSwimmingPool { get; set; }
@@ -98,18 +86,33 @@ namespace EstateEase.Models.ViewModels
         [Display(Name = "CCTV")]
         public bool HasCCTV { get; set; }
 
+        // Image upload properties
         [Display(Name = "Property Images")]
         public List<IFormFile>? PropertyImages { get; set; }
 
- 
-        public string? PropertyImagePaths { get; set; }
-        public string? FloorPlanImagePath { get; set; }
-        public string? BasementPlanImagePath { get; set; }
-        public string? GroundFloorPlanImagePath { get; set; }
-        
-        [Display(Name = "Main Image")]
-        public string? MainImageUrl { get; set; }
-        
+        [Display(Name = "Floor Plan")]
+        public IFormFile? FloorPlanImage { get; set; }
+
+        [Display(Name = "Basement Plan")]
+        public IFormFile? BasementPlanImage { get; set; }
+
+        [Display(Name = "Ground Floor Plan")]
+        public IFormFile? GroundFloorPlanImage { get; set; }
+
+        // Navigation properties
+        public string? AgentId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; }
+
+        // Collection of existing images
+        public ICollection<PropertyImageViewModel>? ExistingImages { get; set; }
+    }
+
+    public class PropertyImageViewModel
+    {
+        public string Id { get; set; }
+        public string ImagePath { get; set; }
+        public bool IsMain { get; set; }
+        public string ImageType { get; set; }
     }
 }

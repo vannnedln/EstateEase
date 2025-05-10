@@ -1,9 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.IO;
 using System.Threading.Tasks;
+using EstateEase.Data;
+using EstateEase.Models.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace EstateEase.Areas.Agent.Controllers
 {
@@ -12,10 +17,17 @@ namespace EstateEase.Areas.Agent.Controllers
     public class ProfileController : Controller
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ApplicationDbContext _context;
 
-        public ProfileController(UserManager<IdentityUser> userManager)
+        public ProfileController(
+            UserManager<IdentityUser> userManager,
+            IWebHostEnvironment webHostEnvironment,
+            ApplicationDbContext context)
         {
-            _userManager = userManager;
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<IActionResult> Index()
@@ -26,22 +38,28 @@ namespace EstateEase.Areas.Agent.Controllers
                 return NotFound();
             }
 
-            var claims = await _userManager.GetClaimsAsync(user);
-            
+            var agent = await _context.Agents
+                .FirstOrDefaultAsync(a => a.UserId == user.Id);
+
+            if (agent == null)
+            {
+                return NotFound();
+            }
+
             var model = new AgentProfileViewModel
             {
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                FirstName = claims.FirstOrDefault(c => c.Type == "FirstName")?.Value,
-                LastName = claims.FirstOrDefault(c => c.Type == "LastName")?.Value,
-                AddressLine1 = claims.FirstOrDefault(c => c.Type == "AddressLine1")?.Value,
-                AddressLine2 = claims.FirstOrDefault(c => c.Type == "AddressLine2")?.Value,
-                City = claims.FirstOrDefault(c => c.Type == "City")?.Value,
-                State = claims.FirstOrDefault(c => c.Type == "State")?.Value,
-                PostalCode = claims.FirstOrDefault(c => c.Type == "PostalCode")?.Value,
-                Country = claims.FirstOrDefault(c => c.Type == "Country")?.Value,
-                LicenseNumber = claims.FirstOrDefault(c => c.Type == "LicenseNumber")?.Value,
-                Bio = claims.FirstOrDefault(c => c.Type == "Bio")?.Value
+                FirstName = agent.FirstName,
+                LastName = agent.LastName,
+                AddressLine1 = agent.AddressLine1,
+                Barangay = agent.Barangay,
+                City = agent.City,
+                PostalCode = agent.PostalCode,
+                Country = agent.Country,
+                LicenseNumber = agent.LicenseNumber,
+                Bio = agent.Bio,
+                ProfilePictureUrl = agent.ProfilePictureUrl ?? "/images/avatar-01.png"
             };
 
             return View(model);
@@ -62,47 +80,86 @@ namespace EstateEase.Areas.Agent.Controllers
                 return NotFound();
             }
 
-            user.PhoneNumber = model.PhoneNumber;
-            
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
+            var agent = await _context.Agents
+                .FirstOrDefaultAsync(a => a.UserId == user.Id);
+
+            if (agent == null)
             {
-                foreach (var error in result.Errors)
+                return NotFound();
+            }
+
+            // Update user's phone number
+            user.PhoneNumber = model.PhoneNumber;
+            var userResult = await _userManager.UpdateAsync(user);
+            if (!userResult.Succeeded)
+            {
+                foreach (var error in userResult.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
                 return View(model);
             }
 
-            // Get current claims
-            var claims = await _userManager.GetClaimsAsync(user);
-            
-            // Update all profile claims
-            await UpdateClaim(user, claims, "FirstName", model.FirstName);
-            await UpdateClaim(user, claims, "LastName", model.LastName);
-            await UpdateClaim(user, claims, "AddressLine1", model.AddressLine1);
-            await UpdateClaim(user, claims, "AddressLine2", model.AddressLine2);
-            await UpdateClaim(user, claims, "City", model.City);
-            await UpdateClaim(user, claims, "State", model.State);
-            await UpdateClaim(user, claims, "PostalCode", model.PostalCode);
-            await UpdateClaim(user, claims, "Country", model.Country);
-            await UpdateClaim(user, claims, "LicenseNumber", model.LicenseNumber);
-            await UpdateClaim(user, claims, "Bio", model.Bio);
+            // Update password if provided
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                if (model.Password != model.ConfirmPassword)
+                {
+                    ModelState.AddModelError("ConfirmPassword", "The password and confirmation password do not match.");
+                    return View(model);
+                }
+
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var passwordResult = await _userManager.ResetPasswordAsync(user, token, model.Password);
+                if (!passwordResult.Succeeded)
+                {
+                    foreach (var error in passwordResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(model);
+                }
+            }
+
+            // Handle profile picture upload
+            if (model.ProfilePicture != null)
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "agents");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                // Generate unique filename
+                string uniqueFileName = $"{Guid.NewGuid()}_{model.ProfilePicture.FileName}";
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                // Save the file
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.ProfilePicture.CopyToAsync(fileStream);
+                }
+
+                // Update the profile picture URL
+                agent.ProfilePictureUrl = $"/uploads/agents/{uniqueFileName}";
+            }
+
+            // Update agent profile
+            agent.FirstName = model.FirstName;
+            agent.LastName = model.LastName;
+            agent.AddressLine1 = model.AddressLine1;
+            agent.Barangay = model.Barangay;
+            agent.City = model.City;
+            agent.PostalCode = model.PostalCode;
+            agent.Country = model.Country;
+            agent.LicenseNumber = model.LicenseNumber;
+            agent.Bio = model.Bio;
+
+            _context.Agents.Update(agent);
+            await _context.SaveChangesAsync();
 
             TempData["Success"] = "Profile updated successfully";
             return RedirectToAction(nameof(Index));
-        }
-
-        private async Task UpdateClaim(IdentityUser user, IList<Claim> currentClaims, string claimType, string claimValue)
-        {
-            var existingClaim = currentClaims.FirstOrDefault(c => c.Type == claimType);
-            
-            if (existingClaim != null)
-            {
-                await _userManager.RemoveClaimAsync(user, existingClaim);
-            }
-            
-            await _userManager.AddClaimAsync(user, new Claim(claimType, claimValue ?? string.Empty));
         }
     }
 
@@ -113,12 +170,21 @@ namespace EstateEase.Areas.Agent.Controllers
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string AddressLine1 { get; set; }
-        public string AddressLine2 { get; set; }
+        public string Barangay { get; set; }
         public string City { get; set; }
-        public string State { get; set; }
         public string PostalCode { get; set; }
         public string Country { get; set; }
         public string LicenseNumber { get; set; }
         public string Bio { get; set; }
+        public string ProfilePictureUrl { get; set; }
+        public IFormFile ProfilePicture { get; set; }
+
+        [DataType(DataType.Password)]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 8)]
+        public string Password { get; set; }
+
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; }
     }
-} 
+}

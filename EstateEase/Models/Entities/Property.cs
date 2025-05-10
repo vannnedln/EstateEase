@@ -1,13 +1,12 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EstateEase.Models.Entities
 {
-    public class AddProperty
+    public class Property
     {
         [Key]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [Required]
         [StringLength(200)]
@@ -19,8 +18,6 @@ namespace EstateEase.Models.Entities
         [Required]
         [Display(Name = "Property Type")]
         public string PropertyType { get; set; }
-
-   
 
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Number of bedrooms must be at least 1")]
@@ -45,13 +42,13 @@ namespace EstateEase.Models.Entities
         [Required]
         [Column(TypeName = "decimal(18,2)")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
-        public decimal Size { get; set; }
+        public decimal Price { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Size must be greater than 0")]
         [Display(Name = "Area Size (sq m)")]
-        public decimal Price { get; set; }
+        public decimal Size { get; set; }
 
         [Required]
         [Display(Name = "Address")]
@@ -67,11 +64,6 @@ namespace EstateEase.Models.Entities
 
         [Display(Name = "Featured Property")]
         public bool IsFeatured { get; set; }
-
-        public string? PropertyImagePaths { get; set; }  // Changed from AdditionalImagePaths
-        public string? FloorPlanImagePath { get; set; }
-        public string? BasementPlanImagePath { get; set; }
-        public string? GroundFloorPlanImagePath { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
@@ -99,5 +91,13 @@ namespace EstateEase.Models.Entities
 
         [Display(Name = "CCTV")]
         public bool HasCCTV { get; set; }
+
+        // Foreign key for the agent who listed this property
+        public string? AgentId { get; set; }
+
+        [ForeignKey("AgentId")]
+        public virtual Agent? Agent { get; set; }
+
+        public virtual ICollection<PropertyImage> PropertyImages { get; set; } = new List<PropertyImage>();
     }
-}
+} 

@@ -68,8 +68,17 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <div class="bg-light rounded" style="width: 50px; height: 50px; overflow: hidden;">
-                                                        <img src="@(string.IsNullOrEmpty(property.MainImageUrl) ? "/images/property-placeholder.jpg" : property.MainImageUrl)" 
-                                                            alt="Property" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                                                        @if (property.ExistingImages != null && property.ExistingImages.Any(i => i.IsMain))
+                                                        {
+                                                            var mainImage = property.ExistingImages.First(i => i.IsMain);
+                                                            <img src="@mainImage.ImagePath" alt="Property" class="img-fluid" 
+                                                                style="width: 100%; height: 100%; object-fit: cover;" asp-append-version="true">
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="/images/property-placeholder.jpg" alt="Property" class="img-fluid" 
+                                                                style="width: 100%; height: 100%; object-fit: cover;">
+                                                        }
                                                     </div>
                                                     <div class="ms-3">
                                                         <h6 class="mb-1 fw-semibold text-truncate" style="max-width: 250px;">@property.Title</h6>
@@ -78,36 +87,38 @@
                                                 </div>
                                             </td>
                                             <td>@property.PropertyType</td>
-                                            <td>@property.Price.ToString("C0")</td>
+                                            <td>₱@property.Price.ToString("N0")</td>
                                             <td>
-                                                @if (property.Status == "Available")
+                                                @switch (property.Status)
                                                 {
-                                                    <span class="badge bg-success bg-opacity-10 text-success">Available</span>
-                                                }
-                                                else if (property.Status == "Sold")
-                                                {
-                                                    <span class="badge bg-danger bg-opacity-10 text-danger">Sold</span>
-                                                }
-                                                else if (property.Status == "Rented")
-                                                {
-                                                    <span class="badge bg-warning bg-opacity-10 text-warning">Rented</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary">@property.Status</span>
+                                                    case "Available":
+                                                        <span class="badge bg-success bg-opacity-10 text-success">Available</span>
+                                                        break;
+                                                    case "Sold":
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger">Sold</span>
+                                                        break;
+                                                    case "Rented":
+                                                        <span class="badge bg-warning bg-opacity-10 text-warning">Rented</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-secondary bg-opacity-10 text-secondary">@property.Status</span>
+                                                        break;
                                                 }
                                             </td>
                                             <td>@property.CreatedAt.ToString("MMM dd, yyyy")</td>
                                             <td>
                                                 <div class="d-flex gap-1">
-                                                    <a asp-action="Edit" asp-route-id="@property.Id" class="btn btn-sm btn-outline-primary">
+                                                    <a asp-action="Edit" asp-route-id="@property.Id" class="btn btn-sm btn-outline-primary" 
+                                                       data-bs-toggle="tooltip" title="Edit Property">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
-                                                    <a asp-action="Details" asp-route-id="@property.Id" class="btn btn-sm btn-outline-info">
+                                                    <a asp-action="Details" asp-route-id="@property.Id" class="btn btn-sm btn-outline-info"
+                                                       data-bs-toggle="tooltip" title="View Details">
                                                         <i class="bi bi-eye"></i>
                                                     </a>
                                                     <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                        data-bs-toggle="modal" data-bs-target="#deleteModal-@property.Id">
+                                                            data-bs-toggle="modal" data-bs-target="#deleteModal-@property.Id"
+                                                            data-bs-toggle="tooltip" title="Delete Property">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>
@@ -161,6 +172,51 @@
     </div>
 </div>
 
+@section Styles {
+    <style>
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+        }
+
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .table > :not(caption) > * > * {
+            padding: 1rem;
+        }
+
+        .badge {
+            padding: 0.5em 0.75em;
+            font-weight: 500;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.5rem;
+        }
+
+        .btn-sm i {
+            font-size: 0.875rem;
+        }
+
+        .modal-content {
+            border: none;
+            border-radius: 0.5rem;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(0,0,0,.1);
+        }
+
+        .modal-footer {
+            border-top: 1px solid rgba(0,0,0,.1);
+        }
+    </style>
+}
+
 @section Scripts {
     <script>
         $(document).ready(function () {
@@ -172,7 +228,17 @@
                     "search": "_INPUT_",
                     "searchPlaceholder": "Search properties...",
                     "lengthMenu": "_MENU_ properties per page"
-                }
+                },
+                "order": [[5, "desc"]], // Sort by date added by default
+                "columnDefs": [
+                    { "orderable": false, "targets": [6] } // Disable sorting on actions column
+                ]
+            });
+
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
             });
 
             // Animation

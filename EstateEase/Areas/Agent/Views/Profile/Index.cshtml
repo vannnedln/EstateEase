@@ -33,24 +33,19 @@
                 <div class="card-body text-center p-4">
                     <div class="mb-3">
                         <div class="position-relative d-inline-block">
-                            <img src="~/images/avatar-01.png" alt="Profile Picture" class="rounded-circle" width="120" height="120">
+                            <img src="@(string.IsNullOrEmpty(Model.ProfilePictureUrl) ? "/images/avatar-01.png" : Model.ProfilePictureUrl)" 
+                                 alt="Profile Picture" class="rounded-circle" width="120" height="120" style="object-fit: cover;">
                             <div class="position-absolute bottom-0 end-0">
-                                <button class="btn btn-sm btn-primary rounded-circle p-2">
+                                <label for="profilePicture" class="btn btn-sm btn-primary rounded-circle p-2 cursor-pointer">
                                     <i class="bi bi-pencil"></i>
-                                </button>
+                                </label>
+                                <input type="file" id="profilePicture" name="ProfilePicture" accept="image/*" class="d-none" 
+                                       onchange="previewImage(this)">
                             </div>
                         </div>
                     </div>
                     <h5 class="fw-bold mb-1">@($"{Model.FirstName} {Model.LastName}")</h5>
                     <p class="text-muted mb-3">Real Estate Agent</p>
-                    <div class="d-flex justify-content-center gap-2">
-                        <a href="#" class="btn btn-light btn-sm">
-                            <i class="bi bi-twitter me-1"></i> Connect
-                        </a>
-                        <a href="#" class="btn btn-light btn-sm">
-                            <i class="bi bi-linkedin me-1"></i> Connect
-                        </a>
-                    </div>
                 </div>
                 <div class="card-body border-top p-4">
                     <h6 class="fw-bold mb-3">Contact Information</h6>
@@ -83,7 +78,7 @@
                             </div>
                             <div>
                                 <small class="text-muted d-block">Location</small>
-                                <span>@($"{Model.City}, {Model.State}")</span>
+                                <span>@($"{Model.Barangay}, {Model.City}")</span>
                             </div>
                         </div>
                     </div>
@@ -108,99 +103,149 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm fade-in">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0 fw-bold">Edit Profile</h5>
+                    <h5 class="mb-0 fw-bold">Edit Profile Information</h5>
                 </div>
                 <div class="card-body p-4">
-                    <form asp-action="Index" method="post">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="FirstName" class="form-label fw-medium">First Name</label>
-                                <input asp-for="FirstName" class="form-control shadow-sm" />
-                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                    <form asp-action="Index" method="post" enctype="multipart/form-data">
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">Personal Information</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="FirstName" class="form-control" placeholder="Enter first name" />
+                                            <label asp-for="FirstName">First Name</label>
+                                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="LastName" class="form-control" placeholder="Enter last name" />
+                                            <label asp-for="LastName">Last Name</label>
+                                            <span asp-validation-for="LastName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="Email" class="form-control" placeholder="Enter email" readonly />
+                                            <label asp-for="Email">Email</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="PhoneNumber" class="form-control" placeholder="Enter phone number" />
+                                            <label asp-for="PhoneNumber">Phone Number</label>
+                                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="Password" class="form-control" placeholder="Enter password" type="password" id="password" />
+                                            <label asp-for="Password">Password</label>
+                                            <span asp-validation-for="Password" class="text-danger"></span>
+                                            <div class="position-absolute end-0 top-50 translate-middle-y pe-3">
+                                                <i class="bi bi-eye-slash cursor-pointer" id="togglePassword" style="cursor: pointer;"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm password" type="password" id="confirmPassword" />
+                                            <label asp-for="ConfirmPassword">Confirm Password</label>
+                                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                            <div class="position-absolute end-0 top-50 translate-middle-y pe-3">
+                                                <i class="bi bi-eye-slash cursor-pointer" id="toggleConfirmPassword" style="cursor: pointer;"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="LastName" class="form-label fw-medium">Last Name</label>
-                                <input asp-for="LastName" class="form-control shadow-sm" />
-                                <span asp-validation-for="LastName" class="text-danger small"></span>
-                            </div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Email" class="form-label fw-medium">Email</label>
-                                <input asp-for="Email" class="form-control shadow-sm" readonly />
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">Address Information</h6>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <input asp-for="AddressLine1" class="form-control" placeholder="Enter street address" />
+                                            <label asp-for="AddressLine1">Street Address</label>
+                                            <span asp-validation-for="AddressLine1" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="Barangay" class="form-control" placeholder="Enter barangay" />
+                                            <label asp-for="Barangay">Barangay</label>
+                                            <span asp-validation-for="Barangay" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="City" class="form-control" placeholder="Enter city" />
+                                            <label asp-for="City">City</label>
+                                            <span asp-validation-for="City" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="PostalCode" class="form-control" placeholder="Enter postal code" />
+                                            <label asp-for="PostalCode">Postal Code</label>
+                                            <span asp-validation-for="PostalCode" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="Country" class="form-control" placeholder="Enter country" value="Philippines" />
+                                            <label asp-for="Country">Country</label>
+                                            <span asp-validation-for="Country" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="PhoneNumber" class="form-label fw-medium">Phone Number</label>
-                                <input asp-for="PhoneNumber" class="form-control shadow-sm" />
-                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
-                            </div>
-                        </div>
 
-                        <h6 class="fw-bold mb-3 mt-4">Address</h6>
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label asp-for="AddressLine1" class="form-label fw-medium">Address Line 1</label>
-                                <input asp-for="AddressLine1" class="form-control shadow-sm" />
-                                <span asp-validation-for="AddressLine1" class="text-danger small"></span>
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">License Information</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="LicenseNumber" class="form-control" placeholder="Enter license number" />
+                                            <label asp-for="LicenseNumber">License Number</label>
+                                            <span asp-validation-for="LicenseNumber" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label asp-for="AddressLine2" class="form-label fw-medium">Address Line 2</label>
-                                <input asp-for="AddressLine2" class="form-control shadow-sm" />
-                                <span asp-validation-for="AddressLine2" class="text-danger small"></span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="City" class="form-label fw-medium">City</label>
-                                <input asp-for="City" class="form-control shadow-sm" />
-                                <span asp-validation-for="City" class="text-danger small"></span>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="State" class="form-label fw-medium">State/Province</label>
-                                <input asp-for="State" class="form-control shadow-sm" />
-                                <span asp-validation-for="State" class="text-danger small"></span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="PostalCode" class="form-label fw-medium">Postal Code</label>
-                                <input asp-for="PostalCode" class="form-control shadow-sm" />
-                                <span asp-validation-for="PostalCode" class="text-danger small"></span>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Country" class="form-label fw-medium">Country</label>
-                                <input asp-for="Country" class="form-control shadow-sm" />
-                                <span asp-validation-for="Country" class="text-danger small"></span>
-                            </div>
-                        </div>
 
-                        <h6 class="fw-bold mb-3 mt-4">Professional Information</h6>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="LicenseNumber" class="form-label fw-medium">License Number</label>
-                                <input asp-for="LicenseNumber" class="form-control shadow-sm" />
-                                <span asp-validation-for="LicenseNumber" class="text-danger small"></span>
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">Bio Information</h6>
+                                <div class="form-floating">
+                                    <textarea asp-for="Bio" class="form-control" style="height: 120px" placeholder="Enter your bio"></textarea>
+                                    <label asp-for="Bio">Bio</label>
+                                    <span asp-validation-for="Bio" class="text-danger"></span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label asp-for="Bio" class="form-label fw-medium">Bio</label>
-                                <textarea asp-for="Bio" class="form-control shadow-sm" rows="4"></textarea>
-                                <span asp-validation-for="Bio" class="text-danger small"></span>
-                            </div>
-                        </div>
 
-                        <div class="text-end mt-4">
-                            <button type="submit" class="btn btn-primary px-4">
-                                <i class="bi bi-save me-2"></i>Save Changes
-                            </button>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="bi bi-check-lg me-2"></i>Save Changes
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="uploadToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="bi bi-check-circle-fill text-success me-2"></i>
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Profile picture updated. Click Save Changes to apply.
         </div>
     </div>
 </div>
@@ -210,9 +255,100 @@
         .avatar-sm {
             width: 40px;
             height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-in;
+        }
+
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .form-floating > .form-control {
+            height: calc(3.5rem + 2px);
+            line-height: 1.25;
+        }
+
+        .form-floating > label {
+            padding: 1rem 0.75rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+        }
+
+        .card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4f5aff, #9f1ae2);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #4f5aff, #8516bd);
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+
+        .alert-danger {
+            border-left-color: #dc3545;
+        }
+
+        .alert-success {
+            border-left-color: #198754;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        .position-relative img {
+            border: 3px solid #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .toast {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .toast-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .form-floating {
+            position: relative;
+        }
+
+        .form-floating .position-absolute {
+            z-index: 5;
+        }
+
+        .bi-eye, .bi-eye-slash {
+            color: #6c757d;
+            transition: color 0.2s ease;
+        }
+
+        .bi-eye:hover, .bi-eye-slash:hover {
+            color: #0d6efd;
         }
     </style>
 }
@@ -220,11 +356,45 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        $(document).ready(function () {
-            // Add animations
-            setTimeout(function () {
-                $('.fade-in').addClass('show');
-            }, 100);
+        document.addEventListener('DOMContentLoaded', function () {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            fadeElements.forEach(element => {
+                element.classList.add('show');
+            });
+
+            // Password toggle functionality
+            const togglePassword = document.querySelector('#togglePassword');
+            const toggleConfirmPassword = document.querySelector('#toggleConfirmPassword');
+            const password = document.querySelector('#password');
+            const confirmPassword = document.querySelector('#confirmPassword');
+
+            togglePassword.addEventListener('click', function () {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                this.classList.toggle('bi-eye');
+                this.classList.toggle('bi-eye-slash');
+            });
+
+            toggleConfirmPassword.addEventListener('click', function () {
+                const type = confirmPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+                confirmPassword.setAttribute('type', type);
+                this.classList.toggle('bi-eye');
+                this.classList.toggle('bi-eye-slash');
+            });
         });
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    $(input).closest('.position-relative').find('img').attr('src', e.target.result);
+                    const toast = new bootstrap.Toast(document.getElementById('uploadToast'));
+                    toast.show();
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
     </script>
 } 

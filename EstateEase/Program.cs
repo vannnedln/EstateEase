@@ -1,7 +1,8 @@
 using EstateEase.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using EstateEase.Services;  // Add this for IFileService
+using EstateEase.Services;
+using Microsoft.AspNetCore.Hosting;  // Add this for IFileService
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,8 @@ builder.Services.AddControllersWithViews();
 
 // Add this line before building the application
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddHttpClient<IReCaptchaService, ReCaptchaService>();
+
 
 var app = builder.Build();
 

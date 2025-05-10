@@ -12,7 +12,7 @@
         <div class="col-12">
             <div class="card border-0 shadow-lg">
                 <div class="card-header position-relative overflow-hidden py-4"
-                    style="background: linear-gradient(45deg,  #4f5aff, #9f1ae2);">
+                     style="background: linear-gradient(45deg, #4f5aff, #9f1ae2);">
                     <h5 class="card-title mb-0 fw-bold ps-2 text-white">
                         Edit Property
                     </h5>
@@ -25,7 +25,7 @@
                     @if (TempData["Error"] != null)
                     {
                         <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 shadow-sm"
-                            role="alert">
+                             role="alert">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-exclamation-circle-fill fs-4 me-2"></i>
                                 <div>@TempData["Error"]</div>
@@ -36,7 +36,7 @@
                     @if (TempData["Success"] != null)
                     {
                         <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 shadow-sm"
-                            role="alert">
+                             role="alert">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-check-circle-fill fs-4 me-2"></i>
                                 <div>@TempData["Success"]</div>
@@ -46,7 +46,7 @@
                     }
 
                     <form method="post" enctype="multipart/form-data" asp-action="Edit" asp-controller="Property"
-                        asp-area="Admin" class="needs-validation">
+                          asp-area="Admin" class="needs-validation">
                         <input type="hidden" asp-for="Id" />
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 shadow-sm mb-4">
                         </div>
@@ -82,8 +82,7 @@
                                     <div class="form-floating">
                                         <select asp-for="PropertyType" class="form-select">
                                             <option value="" disabled selected>Select Type</option>
-                                            <option value="Single-Family Detached House">Single-Family Detached House
-                                            </option>
+                                            <option value="Single-Family Detached House">Single-Family Detached House</option>
                                             <option value="Townhouse">Townhouse</option>
                                             <option value="Duplex">Duplex</option>
                                             <option value="Bungalow">Bungalow</option>
@@ -106,32 +105,28 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-floating">
-                                        <input asp-for="Bedrooms" class="form-control" type="number"
-                                            placeholder="Bedrooms">
+                                        <input asp-for="Bedrooms" class="form-control" type="number" placeholder="Bedrooms">
                                         <label asp-for="Bedrooms">Bedrooms</label>
                                         <span asp-validation-for="Bedrooms" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-floating">
-                                        <input asp-for="Bathrooms" class="form-control" type="number"
-                                            placeholder="Bathrooms">
+                                        <input asp-for="Bathrooms" class="form-control" type="number" placeholder="Bathrooms">
                                         <label asp-for="Bathrooms">Bathrooms</label>
                                         <span asp-validation-for="Bathrooms" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-floating">
-                                        <input asp-for="Kitchen" class="form-control" type="number"
-                                            placeholder="Kitchen">
+                                        <input asp-for="Kitchen" class="form-control" type="number" placeholder="Kitchen">
                                         <label asp-for="Kitchen">Kitchen</label>
                                         <span asp-validation-for="Kitchen" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-floating">
-                                        <input asp-for="Balcony" class="form-control" type="number"
-                                            placeholder="Balcony">
+                                        <input asp-for="Balcony" class="form-control" type="number" placeholder="Balcony">
                                         <label asp-for="Balcony">Balcony</label>
                                         <span asp-validation-for="Balcony" class="text-danger"></span>
                                     </div>
@@ -145,32 +140,28 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-floating">
-                                        <input asp-for="TotalFloors" class="form-control" type="number"
-                                            placeholder="Total Floors">
+                                        <input asp-for="TotalFloors" class="form-control" type="number" placeholder="Total Floors">
                                         <label asp-for="TotalFloors">Total Floors</label>
                                         <span asp-validation-for="TotalFloors" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-floating">
-                                        <input asp-for="Size" class="form-control" type="number" step="0.01"
-                                            placeholder="Area">
+                                        <input asp-for="Size" class="form-control" type="number" step="0.01" placeholder="Area">
                                         <label asp-for="Size">Area (sq m)</label>
                                         <span asp-validation-for="Size" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating">
-                                        <textarea asp-for="Address" class="form-control" placeholder="Address"
-                                            style="height: 100px"></textarea>
+                                        <textarea asp-for="Address" class="form-control" placeholder="Address" style="height: 100px"></textarea>
                                         <label asp-for="Address">Address</label>
                                         <span asp-validation-for="Address" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input asp-for="Price" class="form-control" type="number" placeholder="Price"
-                                            min="0" step="any">
+                                        <input asp-for="Price" class="form-control" type="number" placeholder="Price" min="0" step="any">
                                         <label asp-for="Price">Price (₱)</label>
                                         <span asp-validation-for="Price" class="text-danger"></span>
                                     </div>
@@ -197,15 +188,13 @@
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <div class="form-check form-switch">
-                                        <input asp-for="HasSwimmingPool" class="form-check-input" type="checkbox"
-                                            role="switch">
+                                        <input asp-for="HasSwimmingPool" class="form-check-input" type="checkbox" role="switch">
                                         <label asp-for="HasSwimmingPool" class="form-check-label">Swimming Pool</label>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-check form-switch">
-                                        <input asp-for="HasParking" class="form-check-input" type="checkbox"
-                                            role="switch">
+                                        <input asp-for="HasParking" class="form-check-input" type="checkbox" role="switch">
                                         <label asp-for="HasParking" class="form-check-label">Parking</label>
                                     </div>
                                 </div>
@@ -217,15 +206,13 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-check form-switch">
-                                        <input asp-for="HasSecurity" class="form-check-input" type="checkbox"
-                                            role="switch">
+                                        <input asp-for="HasSecurity" class="form-check-input" type="checkbox" role="switch">
                                         <label asp-for="HasSecurity" class="form-check-label">Security</label>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-check form-switch">
-                                        <input asp-for="HasElevator" class="form-check-input" type="checkbox"
-                                            role="switch">
+                                        <input asp-for="HasElevator" class="form-check-input" type="checkbox" role="switch">
                                         <label asp-for="HasElevator" class="form-check-label">Elevator</label>
                                     </div>
                                 </div>
@@ -244,11 +231,42 @@
                                 <i class="bi bi-images me-2"></i>Images & Floor Plans
                             </h5>
                             <div class="row g-4">
+                                <!-- Existing Images -->
+                                @if (Model.ExistingImages != null && Model.ExistingImages.Any())
+                                {
+                                    <div class="col-12 mb-4">
+                                        <h6 class="text-muted mb-3">Current Images</h6>
+                                        <div class="row g-3">
+                                            @foreach (var image in Model.ExistingImages)
+                                            {
+                                                <div class="col-md-3">
+                                                    <div class="card h-100 border-0 shadow-sm">
+                                                        <div class="image-container" style="height: 200px;">
+                                                            <img src="@image.ImagePath" class="img-fluid w-100 h-100 rounded" 
+                                                                 style="object-fit: cover;" asp-append-version="true" 
+                                                                 alt="@image.ImageType">
+                                                            @if (image.IsMain)
+                                                            {
+                                                                <div class="position-absolute top-0 end-0 m-2">
+                                                                    <span class="badge bg-primary">Main</span>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                        <div class="card-footer bg-transparent border-0">
+                                                            <small class="text-muted">@image.ImageType</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+
+                                <!-- New Images Upload -->
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="form-label">Property Images</label>
                                         <input type="file" asp-for="PropertyImages" class="form-control" multiple>
-                                        <input type="hidden" asp-for="PropertyImagePaths" />
                                         <div class="form-text">Upload multiple property images</div>
                                         <span asp-validation-for="PropertyImages" class="text-danger"></span>
                                     </div>
@@ -257,7 +275,6 @@
                                     <div class="form-group">
                                         <label class="form-label">Floor Plan Image</label>
                                         <input type="file" asp-for="FloorPlanImage" class="form-control">
-                                        <input type="hidden" asp-for="FloorPlanImagePath" />
                                         <div class="form-text">Upload main floor plan</div>
                                     </div>
                                 </div>
@@ -265,7 +282,6 @@
                                     <div class="form-group">
                                         <label class="form-label">Ground Floor Plan</label>
                                         <input type="file" asp-for="GroundFloorPlanImage" class="form-control">
-                                        <input type="hidden" asp-for="GroundFloorPlanImagePath" />
                                         <div class="form-text">Upload ground floor plan</div>
                                     </div>
                                 </div>
@@ -273,7 +289,6 @@
                                     <div class="form-group">
                                         <label class="form-label">Basement Floor Plan</label>
                                         <input type="file" asp-for="BasementPlanImage" class="form-control">
-                                        <input type="hidden" asp-for="BasementPlanImagePath" />
                                         <div class="form-text">Upload basement floor plan</div>
                                     </div>
                                 </div>
@@ -282,12 +297,11 @@
 
                         <!-- Featured Status -->
                         <div class="section mb-5">
-                            <h5 class="text-primary fw-bold mb-4">
+                            <hh56 class="text-primary fw-bold mb-4">
                                 <i class="bi bi-star me-2"></i>Featured Status
                             </h5>
                             <div class="form-floating">
                                 <select asp-for="IsFeatured" class="form-select">
-                                    <option value="" disabled selected>Select...</option>
                                     <option value="true">Yes</option>
                                     <option value="false">No</option>
                                 </select>
@@ -297,7 +311,7 @@
 
                         <!-- Form Actions -->
                         <div class="d-flex justify-content-end gap-2">
-                            <a asp-controller="Property" asp-action="ViewProperty" class="btn btn-light btn-lg px-5">
+                            <a asp-action="ViewPropertyList" class="btn btn-light btn-lg px-5">
                                 <i class="bi bi-x-lg me-2"></i>Cancel
                             </a>
                             <button type="submit" class="btn btn-primary btn-lg px-5">
@@ -311,156 +325,128 @@
     </div>
 </div>
 
-<style>
-    :root {
-        --primary-gradient: linear-gradient(45deg, #4f5aff, #9f1ae2);
-    }
+@section Styles {
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(45deg, #4f5aff, #9f1ae2);
+        }
 
-    /* Base Animation States */
-    .card {
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.5s ease-out;
-    }
+        .section {
+            background: #fff;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
 
-    .section {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: all 0.5s ease-out;
-    }
+        .form-floating > .form-control,
+        .form-floating > .form-select {
+            height: calc(3.5rem + 2px);
+            line-height: 1.25;
+        }
 
-    /* Animation Classes */
-    .card.animate {
-        opacity: 1;
-        transform: translateY(0);
-    }
+        .form-floating > label {
+            padding: 1rem 0.75rem;
+        }
 
-    .section.animate {
-        opacity: 1;
-        transform: translateY(0);
-    }
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #9f1ae2;
+            box-shadow: 0 0 0 0.25rem rgba(159, 26, 226, 0.25);
+        }
 
-    /* Staggered Animations for Sections */
-    .section:nth-child(1) {
-        transition-delay: 0.2s;
-    }
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+        }
 
-    .section:nth-child(2) {
-        transition-delay: 0.3s;
-    }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #232cc5, #8516bd);
+        }
 
-    .section:nth-child(3) {
-        transition-delay: 0.4s;
-    }
+        .form-check-input:checked {
+            background-color: #9f1ae2;
+            border-color: #9f1ae2;
+        }
 
-    .section:nth-child(4) {
-        transition-delay: 0.5s;
-    }
+        .text-primary {
+            color: #2937f0 !important;
+        }
 
-    .section:nth-child(5) {
-        transition-delay: 0.6s;
-    }
+        .form-text {
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
 
-    /* Existing Styles */
-    .form-floating>.form-control,
-    .form-floating>.form-select {
-        height: calc(3.5rem + 2px);
-        line-height: 1.25;
-    }
+        .alert {
+            border-left: 4px solid;
+        }
 
-    .form-floating>label {
-        padding: 1rem 0.75rem;
-    }
+        .alert-danger {
+            border-left-color: #dc3545;
+        }
 
-    .form-control:focus,
-    .form-select:focus {
-        border-color: #9f1ae2;
-        box-shadow: 0 0 0 0.25rem rgba(159, 26, 226, 0.25);
-    }
+        .alert-success {
+            border-left-color: #198754;
+        }
 
-    .btn-primary {
-        background: var(--primary-gradient);
-        border: none;
-    }
+        .form-check.form-switch {
+            padding-left: 3rem;
+        }
 
-    .btn-primary:hover {
-        background: linear-gradient(45deg, #232cc5, #8516bd);
-    }
+        .form-switch .form-check-input {
+            width: 2.5em;
+            margin-left: -3rem;
+        }
 
-    .form-check-input:checked {
-        background-color: #9f1ae2;
-        border-color: #9f1ae2;
-    }
+        .section h5 {
+            position: relative;
+            padding-left: 1rem;
+        }
 
-    .text-primary {
-        color: #2937f0 !important;
-    }
+        .section h5::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 1rem;
+            background: var(--primary-gradient);
+            border-radius: 3px;
+        }
 
-    .section {
-        background: #fff;
-        border-radius: 1rem;
-        padding: 2rem;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    }
+        /* Animation styles */
+        .card {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+        }
 
-    .form-text {
-        color: #6c757d;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-    }
+        .card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-    .alert {
-        border-left: 4px solid;
-    }
+        .section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.5s ease-out;
+        }
 
-    .alert-danger {
-        border-left-color: #dc3545;
-    }
+        .section.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-    .alert-success {
-        border-left-color: #198754;
-    }
-
-    .form-check.form-switch {
-        padding-left: 3rem;
-    }
-
-    .form-switch .form-check-input {
-        width: 2.5em;
-        margin-left: -3rem;
-    }
-
-    /* Section Headers */
-    .section h6 {
-        position: relative;
-        padding-left: 1rem;
-    }
-
-    .section h6::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 3px;
-        height: 1rem;
-        background: var(--primary-gradient);
-        border-radius: 3px;
-    }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Trigger animations
-        setTimeout(() => {
-            document.querySelector('.card').classList.add('animate');
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.add('animate');
-            });
-        }, 100);
-    });
-</script>
-
+        .section:nth-child(1) { transition-delay: 0.2s; }
+        .section:nth-child(2) { transition-delay: 0.3s; }
+        .section:nth-child(3) { transition-delay: 0.4s; }
+        .section:nth-child(4) { transition-delay: 0.5s; }
+        .section:nth-child(5) { transition-delay: 0.6s; }
+    </style>
+}
 
 @section Scripts {
     <script src="https://cdn.tiny.cloud/1/@tinyMCEApiKey/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
@@ -474,15 +460,10 @@
 
         // Animation on load
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('.card').classList.add('animate');
+            document.querySelector('.card').classList.add('show');
             document.querySelectorAll('.section').forEach(section => {
-                section.classList.add('animate');
+                section.classList.add('show');
             });
         });
     </script>
-}
-
-
-@section Styles {
-    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
 }

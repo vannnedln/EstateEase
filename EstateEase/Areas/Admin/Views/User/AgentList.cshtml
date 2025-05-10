@@ -1,4 +1,4 @@
-@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser>
+@model IEnumerable<EstateEase.Models.ViewModels.AgentListViewModel>
 @{
     ViewData["Title"] = "View Agents";
     Layout = "_AdminLayout";
@@ -19,7 +19,7 @@
                 <div class="card-header position-relative overflow-hidden py-4"
                     style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
                     <h5 class="card-title mb-0 fw-bold ps-2 text-white">
-                        Agent List
+                        <i class=" me-2"></i>Agent List
                     </h5>
                     <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
                         <i class="bi bi-people display-1 text-white"></i>
@@ -53,10 +53,12 @@
                     <table id="myTable" class="table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Username</th>
+                                <th>Profile</th>
+                                <th>Full Name</th>
                                 <th>Email</th>
-                                <th>Email Confirmed</th>
+                                <th>Phone Number</th>
+                                <th>License</th>
+                                <th>Properties</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -64,10 +66,23 @@
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td>@item.Id</td>
-                                    <td>@item.UserName</td>
+                                    <td>
+                                        <img src="@item.ProfilePictureUrl" 
+                                             alt="@item.FullName" 
+                                             class="rounded-circle"
+                                             style="width: 40px; height: 40px; object-fit: cover;" />
+                                    </td>
+                                    <td>
+                                        @item.FullName
+                                        <br />
+                                        <small class="text-muted">
+                                            @(item.DateOfBirth?.ToString("MMM dd, yyyy") ?? "No birth date")
+                                        </small>
+                                    </td>
                                     <td>@item.Email</td>
-                                    <td>@(item.EmailConfirmed ? "Yes" : "No")</td>
+                                    <td>@(item.PhoneNumber ?? "Not provided")</td>
+                                    <td>@item.LicenseNumber</td>
+                                    <td>@item.PropertyCount</td>
                                     <td class="text-nowrap">
                                         <div class="d-flex gap-2">
                                             <a asp-action="EditAgent" asp-route-id="@item.Id" class="btn btn-primary btn-sm">
@@ -96,24 +111,6 @@
     <style>
         * {
             font-family: 'Poppins', sans-serif;
-        }
-
-        /* Gradient button style */
-        .gradient-primary-btn {
-            background: linear-gradient(45deg, #2937f0, #9f1ae2);
-            border: none;
-            color: white;
-            border-radius: 0.75rem;
-            padding: 0.5rem 1.5rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(41, 55, 240, 0.3);
-        }
-
-        .gradient-primary-btn:hover {
-            background: linear-gradient(45deg, #232cc5, #8516bd);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(41, 55, 240, 0.4);
-            color: white;
         }
 
         /* Animation styles */
@@ -168,6 +165,19 @@
             margin: 0 0.2rem;
         }
 
+        .gradient-primary-btn {
+            background: linear-gradient(45deg, #2937f0, #9f1ae2);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .gradient-primary-btn:hover {
+            background: linear-gradient(45deg, #232cc5, #8516bd);
+            transform: translateY(-2px);
+            color: white;
+        }
+
         /* DataTables Custom Styling */
         .dataTables_wrapper .dataTables_length select {
             border-radius: 0.5rem;
@@ -212,11 +222,15 @@
                     '<"row align-items-center"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
                 language: {
                     search: "_INPUT_",
-                    searchPlaceholder: "Search...",
+                    searchPlaceholder: "Search agents...",
                     lengthMenu: "_MENU_ records per page"
                 },
                 pageLength: 10,
-                responsive: true
+                responsive: true,
+                order: [[1, "asc"]], // Sort by Full Name by default
+                columnDefs: [
+                    { "orderable": false, "targets": [0, 6] } // Disable sorting on Profile and Actions columns
+                ]
             });
 
             // Add animations
@@ -232,4 +246,5 @@
             }, 100);
         });
     </script>
-} 
+}
+

@@ -5,9 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using EstateEase.Data;
 using EstateEase.Models.ViewModels;
-using System.Collections.Generic;  // Add this line
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 using System.Security.Claims;
+using System.Linq;
+using Microsoft.Extensions.Logging;
+using System;
+using EstateEase.Models.Entities;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace EstateEase.Areas.Admin.Controllers
 {
@@ -18,15 +23,21 @@ namespace EstateEase.Areas.Admin.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<UserController> _logger;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public UserController(
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            ILogger<UserController> logger,
+            IWebHostEnvironment webHostEnvironment)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
+            _logger = logger;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<IActionResult> AdminList()
@@ -42,13 +53,34 @@ namespace EstateEase.Areas.Admin.Controllers
 
         public async Task<IActionResult> AgentList()
         {
-            var agentRole = await _roleManager.FindByNameAsync("Agent");
-            if (agentRole != null)
+            try
             {
-                var agentUsers = await _userManager.GetUsersInRoleAsync("Agent");
-                return View(agentUsers);
+                var agents = await _context.Agents
+                    .Include(a => a.User)
+                    .Include(a => a.Properties)
+                    .Select(a => new AgentListViewModel
+                    {
+                        Id = a.Id,
+                        UserId = a.UserId,
+                        FirstName = a.FirstName,
+                        LastName = a.LastName,
+                        Email = a.User.Email,
+                        PhoneNumber = a.User.PhoneNumber,
+                        ProfilePictureUrl = a.ProfilePictureUrl ?? "/images/avatar-01.png",
+                        LicenseNumber = a.LicenseNumber,
+                        PropertyCount = a.Properties.Count,
+                        DateOfBirth = a.DateOfBirth
+                    })
+                    .ToListAsync();
+
+                return View(agents);
             }
-            return View(new List<IdentityUser>());
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in AgentList action: {ex.Message}");
+                TempData["Error"] = "An error occurred while loading the agent list.";
+                return View(new List<AgentListViewModel>());
+            }
         }
 
         public async Task<IActionResult> UserList()
@@ -86,22 +118,51 @@ namespace EstateEase.Areas.Admin.Controllers
                     // Add the user to the Agent role
                     await _userManager.AddToRoleAsync(user, "Agent");
                     
-                    // Store additional agent information in a separate table or claims
-                    // Example of adding claims
-                    await _userManager.AddClaimsAsync(user, new Claim[]
+                    // Handle profile picture upload
+                    string profilePictureUrl = "/images/avatar-01.png"; // Default image
+                    if (model.ProfilePicture != null && model.ProfilePicture.Length > 0)
                     {
-                        new Claim("FirstName", model.FirstName ?? string.Empty),
-                        new Claim("LastName", model.LastName ?? string.Empty),
-                        new Claim("AddressLine1", model.AddressLine1 ?? string.Empty),
-                        new Claim("AddressLine2", model.AddressLine2 ?? string.Empty),
-                        new Claim("City", model.City ?? string.Empty),
-                        new Claim("State", model.State ?? string.Empty),
-                        new Claim("PostalCode", model.PostalCode ?? string.Empty),
-                        new Claim("Country", model.Country ?? string.Empty),
-                        new Claim("LicenseNumber", model.LicenseNumber ?? string.Empty),
-                        new Claim("DateOfBirth", model.DateOfBirth?.ToString("yyyy-MM-dd") ?? string.Empty),
-                        new Claim("Bio", model.Bio ?? string.Empty)
-                    });
+                        // Create unique filename
+                        string uniqueFileName = $"{Guid.NewGuid()}_{model.ProfilePicture.FileName}";
+                        string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/agents");
+                        
+                        // Create directory if it doesn't exist
+                        if (!Directory.Exists(uploadsFolder))
+                        {
+                            Directory.CreateDirectory(uploadsFolder);
+                        }
+                        
+                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                        
+                        // Save the file
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await model.ProfilePicture.CopyToAsync(fileStream);
+                        }
+                        
+                        profilePictureUrl = $"/uploads/agents/{uniqueFileName}";
+                    }
+                    
+                    // Create and save the agent profile
+                    var agent = new Models.Entities.Agent
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserId = user.Id,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        AddressLine1 = model.AddressLine1,
+                        Barangay = model.Barangay,
+                        City = model.City,
+                        PostalCode = model.PostalCode,
+                        Country = model.Country,
+                        LicenseNumber = model.LicenseNumber,
+                        DateOfBirth = model.DateOfBirth,
+                        Bio = model.Bio,
+                        ProfilePictureUrl = profilePictureUrl
+                    };
+
+                    _context.Agents.Add(agent);
+                    await _context.SaveChangesAsync();
 
                     TempData["Success"] = "Agent account created successfully!";
                     return RedirectToAction(nameof(AgentList));
@@ -167,75 +228,5 @@ namespace EstateEase.Areas.Admin.Controllers
 
             return Json(new { success = false, message = "Failed to update user role" });
         }
-    }
-
-    public class CreateAgentViewModel
-    {
-        [Required]
-        [Display(Name = "First Name")]
-        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
-        public string FirstName { get; set; }
-
-        [Required]
-        [Display(Name = "Last Name")]
-        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
-        public string LastName { get; set; }
-
-        [Required]
-        [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
-
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-        [DataType(DataType.Password)]
-        [Display(Name = "Password")]
-        public string Password { get; set; }
-
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
-
-        [Phone]
-        [Display(Name = "Phone Number")]
-        public string PhoneNumber { get; set; }
-
-        [Display(Name = "Address Line 1")]
-        [StringLength(100)]
-        public string AddressLine1 { get; set; }
-
-        [Display(Name = "Address Line 2")]
-        [StringLength(100)]
-        public string AddressLine2 { get; set; }
-
-        [Display(Name = "City")]
-        [StringLength(50)]
-        public string City { get; set; }
-
-        [Display(Name = "State/Province")]
-        [StringLength(50)]
-        public string State { get; set; }
-
-        [Display(Name = "Postal Code")]
-        [StringLength(20)]
-        public string PostalCode { get; set; }
-
-        [Display(Name = "Country")]
-        [StringLength(50)]
-        public string Country { get; set; }
-
-        [Display(Name = "License Number")]
-        [StringLength(50)]
-        public string LicenseNumber { get; set; }
-
-        [Display(Name = "Date of Birth")]
-        [DataType(DataType.Date)]
-        public DateTime? DateOfBirth { get; set; }
-
-        [Display(Name = "Agent Bio")]
-        [StringLength(500)]
-        [DataType(DataType.MultilineText)]
-        public string Bio { get; set; }
     }
 }

@@ -12,7 +12,7 @@
         <div class="col-12">
             <div class="card border-0 shadow-lg">
                 <div class="card-header position-relative overflow-hidden py-4"
-                    style="background: linear-gradient(45deg, #4f5aff, #9f1ae2);">
+                     style="background: linear-gradient(45deg, #4f5aff, #9f1ae2);">
                     <h5 class="card-title mb-0 fw-bold ps-2 text-white">
                         Add New Property
                     </h5>
@@ -25,7 +25,7 @@
                     @if (TempData["Error"] != null)
                     {
                         <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 shadow-sm"
-                            role="alert">
+                             role="alert">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-exclamation-circle-fill fs-4 me-2"></i>
                                 <div>@TempData["Error"]</div>
@@ -36,7 +36,7 @@
                     @if (TempData["Success"] != null)
                     {
                         <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 shadow-sm"
-                            role="alert">
+                             role="alert">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-check-circle-fill fs-4 me-2"></i>
                                 <div>@TempData["Success"]</div>
@@ -46,7 +46,7 @@
                     }
 
                     <form method="post" enctype="multipart/form-data" asp-action="Add" asp-controller="Property"
-                        asp-area="Admin" class="needs-validation">
+                          asp-area="Admin" class="needs-validation">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 shadow-sm mb-4">
                         </div>
 
@@ -73,15 +73,16 @@
 
                         <!-- Property Details -->
                         <div class="section mb-5">
-                            <h6 class="text-primary fw-bold mb-4">
+                            <h5 class="text-primary fw-bold mb-4">
                                 <i class="bi bi-house-gear me-2"></i>Property Details
-                            </h6>
+                            </h5>
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <div class="form-floating">
                                         <select asp-for="PropertyType" class="form-select">
                                             <option value="" disabled selected>Select Type</option>
-                                            <option value="Single-Family Detached House">Single-Family Detached House
+                                            <option value="Single-Family Detached House">
+                                                Single-Family Detached House
                                             </option>
                                             <option value="Townhouse">Townhouse</option>
                                             <option value="Duplex">Duplex</option>
@@ -106,7 +107,7 @@
                                 <div class="col-md-4">
                                     <div class="form-floating">
                                         <input asp-for="Bedrooms" class="form-control" type="number"
-                                            placeholder="Bedrooms">
+                                               placeholder="Bedrooms">
                                         <label asp-for="Bedrooms">Bedrooms</label>
                                         <span asp-validation-for="Bedrooms" class="text-danger"></span>
                                     </div>
@@ -114,7 +115,7 @@
                                 <div class="col-md-4">
                                     <div class="form-floating">
                                         <input asp-for="Bathrooms" class="form-control" type="number"
-                                            placeholder="Bathrooms">
+                                               placeholder="Bathrooms">
                                         <label asp-for="Bathrooms">Bathrooms</label>
                                         <span asp-validation-for="Bathrooms" class="text-danger"></span>
                                     </div>
@@ -122,7 +123,7 @@
                                 <div class="col-md-4">
                                     <div class="form-floating">
                                         <input asp-for="Kitchen" class="form-control" type="number"
-                                            placeholder="Kitchen">
+                                               placeholder="Kitchen">
                                         <label asp-for="Kitchen">Kitchen</label>
                                         <span asp-validation-for="Kitchen" class="text-danger"></span>
                                     </div>
@@ -130,7 +131,7 @@
                                 <div class="col-md-3">
                                     <div class="form-floating">
                                         <input asp-for="Balcony" class="form-control" type="number"
-                                            placeholder="Balcony">
+                                               placeholder="Balcony">
                                         <label asp-for="Balcony">Balcony</label>
                                         <span asp-validation-for="Balcony" class="text-danger"></span>
                                     </div>
@@ -145,7 +146,7 @@
                                 <div class="col-md-3">
                                     <div class="form-floating">
                                         <input asp-for="TotalFloors" class="form-control" type="number"
-                                            placeholder="Total Floors">
+                                               placeholder="Total Floors">
                                         <label asp-for="TotalFloors">Total Floors</label>
                                         <span asp-validation-for="TotalFloors" class="text-danger"></span>
                                     </div>
@@ -153,7 +154,7 @@
                                 <div class="col-md-3">
                                     <div class="form-floating">
                                         <input asp-for="Size" class="form-control" type="number" step="0.01"
-                                            placeholder="Area">
+                                               placeholder="Area">
                                         <label asp-for="Size">Area (sq m)</label>
                                         <span asp-validation-for="Size" class="text-danger"></span>
                                     </div>
@@ -161,7 +162,7 @@
                                 <div class="col-12">
                                     <div class="form-floating">
                                         <textarea asp-for="Address" class="form-control" placeholder="Address"
-                                            style="height: 100px"></textarea>
+                                                  style="height: 100px"></textarea>
                                         <label asp-for="Address">Address</label>
                                         <span asp-validation-for="Address" class="text-danger"></span>
                                     </div>
@@ -169,7 +170,7 @@
                                 <div class="col-md-6">
                                     <div class="form-floating">
                                         <input asp-for="Price" class="form-control" type="number" placeholder="Price"
-                                            min="0" step="any">
+                                               min="0" step="any">
                                         <label asp-for="Price">Price (₱)</label>
                                         <span asp-validation-for="Price" class="text-danger"></span>
                                     </div>
@@ -191,21 +192,21 @@
 
                         <!-- Property Features -->
                         <div class="section mb-5">
-                            <h6 class="text-primary fw-bold mb-4">
+                            <h5 class="text-primary fw-bold mb-4">
                                 <i class="bi bi-list-check me-2"></i>Property Features
-                            </h6>
+                            </h5>
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <div class="form-check form-switch">
                                         <input asp-for="HasSwimmingPool" class="form-check-input" type="checkbox"
-                                            role="switch">
+                                               role="switch">
                                         <label asp-for="HasSwimmingPool" class="form-check-label">Swimming Pool</label>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-check form-switch">
                                         <input asp-for="HasParking" class="form-check-input" type="checkbox"
-                                            role="switch">
+                                               role="switch">
                                         <label asp-for="HasParking" class="form-check-label">Parking</label>
                                     </div>
                                 </div>
@@ -218,14 +219,14 @@
                                 <div class="col-md-4">
                                     <div class="form-check form-switch">
                                         <input asp-for="HasSecurity" class="form-check-input" type="checkbox"
-                                            role="switch">
+                                               role="switch">
                                         <label asp-for="HasSecurity" class="form-check-label">Security</label>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-check form-switch">
                                         <input asp-for="HasElevator" class="form-check-input" type="checkbox"
-                                            role="switch">
+                                               role="switch">
                                         <label asp-for="HasElevator" class="form-check-label">Elevator</label>
                                     </div>
                                 </div>
@@ -240,9 +241,9 @@
 
                         <!-- Images & Plans -->
                         <div class="section mb-5">
-                            <h6 class="text-primary fw-bold mb-4">
+                            <h5 class="text-primary fw-bold mb-4">
                                 <i class="bi bi-images me-2"></i>Images & Floor Plans
-                            </h6>
+                            </h5>
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -278,9 +279,9 @@
 
                         <!-- Featured Status -->
                         <div class="section mb-5">
-                            <h6 class="text-primary fw-bold mb-4">
+                            <h5 class="text-primary fw-bold mb-4">
                                 <i class="bi bi-star me-2"></i>Featured Status
-                            </h6>
+                            </h5>
                             <div class="form-floating">
                                 <select asp-for="IsFeatured" class="form-select">
                                     <option value="" disabled selected>Select...</option>
@@ -293,7 +294,7 @@
 
                         <!-- Form Actions -->
                         <div class="d-flex justify-content-end gap-2">
-                            <a asp-controller="Property" asp-action="ViewProperty" class="btn btn-light btn-lg px-5">
+                            <a asp-controller="Home" asp-action="Index" asp-area="Admin" class="btn btn-light btn-lg px-5">
                                 <i class="bi bi-x-lg me-2"></i>Cancel
                             </a>
                             <button type="submit" class="btn btn-primary btn-lg px-5">
@@ -427,12 +428,12 @@
     }
 
     /* Section Headers */
-    .section h6 {
+    .section h5 {
         position: relative;
         padding-left: 1rem;
     }
 
-    .section h6::before {
+    .section h5::before {
         content: '';
         position: absolute;
         left: 0;

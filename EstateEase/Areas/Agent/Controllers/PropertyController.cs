@@ -9,7 +9,6 @@ namespace EstateEase.Areas.Agent.Controllers
     {
         public IActionResult Index()
         {
-            // This would fetch properties from database
             return View();
         }
 
@@ -27,7 +26,6 @@ namespace EstateEase.Areas.Agent.Controllers
                 return View(model);
             }
 
-            // Save property logic here
 
             TempData["Success"] = "Property added successfully";
             return RedirectToAction(nameof(Index));
@@ -35,7 +33,7 @@ namespace EstateEase.Areas.Agent.Controllers
 
         public IActionResult Edit(int id)
         {
-            // Fetch property and return view
+    
             return View();
         }
 
@@ -48,7 +46,7 @@ namespace EstateEase.Areas.Agent.Controllers
                 return View(model);
             }
 
-            // Update property logic here
+      
 
             TempData["Success"] = "Property updated successfully";
             return RedirectToAction(nameof(Index));
@@ -56,7 +54,7 @@ namespace EstateEase.Areas.Agent.Controllers
 
         public IActionResult Details(int id)
         {
-            // Fetch property details and return view
+            
             return View();
         }
 
@@ -64,7 +62,7 @@ namespace EstateEase.Areas.Agent.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
-            // Delete property logic here
+      
 
             TempData["Success"] = "Property deleted successfully";
             return RedirectToAction(nameof(Index));
@@ -73,6 +71,6 @@ namespace EstateEase.Areas.Agent.Controllers
 
     public class PropertyViewModel
     {
-        // Property fields would go here
+      
     }
 } 

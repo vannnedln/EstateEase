@@ -174,11 +174,12 @@ body {
     transition: var(--transition);
 }
 
-.auth-submit-btn:hover {
-    background: linear-gradient(45deg, var(--primary-hover), var(--secondary-hover));
-    transform: translateY(-3px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-}
+    .auth-submit-btn:hover {
+        background: linear-gradient(45deg, var(--primary-hover), var(--secondary-hover));
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        color: var(--white);
+    }
 
 .auth-alt-link {
     color: var(--primary-color);
@@ -187,7 +188,7 @@ body {
     transition: var(--transition);
 }
 
-.auth-alt-link:hover {
+.auth-alt-link:hover {  
     color: var(--secondary-color);
 }
 

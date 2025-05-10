@@ -1,5 +1,6 @@
 ﻿@page
 @model LoginModel
+@inject IConfiguration Configuration
 
 @{
     ViewData["Title"] = "Log in";
@@ -34,23 +35,33 @@
                             <span asp-validation-for="Input.Password" class="text-danger"></span>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <label class="form-check mb-0">
-                                <input class="form-check-input" asp-for="Input.RememberMe" />
-                                <span class="form-check-label">Remember me</span>
-                            </label>
-                            <a asp-page="./ForgotPassword" class="forgot-password">Forgot password?</a>
-                        </div>
+                        
 
-                        <button type="submit" class="btn auth-submit-btn w-100 py-3 mb-4">Sign In</button>
+                        <button type="submit" class="btn auth-submit-btn w-100 py-3 mb-4" id="submitButton" disabled>Sign In</button>
 
-                        <div class="text-center">
+                        <div class="text-center mb-4">
                             <hr class="my-4">
                             <p class="mb-0 fs-6">Don't have an account?
                                 <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl"
                                     class="auth-alt-link">Sign up</a>
                             </p>
                         </div>
+
+                        <div class="mb-4">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-shield-lock text-primary me-2"></i>
+                                        <small class="text-muted ">Security Verification</small>
+                                    </div>
+                                <div id="recaptcha-container" class="d-flex justify-content-center"></div>
+                                <input type="hidden" asp-for="Input.RecaptchaResponse" id="recaptchaResponse" />
+                                <span asp-validation-for="Input.RecaptchaResponse" class="text-danger d-block text-center mt-2"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                        
                     </form>
                 </div>
             </div>
@@ -60,6 +71,19 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+        var onloadCallback = function() {
+            grecaptcha.render('recaptcha-container', {
+                'sitekey': '@Configuration["ReCaptcha:SiteKey"]',
+                'callback': onRecaptchaComplete,
+                'theme': 'light',
+                'size': 'normal'
+            });
+        };
+    </script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
+        async defer>
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Animate fade-in elements
@@ -69,6 +93,24 @@
                     el.style.opacity = '1';
                 }, 100 + (index * 100));
             });
+
+            // Handle form submission
+            const form = document.getElementById('account');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const recaptchaResponse = grecaptcha.getResponse();
+                if (!recaptchaResponse) {
+                    alert('Please complete the reCAPTCHA verification.');
+                    return;
+                }
+                document.getElementById('recaptchaResponse').value = recaptchaResponse;
+                form.submit();
+            });
         });
+
+        function onRecaptchaComplete(token) {
+            document.getElementById('recaptchaResponse').value = token;
+            document.getElementById('submitButton').disabled = false;
+        }
     </script>
 }

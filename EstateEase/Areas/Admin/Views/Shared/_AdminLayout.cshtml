@@ -77,7 +77,7 @@
             border-radius: 15px;
             transition: all 0.3s ease;
             min-height: calc(100vh - var(--header-height));
-            /* Remove margin-top since body already has padding-top */
+            
         }
 
         .page-wrapper.slide-content {
@@ -89,7 +89,7 @@
             margin: 4px 15px;
             border-radius: 8px;
             transition: all 0.3s ease;
-            color: #6c757d;
+            color: rgb(24, 26, 27);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -153,8 +153,7 @@
                     <li class="submenu">
                         <a href="#"><i class="bi bi-people"></i> <span>All Users</span> <span class="menu-arrow"><i
                                     class="bi bi-chevron-right"></i></span></a>
-                        <ul>
-                            <li><a asp-area="Admin" asp-controller="User" asp-action="AdminList">Admin</a></li>
+                        <ul>                    
                             <li><a asp-area="Admin" asp-controller="User" asp-action="AgentList">Agents</a></li>
                             <li><a asp-area="Admin" asp-controller="User" asp-action="UserList">Users</a></li>
                         </ul>
@@ -166,7 +165,7 @@
                                     class="bi bi-chevron-right"></i></span></a>
                         <ul>
                             <li><a asp-area="Admin" asp-controller="Property" asp-action="Add">Create Property</a></li>
-                            <li><a asp-area="Admin" asp-controller="Property" asp-action="ViewProperty">
+                            <li><a asp-area="Admin" asp-controller="Property" asp-action="ViewPropertyList">
                                     Property List</a></li>
                         </ul>
                     </li>
