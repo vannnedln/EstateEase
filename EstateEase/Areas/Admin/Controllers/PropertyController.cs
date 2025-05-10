@@ -473,61 +473,91 @@ namespace EstateEase.Controllers.Admin
                 return RedirectToAction(nameof(ViewPropertyList));
             }
 
-            // Debug: Check if PropertyImages is loaded correctly
+            // Enhanced debugging for image loading
+            System.Diagnostics.Debug.WriteLine($"=== DEBUG: Property Edit ===");
             System.Diagnostics.Debug.WriteLine($"Property ID: {property.Id}");
             System.Diagnostics.Debug.WriteLine($"PropertyImages count: {property.PropertyImages?.Count ?? 0}");
+            
+            // Add debug information to TempData
+            TempData["DebugPropertyId"] = property.Id;
+            TempData["DebugImagesCount"] = property.PropertyImages?.Count.ToString() ?? "0";
             
             if (property.PropertyImages != null)
             {
                 foreach (var img in property.PropertyImages)
                 {
                     System.Diagnostics.Debug.WriteLine($"Image ID: {img.Id}, Type: {img.ImageType}, Path: {img.ImagePath}, IsMain: {img.IsMain}");
+                    
+                    // Verify if the image file exists
+                    if (!string.IsNullOrEmpty(img.ImagePath))
+                    {
+                        string webRootPath = _webHostEnvironment.WebRootPath;
+                        string imagePath = img.ImagePath.TrimStart('/');
+                        string fullPath = Path.Combine(webRootPath, imagePath);
+                        
+                        bool fileExists = System.IO.File.Exists(fullPath);
+                        System.Diagnostics.Debug.WriteLine($"Image file exists: {fileExists}, Full path: {fullPath}");
+                    }
                 }
             }
-
-            var viewModel = new PropertyViewModel
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("PropertyImages collection is NULL");
+            }
+            
+            // Create the view model and map the properties
+            var model = new PropertyViewModel
             {
                 Id = property.Id,
                 Title = property.Title,
                 Content = property.Content,
                 PropertyType = property.PropertyType,
-                SellingType = property.SellingType,
                 Bedrooms = property.Bedrooms,
                 Bathrooms = property.Bathrooms,
-                Kitchen = property.Kitchen,
                 Balcony = property.Balcony,
+                Kitchen = property.Kitchen,
                 Hall = property.Hall,
-                TotalFloors = property.TotalFloors,
+                Price = property.Price,
                 Size = property.Size,
                 Address = property.Address,
-                Price = property.Price,
                 Status = property.Status,
+                TotalFloors = property.TotalFloors,
+                IsFeatured = property.IsFeatured,
+                SellingType = property.SellingType,
                 HasSwimmingPool = property.HasSwimmingPool,
                 HasParking = property.HasParking,
                 HasGym = property.HasGym,
                 HasSecurity = property.HasSecurity,
                 HasElevator = property.HasElevator,
                 HasCCTV = property.HasCCTV,
-                IsFeatured = property.IsFeatured,
+                AgentId = property.AgentId,
                 CreatedAt = property.CreatedAt,
                 UpdatedAt = property.UpdatedAt,
-                AgentId = property.AgentId,
+                // Map existing images to view model
                 ExistingImages = property.PropertyImages?.Select(pi => new PropertyImageViewModel
                 {
                     Id = pi.Id,
-                    ImagePath = pi.ImagePath,
+                    ImagePath = pi.ImagePath.StartsWith("http") ? pi.ImagePath : pi.ImagePath,
                     IsMain = pi.IsMain,
                     ImageType = pi.ImageType
                 }).ToList()
             };
-            
-            // Debug: Check if viewModel.ExistingImages is populated correctly
-            System.Diagnostics.Debug.WriteLine($"ViewModel ExistingImages count: {viewModel.ExistingImages?.Count ?? 0}");
-            
-            // Add debug information to TempData
-            TempData["DebugImageCount"] = viewModel.ExistingImages?.Count.ToString() ?? "0";
 
-            return View(viewModel);
+            // Debug the view model's images
+            System.Diagnostics.Debug.WriteLine($"ViewModel ExistingImages count: {model.ExistingImages?.Count ?? 0}");
+            if (model.ExistingImages != null)
+            {
+                foreach (var img in model.ExistingImages)
+                {
+                    System.Diagnostics.Debug.WriteLine($"ViewModel Image: ID: {img.Id}, Type: {img.ImageType}, Path: {img.ImagePath}, IsMain: {img.IsMain}");
+                }
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("ViewModel ExistingImages is NULL");
+            }
+
+            return View(model);
         }
 
         // POST: Admin/Property/Edit/5

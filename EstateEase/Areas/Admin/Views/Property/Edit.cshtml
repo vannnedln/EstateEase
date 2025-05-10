@@ -45,8 +45,6 @@
                         </div>
                     }
 
-                    
-
                     <form method="post" enctype="multipart/form-data" asp-action="Edit" asp-controller="Property"
                           asp-area="Admin" class="needs-validation">
                         <input type="hidden" asp-for="Id" />
@@ -257,11 +255,10 @@
                                             {
                                                 <div class="col-md-3 mb-4">
                                                     <div class="card h-100 border-0 shadow-sm position-relative image-card">
-                                                        <div class="image-container" style="height: 250px;">
-                                                            <img src="@image.ImagePath" class="img-fluid w-100 h-100 rounded" 
-                                                                 style="object-fit: cover;" asp-append-version="true" 
+                                                        <div class="image-container">
+                                                            <img src="@Url.Content(image.ImagePath)" class="img-fluid" 
                                                                  alt="@image.ImageType"
-                                                                 onerror="this.src='/uploads/properties/placeholder.jpg'; this.onerror=null;">
+                                                                 onerror="this.src='/uploads/properties/placeholder.jpg'; this.onerror=null; console.error('Failed to load image:', this.src);">
                                                             
                                                             <!-- Image type badge -->
                                                             <div class="position-absolute bottom-0 start-0 m-2">
@@ -347,11 +344,10 @@
                                             {
                                                 <div class="col-md-3 mb-4">
                                                     <div class="card h-100 border-0 shadow-sm position-relative image-card">
-                                                        <div class="image-container" style="height: 250px;">
-                                                            <img src="@image.ImagePath" class="img-fluid w-100 h-100 rounded" 
-                                                                 style="object-fit: cover;" asp-append-version="true" 
+                                                        <div class="image-container">
+                                                            <img src="@Url.Content(image.ImagePath)" class="img-fluid" 
                                                                  alt="@image.ImageType"
-                                                                 onerror="this.src='/uploads/properties/placeholder.jpg'; this.onerror=null;">
+                                                                 onerror="this.src='/uploads/properties/placeholder.jpg'; this.onerror=null; console.error('Failed to load image:', this.src);">
                                                             
                                                             <!-- Image type badge -->
                                                             <div class="position-absolute bottom-0 start-0 m-2">
@@ -564,11 +560,31 @@
         .image-card {
             overflow: hidden;
             transition: transform 0.3s ease;
+            margin-bottom: 1rem;
+            display: block !important;
+            visibility: visible !important;
         }
 
         .image-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .image-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0.375rem;
+            display: block !important;
+            visibility: visible !important;
         }
 
         .image-controls {
@@ -585,6 +601,7 @@
             opacity: 0;
             transition: opacity 0.3s ease;
             border-radius: 0.375rem;
+            z-index: 10;
         }
 
         .image-card:hover .image-controls {
@@ -602,6 +619,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             transform: scale(0.9);
             transition: transform 0.2s ease;
+            z-index: 20;
         }
 
         .image-controls .btn:hover {
@@ -660,6 +678,14 @@
     <script>
         // Animation on load
         document.addEventListener('DOMContentLoaded', function () {
+            // Debug image paths
+            console.log('Debugging image paths:');
+            document.querySelectorAll('.image-container img').forEach(img => {
+                console.log('Image src:', img.src);
+                console.log('Image complete:', img.complete);
+                console.log('Image naturalWidth:', img.naturalWidth);
+            });
+            
             document.querySelector('.card').classList.add('show');
             document.querySelectorAll('.section').forEach(section => {
                 section.classList.add('show');
@@ -671,8 +697,18 @@
                 console.log('Image src:', img.src);
                 img.addEventListener('error', function() {
                     console.error('Failed to load image:', this.src);
-                    this.src = '/images/placeholder.jpg'; // Fallback image
+                    this.src = '/uploads/properties/placeholder.jpg'; // Fallback image
                 });
+                img.addEventListener('load', function() {
+                    console.log('Successfully loaded image:', this.src);
+                });
+            });
+
+            // Ensure all image cards are visible
+            document.querySelectorAll('.image-card, .image-container, .image-container img').forEach(el => {
+                el.style.display = 'block';
+                el.style.visibility = 'visible';
+                el.style.opacity = '1';
             });
 
             // Image management functionality
