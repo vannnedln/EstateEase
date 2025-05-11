@@ -49,6 +49,17 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     }
+                    @if (TempData["Warning"] != null)
+                    {
+                        <div class="alert alert-warning alert-dismissible fade show border-0 rounded-3 shadow-sm"
+                             role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
+                                <div>@TempData["Warning"]</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
 
                     <table id="myTable" class="table">
                         <thead>
@@ -223,7 +234,7 @@
                 },
                 pageLength: 10,
                 responsive: true,
-                order: [[1, "asc"]], // Sort by Title by default
+                order: [[0, "desc"]], // Sort by ID in descending order (assuming newest IDs are higher)
                 columnDefs: [
                     { "orderable": false, "targets": [7] } // Disable sorting on Actions column
                 ]

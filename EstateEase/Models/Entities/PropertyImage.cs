@@ -8,9 +8,9 @@ namespace EstateEase.Models.Entities
         [Key]
         public string Id { get; set; }
         public string ImagePath { get; set; }
-        public bool IsMain { get; set; }
         public string PropertyId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; }
         public string ImageType { get; set; }
 
         [ForeignKey("PropertyId")]

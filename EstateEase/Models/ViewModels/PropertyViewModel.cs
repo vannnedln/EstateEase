@@ -91,13 +91,17 @@ namespace EstateEase.Models.ViewModels
         public List<IFormFile>? PropertyImages { get; set; }
 
         [Display(Name = "Floor Plan")]
-        public IFormFile? FloorPlanImage { get; set; }
-
-        [Display(Name = "Basement Plan")]
-        public IFormFile? BasementPlanImage { get; set; }
-
-        [Display(Name = "Ground Floor Plan")]
-        public IFormFile? GroundFloorPlanImage { get; set; }
+        public List<IFormFile>? FloorPlanImage { get; set; }
+        
+        // Properties for pending image actions
+        public List<string>? DeletedImageIds { get; set; }
+        public string? MainImageId { get; set; }
+        
+        // Dictionary structure isn't easily bindable, so we'll use form handling in the controller
+        // public Dictionary<string, IFormFile>? ReplacementImages { get; set; }
+        
+        // Complex nested structures aren't easily bindable, so we'll use form handling in the controller
+        // public List<NewImageViewModel>? NewImages { get; set; }
 
         // Navigation properties
         public string? AgentId { get; set; }
@@ -112,7 +116,14 @@ namespace EstateEase.Models.ViewModels
     {
         public string? Id { get; set; }
         public string ImagePath { get; set; }
-        public bool IsMain { get; set; }
         public string ImageType { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+    }
+    
+    // This class is just for documentation purposes, as we'll handle this in the controller
+    public class NewImageViewModel
+    {
+        public string Type { get; set; }
+        public IFormFile File { get; set; }
     }
 }

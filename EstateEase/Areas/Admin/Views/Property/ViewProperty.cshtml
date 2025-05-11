@@ -210,20 +210,27 @@
                                     !i.ImageType.Contains("basement", StringComparison.OrdinalIgnoreCase)))
                                 {
                                     <div class="col-md-4">
-                                        <div class="card h-100 border-0 shadow-sm">
-                                            <div class="image-container" style="height: 250px;">
-                                                <img src="@image.ImagePath"
-                                                     class="img-fluid w-100 h-100 rounded" style="object-fit: cover;"
-                                                     asp-append-version="true" alt="@image.ImageType">
-                                                @if (image.IsMain)
-                                                {
-                                                    <div class="position-absolute top-0 end-0 m-2">
-                                                        <span class="badge bg-primary">Main</span>
-                                                    </div>
-                                                }
-                                            </div>
-                                            <div class="card-footer bg-transparent border-0">
-                                                <small class="text-muted">@image.ImageType</small>
+                                        <div class="card h-100 border-0 shadow-sm hover-elevate-up">
+                                            <div class="card-body p-0">
+                                                <img src="@Url.Content(image.ImagePath)" class="card-img"
+                                                     alt="Property Image"
+                                                     onerror="this.src='/uploads/properties/placeholder.jpg'; this.onerror=null;">
+                                                
+                                                <div class="position-absolute bottom-0 start-0 p-3">
+                                                    <span class="badge rounded-pill bg-primary">
+                                                        <i class="bi bi-image me-1"></i>
+                                                        Property Image
+                                                    </span>
+                                                </div>
+                                                
+                                                <div class="position-absolute top-0 end-0 p-3">
+                                                    <button type="button" class="btn btn-sm btn-light rounded-circle img-view-btn" 
+                                                           data-image-url="@Url.Content(image.ImagePath)" 
+                                                           data-image-type="Property Image"
+                                                           title="View Full Size">
+                                                        <i class="bi bi-arrows-fullscreen"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -241,47 +248,43 @@
                     </div>
 
                     <!-- Floor Plans -->
-                    <div class="section mb-5">
-                        <h5 class="text-primary fw-bold mb-4">
-                            <i class="bi bi-layers me-2"></i>Floor Plans
-                        </h5>
-                        <div class="row g-4">
-                            @if (Model.ExistingImages != null && Model.ExistingImages.Any(i => 
-                                i.ImageType == "FloorPlan" || 
-                                i.ImageType.Contains("floor", StringComparison.OrdinalIgnoreCase) || 
-                                i.ImageType.Contains("ground", StringComparison.OrdinalIgnoreCase) || 
-                                i.ImageType.Contains("basement", StringComparison.OrdinalIgnoreCase)))
-                            {
-                                @foreach (var image in Model.ExistingImages.Where(i => 
-                                    i.ImageType == "FloorPlan" || 
-                                    i.ImageType.Contains("floor", StringComparison.OrdinalIgnoreCase) || 
-                                    i.ImageType.Contains("ground", StringComparison.OrdinalIgnoreCase) || 
-                                    i.ImageType.Contains("basement", StringComparison.OrdinalIgnoreCase)))
+                    @if (Model.ExistingImages != null && Model.ExistingImages.Any(x => x.ImageType == "FloorPlan"))
+                    {
+                        <div class="section mb-5">
+                            <h5 class="text-primary fw-bold mb-4">
+                                <i class="bi bi-layers me-2"></i>Floor Plans
+                            </h5>
+                            <div class="row g-4">
+                                @foreach (var image in Model.ExistingImages.Where(x => x.ImageType == "FloorPlan"))
                                 {
                                     <div class="col-md-4">
-                                        <div class="card h-100 border-0 shadow-sm">
-                                            <div class="image-container" style="height: 250px;">
-                                                <img src="@image.ImagePath"
-                                                     class="img-fluid w-100 h-100 rounded" style="object-fit: cover;"
-                                                     asp-append-version="true" alt="@image.ImageType">
-                                            </div>
-                                            <div class="card-footer bg-transparent border-0">
-                                                <small class="text-muted">@image.ImageType</small>
+                                        <div class="card h-100 border-0 shadow-sm hover-elevate-up">
+                                            <div class="card-body p-0">
+                                                <img src="@Url.Content(image.ImagePath)" class="card-img"
+                                                     alt="Floor Plan"
+                                                     onerror="this.src='/uploads/properties/placeholder.jpg'; this.onerror=null;">
+                                                
+                                                <div class="position-absolute bottom-0 start-0 p-3">
+                                                    <span class="badge rounded-pill bg-primary">
+                                                        <i class="bi bi-layers me-1"></i>Floor Plan
+                                                    </span>
+                                                </div>
+                                                
+                                                <div class="position-absolute top-0 end-0 p-3">
+                                                    <button type="button" class="btn btn-sm btn-light rounded-circle img-view-btn" 
+                                                           data-image-url="@Url.Content(image.ImagePath)" 
+                                                           data-image-type="Floor Plan"
+                                                           title="View Full Size">
+                                                        <i class="bi bi-arrows-fullscreen"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 }
-                            }
-                            else
-                            {
-                                <div class="col-12">
-                                    <div class="alert alert-info">
-                                        No floor plans available for this property.
-                                    </div>
-                                </div>
-                            }
+                            </div>
                         </div>
-                    </div>
+                    }
 
                     <!-- Featured Status -->
                     <div class="section mb-5">
@@ -301,6 +304,29 @@
                         </a>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image View Modal -->
+<div class="modal fade" id="imageViewModal" tabindex="-1" aria-labelledby="imageViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0 bg-light">
+                <h5 class="modal-title" id="imageViewModalLabel">Property Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 d-flex justify-content-center align-items-center bg-dark" style="min-height: 75vh;">
+                <img id="modalImage" src="" alt="Property Image" class="img-fluid" style="max-height: 75vh;">
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <a id="downloadImageLink" href="#" download class="btn btn-gradient btn-sm">
+                    <i class="bi bi-download me-1"></i> Download Image
+                </a>
+                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i> Close
+                </button>
             </div>
         </div>
     </div>
@@ -350,5 +376,114 @@
             background: linear-gradient(45deg, #4f5aff, #9f1ae2);
             border-radius: 3px;
         }
+        
+        /* Image consistency styles */
+        .card-body.p-0 {
+            height: 250px;
+            overflow: hidden;
+        }
+        
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        
+        .hover-elevate-up {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-elevate-up:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        /* Modal styles */
+        #imageViewModal .modal-content {
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+        
+        #imageViewModal .modal-body {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #modalImage {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .img-view-btn {
+            opacity: 0.7;
+            transition: all 0.2s ease;
+        }
+        
+        .img-view-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .card:hover .img-view-btn {
+            opacity: 1;
+        }
+        
+        /* Gradient button */
+        .btn-gradient {
+            background: linear-gradient(45deg, #4f5aff, #9f1ae2);
+            color: white;
+            border: none;
+            box-shadow: 0 3px 10px rgba(79, 90, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gradient:hover {
+            background: linear-gradient(45deg, #3a45e0, #8516bd);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 90, 255, 0.5);
+        }
     </style>
+}
+
+@section Scripts {
+    <script>
+        // Image modal functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the modal elements
+            const modal = document.getElementById('imageViewModal');
+            const modalTitle = document.getElementById('imageViewModalLabel');
+            const modalImage = document.getElementById('modalImage');
+            const downloadLink = document.getElementById('downloadImageLink');
+            
+            // Initialize the Bootstrap modal
+            const imageModal = new bootstrap.Modal(modal);
+            
+            // Add click event listeners to all image view buttons
+            document.querySelectorAll('.img-view-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const imageUrl = this.getAttribute('data-image-url');
+                    const imageType = this.getAttribute('data-image-type');
+                    
+                    // Set modal content
+                    modalTitle.textContent = imageType;
+                    modalImage.src = imageUrl;
+                    downloadLink.href = imageUrl;
+                    
+                    // Ensure image loads properly
+                    modalImage.onload = function() {
+                        // Show the modal
+                        imageModal.show();
+                    };
+                    
+                    // Fallback in case the image doesn't load
+                    modalImage.onerror = function() {
+                        this.src = '/uploads/properties/placeholder.jpg';
+                        imageModal.show();
+                    };
+                });
+            });
+        });
+    </script>
 }

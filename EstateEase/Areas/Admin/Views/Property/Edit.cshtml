@@ -45,6 +45,7 @@
                         </div>
                     }
 
+                    
                     <form method="post" enctype="multipart/form-data" asp-action="Edit" asp-controller="Property"
                           asp-area="Admin" class="needs-validation">
                         <input type="hidden" asp-for="Id" />
@@ -233,67 +234,57 @@
                                 <i class="bi bi-images me-2"></i>Property Images
                             </h5>
                             <div class="row g-4">
+                                <!-- Add Property Images Button -->
+                                <div class="col-12 mb-4">
+                                    <div class="d-flex justify-content-end">
+                                        <div class="file-upload-wrapper">
+                                            <input type="file" name="PropertyImages" id="propertyImagesInput" multiple accept="image/*" class="d-none" />
+                                            <button type="button" id="addPropertyImagesBtn" class="btn btn-gradient btn-rounded px-4 py-2">
+                                                <i class="bi bi-plus-circle me-2"></i>Add Property Images
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <!-- Existing Images -->
                                 @if (Model.ExistingImages != null && Model.ExistingImages.Any(i => 
-                                    i.ImageType != "FloorPlan" && 
-                                    !i.ImageType.Contains("floor", StringComparison.OrdinalIgnoreCase) && 
-                                    !i.ImageType.Contains("ground", StringComparison.OrdinalIgnoreCase) && 
-                                    !i.ImageType.Contains("basement", StringComparison.OrdinalIgnoreCase)))
+                                    i.ImageType == "Property"))
                                 {
                                     <div class="col-12 mb-4">
                                         <h6 class="text-muted mb-3">Current Property Images</h6>
-                                        <div class="alert alert-info">
-                                            <i class="bi bi-info-circle me-2"></i>
-                                            Manage your property images - hover over an image to see controls for setting as main image or deleting.
-                                        </div>
+                                        
                                         <div class="row g-3">
                                             @foreach (var image in Model.ExistingImages.Where(i => 
-                                                i.ImageType != "FloorPlan" && 
-                                                !i.ImageType.Contains("floor", StringComparison.OrdinalIgnoreCase) && 
-                                                !i.ImageType.Contains("ground", StringComparison.OrdinalIgnoreCase) && 
-                                                !i.ImageType.Contains("basement", StringComparison.OrdinalIgnoreCase)))
+                                                i.ImageType == "Property").OrderBy(i => i.CreatedAt))
                                             {
-                                                <div class="col-md-3 mb-4">
-                                                    <div class="card h-100 border-0 shadow-sm position-relative image-card">
-                                                        <div class="image-container">
-                                                            <img src="@Url.Content(image.ImagePath)" class="img-fluid" 
+                                                <div class="col-md-4 mb-4" id="image-container-@image.Id">
+                                                    <div class="card h-100 border-0 shadow-sm hover-elevate-up">
+                                                        <div class="card-body p-0">
+                                                            <img src="@Url.Content(image.ImagePath)" class="card-img"
                                                                  alt="@image.ImageType"
-                                                                 onerror="this.src='/uploads/properties/placeholder.jpg'; this.onerror=null; console.error('Failed to load image:', this.src);">
+                                                                 onerror="this.src='/uploads/properties/placeholder.jpg'; this.onerror=null;">
                                                             
-                                                            <!-- Image type badge -->
-                                                            <div class="position-absolute bottom-0 start-0 m-2">
-                                                                <span class="badge bg-dark">@image.ImageType</span>
+                                                            <div class="position-absolute bottom-0 start-0 p-3">
+                                                                <span class="badge rounded-pill bg-primary">
+                                                                    <i class="bi bi-image me-1"></i>
+                                                                    Property Image
+                                                                </span>
                                                             </div>
                                                             
-                                                            <!-- Main image badge -->
-                                                            @if (image.IsMain)
-                                                            {
-                                                                <div class="position-absolute top-0 end-0 m-2">
-                                                                    <span class="badge bg-primary">Main</span>
-                                                                </div>
-                                                            }
-                                                            
-                                                            <!-- Image control overlay -->
-                                                            <div class="image-controls">
-                                                                @if (image.ImageType == "Property")
-                                                                {
-                                                                    <button type="button" class="btn btn-sm btn-primary set-main-btn" 
-                                                                            data-id="@image.Id"
-                                                                            title="Set as main image"
-                                                                            @(image.IsMain ? "disabled" : "")>
-                                                                        <i class="bi bi-star-fill"></i>
-                                                                    </button>
-                                                                }
-                                                                <button type="button" class="btn btn-sm btn-danger delete-img-btn" 
+                                                            <div class="position-absolute top-0 end-0 p-3 d-flex gap-2">
+                                                                <button type="button" class="btn btn-sm btn-edit rounded-circle edit-img-btn" 
+                                                                        data-id="@image.Id" 
+                                                                        data-type="@image.ImageType"
+                                                                        title="Edit image">
+                                                                    <i class="bi bi-pencil-fill"></i>
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-delete rounded-circle delete-img-btn" 
                                                                         data-id="@image.Id" 
                                                                         data-type="@image.ImageType"
                                                                         title="Delete image">
-                                                                    <i class="bi bi-trash"></i>
+                                                                    <i class="bi bi-trash-fill"></i>
                                                                 </button>
                                                             </div>
-                                                        </div>
-                                                        <div class="card-footer bg-transparent border-0">
-                                                            <small class="text-muted">@image.ImageType</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -301,18 +292,14 @@
                                         </div>
                                     </div>
                                 }
-
-                                <!-- New Property Images Upload -->
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label class="form-label">Property Images</label>
-                                        <input type="file" asp-for="PropertyImages" class="form-control" multiple>
-                                        <div class="form-text">
-                                            Upload multiple property images (exterior, interior, etc.)
+                                else
+                                {
+                                    <div class="col-12">
+                                        <div class="alert alert-info">
+                                            No property images available.
                                         </div>
-                                        <span asp-validation-for="PropertyImages" class="text-danger"></span>
                                     </div>
-                                </div>
+                                }
                             </div>
                         </div>
 
@@ -322,86 +309,70 @@
                                 <i class="bi bi-layers me-2"></i>Floor Plans
                             </h5>
                             <div class="row g-4">
+                                <!-- Add Floor Plan Button -->
+                                <div class="col-12 mb-4">
+                                    <div class="d-flex justify-content-end">
+                                        <div class="file-upload-wrapper">
+                                            <input type="file" name="FloorPlanImages" id="floorPlanImagesInput" multiple accept="image/*" class="d-none" />
+                                            <button type="button" id="addFloorPlanImagesBtn" class="btn btn-gradient btn-rounded px-4 py-2">
+                                                <i class="bi bi-plus-circle me-2"></i>Add Floor Plan Images
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <!-- Existing Floor Plans -->
-                                @if (Model.ExistingImages != null && Model.ExistingImages.Any(i => 
-                                    i.ImageType == "FloorPlan" || 
-                                    i.ImageType.Contains("floor", StringComparison.OrdinalIgnoreCase) || 
-                                    i.ImageType.Contains("ground", StringComparison.OrdinalIgnoreCase) || 
-                                    i.ImageType.Contains("basement", StringComparison.OrdinalIgnoreCase)))
+                                @if (Model.ExistingImages != null && Model.ExistingImages.Any(i => i.ImageType == "FloorPlan"))
                                 {
                                     <div class="col-12 mb-4">
                                         <h6 class="text-muted mb-3">Current Floor Plans</h6>
-                                        <div class="alert alert-info">
-                                            <i class="bi bi-info-circle me-2"></i>
-                                            Manage your floor plans - hover over an image to see controls for deleting.
-                                        </div>
+                                        
                                         <div class="row g-3">
-                                            @foreach (var image in Model.ExistingImages.Where(i => 
-                                                i.ImageType == "FloorPlan" || 
-                                                i.ImageType.Contains("floor", StringComparison.OrdinalIgnoreCase) || 
-                                                i.ImageType.Contains("ground", StringComparison.OrdinalIgnoreCase) || 
-                                                i.ImageType.Contains("basement", StringComparison.OrdinalIgnoreCase)))
-                                            {
-                                                <div class="col-md-3 mb-4">
-                                                    <div class="card h-100 border-0 shadow-sm position-relative image-card">
-                                                        <div class="image-container">
-                                                            <img src="@Url.Content(image.ImagePath)" class="img-fluid" 
-                                                                 alt="@image.ImageType"
-                                                                 onerror="this.src='/uploads/properties/placeholder.jpg'; this.onerror=null; console.error('Failed to load image:', this.src);">
-                                                            
-                                                            <!-- Image type badge -->
-                                                            <div class="position-absolute bottom-0 start-0 m-2">
-                                                                <span class="badge bg-dark">@image.ImageType</span>
-                                                            </div>
-                                                            
-                                                            <!-- Image control overlay -->
-                                                            <div class="image-controls">
-                                                                <button type="button" class="btn btn-sm btn-danger delete-img-btn" 
-                                                                        data-id="@image.Id" 
-                                                                        data-type="@image.ImageType"
-                                                                        title="Delete image">
-                                                                    <i class="bi bi-trash"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                        <div class="card-footer bg-transparent border-0">
-                                                            <small class="text-muted">@image.ImageType</small>
-                                                        </div>
+                                    <!-- Main Floor Plan -->
+                                    @foreach (var image in Model.ExistingImages.Where(i => i.ImageType == "FloorPlan").OrderBy(i => i.CreatedAt))
+                                    {
+                                                <div class="col-md-4 mb-4" id="image-container-@image.Id">
+                                            <div class="card h-100 border-0 shadow-sm hover-elevate-up">
+                                                <div class="card-body p-0">
+                                                    <img src="@Url.Content(image.ImagePath)" class="card-img"
+                                                         alt="Floor Plan"
+                                                                 onerror="this.src='/uploads/properties/placeholder.jpg'; this.onerror=null;">
+                                                    
+                                                    <div class="position-absolute bottom-0 start-0 p-3">
+                                                        <span class="badge rounded-pill bg-primary">
+                                                            <i class="bi bi-layers me-1"></i>Floor Plan
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    <div class="position-absolute top-0 end-0 p-3 d-flex gap-2">
+                                                        <button type="button" class="btn btn-sm btn-edit rounded-circle edit-img-btn" 
+                                                                data-id="@image.Id" 
+                                                                data-type="@image.ImageType"
+                                                                title="Edit image">
+                                                            <i class="bi bi-pencil-fill"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-delete rounded-circle delete-img-btn" 
+                                                                data-id="@image.Id" 
+                                                                data-type="@image.ImageType"
+                                                                title="Delete image">
+                                                            <i class="bi bi-trash-fill"></i>
+                                                        </button>
                                                     </div>
                                                 </div>
-                                            }
+                                            </div>
+                                        </div>
+                                    }
                                         </div>
                                     </div>
                                 }
-
-                                <!-- Floor Plan Uploads -->
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Floor Plan Image</label>
-                                        <input type="file" asp-for="FloorPlanImage" class="form-control">
-                                        <div class="form-text">
-                                            Upload main floor plan
+                                else
+                                {
+                                    <div class="col-12">
+                                        <div class="alert alert-info">
+                                            No floor plans available.
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Ground Floor Plan</label>
-                                        <input type="file" asp-for="GroundFloorPlanImage" class="form-control">
-                                        <div class="form-text">
-                                            Upload ground floor plan
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Basement Floor Plan</label>
-                                        <input type="file" asp-for="BasementPlanImage" class="form-control">
-                                        <div class="form-text">
-                                            Upload basement floor plan
-                                        </div>
-                                    </div>
-                                </div>
+                                }
                             </div>
                         </div>
 
@@ -418,6 +389,12 @@
                                 <label asp-for="IsFeatured">Featured Property</label>
                             </div>
                         </div>
+
+                        <!-- Hidden field to track deleted image IDs -->
+                        <input type="hidden" name="DeletedImageIds" id="deletedImageIds" value="" />
+                        
+                        <!-- Hidden container for replacement image inputs -->
+                        <div id="replacementImagesContainer" style="display: none;"></div>
 
                         <!-- Form Actions -->
                         <div class="d-flex justify-content-end gap-2">
@@ -440,6 +417,7 @@
     <style>
         :root {
             --primary-gradient: linear-gradient(45deg, #4f5aff, #9f1ae2);
+            --delete-gradient: linear-gradient(45deg, #ff4f4f, #e21a1a);
         }
 
         .section {
@@ -472,6 +450,81 @@
 
         .btn-primary:hover {
             background: linear-gradient(45deg, #232cc5, #8516bd);
+        }
+        
+        /* Gradient buttons */
+        .btn-gradient {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(79, 90, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gradient:hover, .btn-gradient:focus {
+            background: linear-gradient(45deg, #232cc5, #8516bd);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(79, 90, 255, 0.6);
+        }
+        
+        .btn-rounded {
+            border-radius: 50px;
+        }
+        
+        /* Edit and Delete buttons */
+        .btn-edit {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 10px rgba(79, 90, 255, 0.4);
+        }
+        
+        .btn-edit:hover {
+            background: linear-gradient(45deg, #232cc5, #8516bd);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(79, 90, 255, 0.6);
+        }
+        
+        .btn-delete {
+            background: var(--delete-gradient);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 10px rgba(226, 26, 26, 0.4);
+        }
+        
+        .btn-delete:hover {
+            background: linear-gradient(45deg, #e01b1b, #a51515);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(226, 26, 26, 0.6);
+        }
+        
+        /* Upload button styles */
+        .file-upload-wrapper {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        #addPropertyImagesBtn, #addFloorPlanImagesBtn {
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #addPropertyImagesBtn:hover, #addFloorPlanImagesBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 90, 255, 0.5);
+        }
+        
+        #addPropertyImagesBtn i, #addFloorPlanImagesBtn i {
+            font-size: 1.1rem;
+            margin-right: 8px;
         }
 
         .form-check-input:checked {
@@ -555,86 +608,58 @@
         .section:nth-child(3) { transition-delay: 0.4s; }
         .section:nth-child(4) { transition-delay: 0.5s; }
         .section:nth-child(5) { transition-delay: 0.6s; }
-
-        /* Image card hover effects and controls */
-        .image-card {
+        
+        /* Updated Image display styles to match ViewProperty page */
+        .card-body.p-0 {
+            height: 250px;
             overflow: hidden;
-            transition: transform 0.3s ease;
-            margin-bottom: 1rem;
-            display: block !important;
-            visibility: visible !important;
         }
-
-        .image-card:hover {
+        
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        
+        .hover-elevate-up {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-elevate-up:hover {
             transform: translateY(-5px);
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
         }
 
-        .image-container {
-            position: relative;
-            height: 250px;
-            width: 100%;
-            display: block !important;
-            visibility: visible !important;
+        /* Card specific styles */
+        .card.h-100 {
+            border-radius: 12px;
+            overflow: hidden;
         }
-
-        .image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 0.375rem;
-            display: block !important;
-            visibility: visible !important;
-        }
-
-        .image-controls {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            border-radius: 0.375rem;
+        
+        /* Make sure buttons and badges are visible */
+        .position-absolute.top-0.end-0 {
             z-index: 10;
         }
-
-        .image-card:hover .image-controls {
-            opacity: 1;
+        
+        .position-absolute.bottom-0.start-0 {
+            z-index: 10;
         }
-
-        .image-controls .btn {
-            padding: 0.5rem;
-            height: 40px;
-            width: 40px;
+        
+        /* Button styling */
+        .btn-sm.rounded-circle {
+            width: 38px;
+            height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            transform: scale(0.9);
-            transition: transform 0.2s ease;
-            z-index: 20;
+            border: none;
+            margin-left: 5px;
+            opacity: 0.95;
+            transition: all 0.2s ease;
         }
-
-        .image-controls .btn:hover {
-            transform: scale(1);
-        }
-
-        .image-controls .btn i {
-            font-size: 1.2rem;
-        }
-
-        .set-main-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
+        
+        /* Modal styles */
         .delete-confirmation-overlay {
             position: fixed;
             top: 0;
@@ -671,7 +696,104 @@
         .delete-confirmation-overlay.show .delete-confirmation-modal {
             transform: scale(1);
         }
+        
+        /* Pending action styles */
+        .pending-delete-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 20;
+        }
+        
+        .pending-replacement-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 20;
+        }
+        
+        .pending-badge {
+            font-size: 0.8rem;
+            padding: 0.35rem 0.7rem;
+            border-radius: 50px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .badge-pending-delete {
+            background-color: #dc3545;
+            color: white;
+            animation: pulse-delete 1.5s infinite;
+        }
+        
+        .badge-pending-replace {
+            background-color: #0d6efd;
+            color: white;
+            animation: pulse-replace 1.5s infinite;
+        }
+        
+        .pending-replacement-preview {
+            position: absolute;
+            bottom: 40px;
+            right: 10px;
+            max-width: 80px;
+            max-height: 80px;
+            border-radius: 4px;
+            border: 2px solid #0d6efd;
+            background-color: white;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            z-index: 15;
+        }
+        
+        @@keyframes pulse-delete {
+            0% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+            }
+        }
+        
+        @@keyframes pulse-replace {
+            0% {
+                box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(13, 110, 253, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+            }
+        }
+        
+        .cancel-action {
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: 5px;
+            opacity: 0.7;
+            transition: all 0.2s ease;
+        }
+        
+        .cancel-action:hover {
+            opacity: 1;
+        }
+        
+        .image-pending-delete .card-img {
+            opacity: 0.6;
+            filter: grayscale(70%);
+            transition: all 0.3s ease;
+        }
+        
+        .image-pending-replace .card-img {
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
     </style>
+    
+    <link href="~/css/property-animations.css" rel="stylesheet" />
 }
 
 @section Scripts {
@@ -680,7 +802,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             // Debug image paths
             console.log('Debugging image paths:');
-            document.querySelectorAll('.image-container img').forEach(img => {
+            document.querySelectorAll('.card-img').forEach(img => {
                 console.log('Image src:', img.src);
                 console.log('Image complete:', img.complete);
                 console.log('Image naturalWidth:', img.naturalWidth);
@@ -693,7 +815,7 @@
 
             // Debug image loading
             console.log('Available images:', @Json.Serialize(Model.ExistingImages?.Count ?? 0));
-            document.querySelectorAll('.image-container img').forEach(img => {
+            document.querySelectorAll('.card-img').forEach(img => {
                 console.log('Image src:', img.src);
                 img.addEventListener('error', function() {
                     console.error('Failed to load image:', this.src);
@@ -705,184 +827,332 @@
             });
 
             // Ensure all image cards are visible
-            document.querySelectorAll('.image-card, .image-container, .image-container img').forEach(el => {
+            document.querySelectorAll('.card, .card-body, .card-img').forEach(el => {
                 el.style.display = 'block';
                 el.style.visibility = 'visible';
                 el.style.opacity = '1';
             });
 
-            // Image management functionality
-            setupImageControls();
-        });
-
-        function setupImageControls() {
-            // Create confirmation modal
-            const deleteConfirmationHTML = `
-                <div class="delete-confirmation-overlay" id="deleteConfirmation">
-                    <div class="delete-confirmation-modal">
-                        <i class="bi bi-exclamation-triangle text-warning display-4 mb-3"></i>
-                        <h4 class="mb-3">Delete Image?</h4>
-                        <p class="mb-4">Are you sure you want to delete this image? This action cannot be undone.</p>
-                        <div class="d-flex justify-content-center gap-3">
-                            <button type="button" id="cancelDeleteBtn" class="btn btn-light px-4">Cancel</button>
-                            <button type="button" id="confirmDeleteBtn" class="btn btn-danger px-4">Delete</button>
+            // Add Property Images button click handler
+            document.getElementById('addPropertyImagesBtn').addEventListener('click', function() {
+                document.getElementById('propertyImagesInput').click();
+            });
+            
+            // Add Floor Plan Images button click handler
+            document.getElementById('addFloorPlanImagesBtn').addEventListener('click', function() {
+                document.getElementById('floorPlanImagesInput').click();
+            });
+            
+            // Property Images input change handler
+            document.getElementById('propertyImagesInput').addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    const fileCount = this.files.length;
+                    const fileText = fileCount === 1 ? '1 image selected' : `${fileCount} images selected`;
+                    
+                    // Show notification to user
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-success alert-dismissible fade show border-0 rounded-3 shadow-sm mb-4';
+                    alert.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill fs-4 me-2"></i>
+                            <div>${fileText} - Will be uploaded when you save changes</div>
                         </div>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', deleteConfirmationHTML);
-
-            const deleteConfirmation = document.getElementById('deleteConfirmation');
-            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-            let currentImageToDelete = null;
-
-            // Set up delete buttons
-            document.querySelectorAll('.delete-img-btn').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    currentImageToDelete = {
-                        id: this.getAttribute('data-id'),
-                        type: this.getAttribute('data-type')
-                    };
-                    deleteConfirmation.classList.add('show');
-                });
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    
+                    // Insert the alert after the "Add Property Images" button
+                    const propertyImagesSection = document.getElementById('addPropertyImagesBtn').closest('.section');
+                    const existingAlert = propertyImagesSection.querySelector('.alert-success');
+                    if (existingAlert) {
+                        existingAlert.remove();
+                    }
+                    propertyImagesSection.insertBefore(alert, propertyImagesSection.querySelector('.row').nextSibling);
+                }
             });
-
-            // Cancel delete
-            cancelDeleteBtn.addEventListener('click', function() {
-                deleteConfirmation.classList.remove('show');
-                currentImageToDelete = null;
-            });
-
-            // Confirm delete
-            confirmDeleteBtn.addEventListener('click', function() {
-                if (currentImageToDelete) {
-                    deleteImage(currentImageToDelete.id, currentImageToDelete.type);
+            
+            // Floor Plan Images input change handler
+            document.getElementById('floorPlanImagesInput').addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    const fileCount = this.files.length;
+                    const fileText = fileCount === 1 ? '1 image selected' : `${fileCount} images selected`;
+                    
+                    // Show notification to user
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-success alert-dismissible fade show border-0 rounded-3 shadow-sm mb-4';
+                    alert.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill fs-4 me-2"></i>
+                            <div>${fileText} - Will be uploaded when you save changes</div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    
+                    // Insert the alert after the "Add Floor Plan Images" button
+                    const floorPlanSection = document.getElementById('addFloorPlanImagesBtn').closest('.section');
+                    const existingAlert = floorPlanSection.querySelector('.alert-success');
+                    if (existingAlert) {
+                        existingAlert.remove();
+                    }
+                    floorPlanSection.insertBefore(alert, floorPlanSection.querySelector('.row').nextSibling);
                 }
             });
 
-            // Set main image buttons
-            document.querySelectorAll('.set-main-btn').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
+            // Array to store IDs of images pending deletion
+            let pendingDeleteImageIds = [];
+            
+            // Object to track images pending replacement
+            let pendingReplaceImages = {};
+
+            // Add click event listeners to delete buttons
+            document.querySelectorAll('.delete-img-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
                     const imageId = this.getAttribute('data-id');
-                    setMainImage(imageId);
+                    if (!imageId) {
+                        console.error('No image ID found on delete button');
+                        return;
+                    }
+                    
+                    const imageContainer = document.getElementById(`image-container-${imageId}`);
+                    if (!imageContainer) {
+                        console.error(`Image container with ID 'image-container-${imageId}' not found`);
+                        return;
+                    }
+                    
+                    // If already marked for deletion, remove from pending list
+                    if (pendingDeleteImageIds.includes(imageId)) {
+                        // Remove from pending deletion list
+                        pendingDeleteImageIds = pendingDeleteImageIds.filter(id => id !== imageId);
+                        
+                        // Remove the pending delete overlay
+                        const overlay = imageContainer.querySelector('.pending-delete-overlay');
+                        if (overlay) {
+                            overlay.remove();
+                        }
+                        
+                        // Remove the pending delete class
+                        imageContainer.querySelector('.card').classList.remove('image-pending-delete');
+                        
+                        // Update the hidden field with current pending delete list
+                        document.getElementById('deletedImageIds').value = pendingDeleteImageIds.join(',');
+                        console.log('Removed from pending deletion:', imageId);
+                        console.log('Current pending deletions:', pendingDeleteImageIds);
+                    } else {
+                        // Add to pending deletion list
+                        pendingDeleteImageIds.push(imageId);
+                        
+                        // Mark the container
+                        imageContainer.querySelector('.card').classList.add('image-pending-delete');
+                        
+                        // Create and append the pending delete badge
+                        const overlay = document.createElement('div');
+                        overlay.className = 'pending-delete-overlay';
+                        overlay.innerHTML = `
+                            <span class="pending-badge badge-pending-delete">
+                                Pending Deletion
+                                <i class="bi bi-x-circle cancel-action cancel-delete-btn" data-id="${imageId}" title="Cancel"></i>
+                            </span>
+                        `;
+                        imageContainer.querySelector('.card').appendChild(overlay);
+                        
+                        // Update the hidden field with current pending delete list
+                        document.getElementById('deletedImageIds').value = pendingDeleteImageIds.join(',');
+                        console.log('Marked for deletion:', imageId);
+                        console.log('Current pending deletions:', pendingDeleteImageIds);
+                    }
                 });
             });
-        }
 
-        // Delete image via AJAX
-        function deleteImage(imageId, imageType) {
-            fetch(`/Admin/Property/DeleteImage?id=${imageId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error('Failed to delete image');
-            })
-            .then(data => {
-                if (data.success) {
-                    // Hide the confirmation modal
-                    document.getElementById('deleteConfirmation').classList.remove('show');
+            // Event delegation for cancel delete buttons (which are dynamically created)
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.cancel-delete-btn')) {
+                    const btn = e.target.closest('.cancel-delete-btn');
+                    const imageId = btn.getAttribute('data-id');
                     
-                    // Remove the image element from the DOM
-                    const imageElement = document.querySelector(`.delete-img-btn[data-id="${imageId}"]`).closest('.col-md-3');
-                    imageElement.remove();
+                    if (!imageId) {
+                        console.error('No image ID found on cancel button');
+                        return;
+                    }
                     
-                    // Show success message
-                    showNotification('Image deleted successfully', 'success');
-                } else {
-                    showNotification(data.message || 'Failed to delete image', 'danger');
+                    const imageContainer = document.getElementById(`image-container-${imageId}`);
+                    
+                    if (!imageContainer) {
+                        console.error(`Image container with ID 'image-container-${imageId}' not found`);
+                        return;
+                    }
+                    
+                    // Remove from pending deletion list
+                    pendingDeleteImageIds = pendingDeleteImageIds.filter(id => id !== imageId);
+                    
+                    // Remove the pending delete overlay
+                    const overlay = imageContainer.querySelector('.pending-delete-overlay');
+                    if (overlay) {
+                        overlay.remove();
+                    }
+                    
+                    // Remove the pending delete class
+                    imageContainer.querySelector('.card').classList.remove('image-pending-delete');
+                    
+                    // Update the hidden field
+                    document.getElementById('deletedImageIds').value = pendingDeleteImageIds.join(',');
+                    console.log('Cancelled deletion for:', imageId);
+                    console.log('Current pending deletions:', pendingDeleteImageIds);
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification('An error occurred while deleting the image', 'danger');
-                document.getElementById('deleteConfirmation').classList.remove('show');
             });
-        }
 
-        // Set image as main via AJAX
-        function setMainImage(imageId) {
-            fetch(`/Admin/Property/SetMainImage?id=${imageId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error('Failed to set main image');
-            })
-            .then(data => {
-                if (data.success) {
-                    // Remove 'Main' badge from all images
-                    document.querySelectorAll('.badge.bg-primary').forEach(badge => {
-                        if (badge.textContent === 'Main') {
-                            badge.closest('.position-absolute').remove();
+            // Add click event listeners to edit buttons
+            document.querySelectorAll('.edit-img-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const imageId = this.getAttribute('data-id');
+                    const imageType = this.getAttribute('data-type');
+                    const imageContainer = document.getElementById(`image-container-${imageId}`);
+                    
+                    // If this image is already pending deletion, don't allow editing
+                    if (pendingDeleteImageIds.includes(imageId)) {
+                        alert('Please cancel the pending deletion before editing this image.');
+                        return;
+                    }
+                    
+                    // If already has a replacement pending, cancel it
+                    if (imageId in pendingReplaceImages) {
+                        // Remove from pending replacements
+                        delete pendingReplaceImages[imageId];
+                        
+                        // Remove the pending replacement overlay
+                        const overlay = imageContainer.querySelector('.pending-replacement-overlay');
+                        if (overlay) {
+                            overlay.remove();
+                        }
+                        
+                        // Remove the image preview
+                        const preview = imageContainer.querySelector('.pending-replacement-preview');
+                        if (preview) {
+                            preview.remove();
+                        }
+                        
+                        // Remove the pending replacement class
+                        imageContainer.querySelector('.card').classList.remove('image-pending-replace');
+                        
+                        // Remove the file input from the form
+                        const existingInput = document.querySelector(`input[name="ReplacementImages[${imageId}]"]`);
+                        if (existingInput) {
+                            existingInput.remove();
+                        }
+                        
+                        console.log('Cancelled replacement for:', imageId);
+                        return;
+                    }
+                    
+                    // Create a file input for replacement
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = 'image/*';
+                    fileInput.style.display = 'none';
+                    fileInput.name = `ReplacementImages[${imageId}]`;
+                    fileInput.addEventListener('change', function() {
+                        if (this.files.length > 0) {
+                            const file = this.files[0];
+                            // Create URL for preview
+                            const imageUrl = URL.createObjectURL(file);
+                            
+                            // Mark the container
+                            imageContainer.querySelector('.card').classList.add('image-pending-replace');
+                            
+                            // Create and append the pending replacement badge
+                            const overlay = document.createElement('div');
+                            overlay.className = 'pending-replacement-overlay';
+                            overlay.innerHTML = `
+                                <span class="pending-badge badge-pending-replace">
+                                    Pending Replacement
+                                    <i class="bi bi-x-circle cancel-action cancel-replace-btn" data-id="${imageId}" title="Cancel"></i>
+                                </span>
+                            `;
+                            imageContainer.querySelector('.card').appendChild(overlay);
+                            
+                            // Add the image preview
+                            const preview = document.createElement('img');
+                            preview.src = imageUrl;
+                            preview.className = 'pending-replacement-preview';
+                            preview.alt = 'New image';
+                            imageContainer.querySelector('.card').appendChild(preview);
+                            
+                            // Store in pending replacements
+                            pendingReplaceImages[imageId] = file.name;
+                            console.log('Marked for replacement:', imageId, 'with file:', file.name);
+                            
+                            // Add the input to the form
+                            document.getElementById('replacementImagesContainer').appendChild(this);
                         }
                     });
                     
-                    // Enable all set-main buttons
-                    document.querySelectorAll('.set-main-btn').forEach(btn => {
-                        btn.removeAttribute('disabled');
-                    });
-                    
-                    // Add 'Main' badge to the selected image
-                    const imageElement = document.querySelector(`.set-main-btn[data-id="${imageId}"]`).closest('.image-container');
-                    const badgeHTML = `<div class="position-absolute top-0 end-0 m-2">
-                                        <span class="badge bg-primary">Main</span>
-                                      </div>`;
-                    imageElement.insertAdjacentHTML('beforeend', badgeHTML);
-                    
-                    // Disable the clicked button
-                    document.querySelector(`.set-main-btn[data-id="${imageId}"]`).setAttribute('disabled', '');
-                    
-                    // Show success message
-                    showNotification('Main image set successfully', 'success');
-                } else {
-                    showNotification(data.message || 'Failed to set main image', 'danger');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification('An error occurred while setting the main image', 'danger');
+                    // Trigger file selection
+                    fileInput.click();
+                });
             });
-        }
 
-        // Helper function to show notifications
-        function showNotification(message, type) {
-            const notificationHTML = `
-                <div class="position-fixed top-0 end-0 p-3" style="z-index: 1060">
-                    <div class="toast align-items-center text-white bg-${type} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-                        <div class="d-flex">
-                            <div class="toast-body">
-                                ${message}
-                            </div>
-                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            const notificationElement = document.createElement('div');
-            notificationElement.innerHTML = notificationHTML;
-            document.body.appendChild(notificationElement);
-            
-            // Auto-remove after 3 seconds
-            setTimeout(() => {
-                notificationElement.remove();
-            }, 3000);
-        }
+            // Event delegation for cancel buttons (which are dynamically created)
+            document.addEventListener('click', function(e) {
+                // Handle cancel delete buttons
+                if (e.target.closest('.cancel-delete-btn')) {
+                    const btn = e.target.closest('.cancel-delete-btn');
+                    const imageId = btn.getAttribute('data-id');
+                    const imageContainer = document.getElementById(`image-container-${imageId}`);
+                    
+                    // Remove from pending deletion list
+                    pendingDeleteImageIds = pendingDeleteImageIds.filter(id => id !== imageId);
+                    
+                    // Remove the pending delete overlay
+                    const overlay = imageContainer.querySelector('.pending-delete-overlay');
+                    if (overlay) {
+                        overlay.remove();
+                    }
+                    
+                    // Remove the pending delete class
+                    imageContainer.querySelector('.card').classList.remove('image-pending-delete');
+                    
+                    // Update the hidden field
+                    document.getElementById('deletedImageIds').value = pendingDeleteImageIds.join(',');
+                    console.log('Cancelled deletion for:', imageId);
+                    console.log('Current pending deletions:', pendingDeleteImageIds);
+                }
+                
+                // Handle cancel replace buttons
+                if (e.target.closest('.cancel-replace-btn')) {
+                    const btn = e.target.closest('.cancel-replace-btn');
+                    const imageId = btn.getAttribute('data-id');
+                    const imageContainer = document.getElementById(`image-container-${imageId}`);
+                    
+                    if (!imageContainer) {
+                        console.error(`Image container with ID 'image-container-${imageId}' not found`);
+                        return;
+                    }
+                    
+                    // Remove from pending replacements
+                    delete pendingReplaceImages[imageId];
+                    
+                    // Remove the pending replacement overlay
+                    const overlay = imageContainer.querySelector('.pending-replacement-overlay');
+                    if (overlay) {
+                        overlay.remove();
+                    }
+                    
+                    // Remove the image preview
+                    const preview = imageContainer.querySelector('.pending-replacement-preview');
+                    if (preview) {
+                        preview.remove();
+                    }
+                    
+                    // Remove the pending replacement class
+                    imageContainer.querySelector('.card').classList.remove('image-pending-replace');
+                    
+                    // Remove the file input from the form
+                    const existingInput = document.querySelector(`input[name="ReplacementImages[${imageId}]"]`);
+                    if (existingInput) {
+                        existingInput.remove();
+                    }
+                    
+                    console.log('Cancelled replacement for:', imageId);
+                }
+            });
+        });
     </script>
 }
