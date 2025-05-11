@@ -15,6 +15,9 @@ namespace EstateEase.Data
         public DbSet<PropertyImage> PropertyImages { get; set; }
         public DbSet<Agent> Agents { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
+        public DbSet<UserProperty> UserProperties { get; set; }
+        public DbSet<Appointment> Appointments { get; set; }
+    
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -85,6 +88,38 @@ namespace EstateEase.Data
                 .WithMany(p => p.PropertyImages)
                 .HasForeignKey(pi => pi.PropertyId)
                 .OnDelete(DeleteBehavior.Cascade);
+                
+            // Configure UserProperty relationships
+            builder.Entity<UserProperty>()
+                .HasOne(up => up.User)
+                .WithMany()
+                .HasForeignKey(up => up.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            builder.Entity<UserProperty>()
+                .HasOne(up => up.Property)
+                .WithMany()
+                .HasForeignKey(up => up.PropertyId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            // Configure Appointment relationships
+            builder.Entity<Appointment>()
+                .HasOne(a => a.User)
+                .WithMany()
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            builder.Entity<Appointment>()
+                .HasOne(a => a.Property)
+                .WithMany()
+                .HasForeignKey(a => a.PropertyId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            builder.Entity<Appointment>()
+                .HasOne(a => a.Agent)
+                .WithMany()
+                .HasForeignKey(a => a.AgentId)
+                .OnDelete(DeleteBehavior.NoAction); // Prevent circular cascade delete
         }
     }
 }

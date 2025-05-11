@@ -1,62 +1,24 @@
-﻿@{
+﻿@model IEnumerable<EstateEase.Models.Entities.Property>
+
+@{
     ViewData["Title"] = "Home";
 }
 
 @section Styles {
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/fonts.css" asp-append-version="true">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true">
 }
 
 <!-- Hero Section -->
 <section class="hero-section">
+    <div class="hero-section-bg"></div>
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 fade-in" style="animation-delay: 0.1s;">
-                <h1 class="hero-title">Find Your Dream <span style="background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; color: transparent;">Home</span> Today</h1>
+        <div class="row">
+            <div class="col-lg-8 fade-in" style="animation-delay: 0.1s;">
+                <h1 class="hero-title">Find Your Dream <span class="gradient-text">Home</span> Today</h1>
                 <p class="hero-text">Discover the perfect property that matches your lifestyle and needs with EstateEase, your trusted real estate partner</p>
-                <a href="#properties" class="btn btn-primary px-4 py-3">Explore Properties</a>
-
-                <div class="search-box mt-5">
-                    <h5 class="search-box-title">Search Properties</h5>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <select class="form-select">
-                                <option selected>Property Type</option>
-                                <option>House</option>
-                                <option>Apartment</option>
-                                <option>Villa</option>
-                                <option>Land</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <select class="form-select">
-                                <option selected>Location</option>
-                                <option>Manila</option>
-                                <option>Quezon City</option>
-                                <option>Makati</option>
-                                <option>Taguig</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <select class="form-select">
-                                <option selected>Price Range</option>
-                                <option>₱1M - ₱5M</option>
-                                <option>₱5M - ₱10M</option>
-                                <option>₱10M - ₱20M</option>
-                                <option>₱20M+</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <button class="btn btn-search w-100">
-                                <i class="bi bi-search me-2"></i> Search
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6 fade-in" style="animation-delay: 0.3s;">
-                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" alt="Modern House" class="hero-image">
+                <a href="#properties" class="btn btn-gradient px-4 py-3 mt-3">Explore Properties</a>
             </div>
         </div>
     </div>
@@ -106,7 +68,7 @@
     </div>
 </section>
 
-<!-- Popular Properties Section -->
+<!-- Featured Properties Section -->
 <section id="properties" class="property-section">
     <div class="container">
         <div class="section-header">
@@ -115,116 +77,66 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-4 col-md-6 mb-4 fade-in" style="animation-delay: 0.2s;">
-                <div class="property-card">
-                    <div class="position-relative">
-                        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9" alt="Property" class="property-image">
-                        <span class="property-badge">For Sale</span>
+            @if (Model != null && Model.Any())
+            {
+                int delay = 2;
+                foreach (var property in Model)
+                {
+                    <div class="col-lg-4 col-md-6 mb-4 fade-in" style="animation-delay: 0.@(delay)s;">
+                        <div class="property-card">
+                            <div class="position-relative">
+                                @if (property.PropertyImages != null && property.PropertyImages.Any())
+                                {
+                                    <img src="@property.PropertyImages.First().ImagePath" alt="@property.Title" class="property-image">
+                                }
+                                else
+                                {
+                                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
+                                        <i class="bi bi-house text-muted" style="font-size: 3rem;"></i>
+                                    </div>
+                                }
+                                <span class="property-badge">For @property.SellingType</span>
+                            </div>
+                            <div class="property-details">
+                                <h3 class="property-title">@property.Title</h3>
+                                <div class="property-location">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>@property.Address</span>
+                                </div>
+                                <h4 class="property-price">₱@property.Price.ToString("N0")</h4>
+                                <div class="property-features">
+                                    <div class="feature-item">
+                                        <i class="bi bi-door-open"></i>
+                                        <span>@property.Bedrooms Beds</span>
+                                    </div>
+                                    <div class="feature-item">
+                                        <i class="bi bi-droplet"></i>
+                                        <span>@property.Bathrooms Baths</span>
+                                    </div>
+                                    <div class="feature-item">
+                                        <i class="bi bi-rulers"></i>
+                                        <span>@property.Size m²</span>
+                                    </div>
+                                </div>
+                                <div class="property-actions">
+                                    <a asp-controller="Property" asp-action="Details" asp-route-id="@property.Id" class="btn-view">View Details</a>
+                                    
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="property-details">
-                        <h3 class="property-title">Luxury Villa with Pool</h3>
-                        <div class="property-location">
-                            <i class="bi bi-geo-alt"></i>
-                            <span>Makati City, Metro Manila</span>
-                        </div>
-                        <h4 class="property-price">₱25,000,000</h4>
-                        <div class="property-features">
-                            <div class="feature-item">
-                                <i class="bi bi-door-open"></i>
-                                <span>4 Beds</span>
-                            </div>
-                            <div class="feature-item">
-                                <i class="bi bi-droplet"></i>
-                                <span>3 Baths</span>
-                            </div>
-                            <div class="feature-item">
-                                <i class="bi bi-rulers"></i>
-                                <span>450 sq.m</span>
-                            </div>
-                        </div>
-                        <div class="property-actions">
-                            <a href="#" class="btn-view">View Details</a>
-                            <button class="btn-favorite">
-                                <i class="bi bi-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6 mb-4 fade-in" style="animation-delay: 0.4s;">
-                <div class="property-card">
-                    <div class="position-relative">
-                        <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c" alt="Property" class="property-image">
-                        <span class="property-badge">For Rent</span>
-                    </div>
-                    <div class="property-details">
-                        <h3 class="property-title">Modern City Apartment</h3>
-                        <div class="property-location">
-                            <i class="bi bi-geo-alt"></i>
-                            <span>BGC, Taguig City</span>
-                        </div>
-                        <h4 class="property-price">₱45,000/mo</h4>
-                        <div class="property-features">
-                            <div class="feature-item">
-                                <i class="bi bi-door-open"></i>
-                                <span>2 Beds</span>
-                            </div>
-                            <div class="feature-item">
-                                <i class="bi bi-droplet"></i>
-                                <span>2 Baths</span>
-                            </div>
-                            <div class="feature-item">
-                                <i class="bi bi-rulers"></i>
-                                <span>80 sq.m</span>
-                            </div>
-                        </div>
-                        <div class="property-actions">
-                            <a href="#" class="btn-view">View Details</a>
-                            <button class="btn-favorite">
-                                <i class="bi bi-heart"></i>
-                            </button>
-                        </div>
+                    delay += 2;
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        No featured properties available at the moment. Check back later!
                     </div>
                 </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6 mb-4 fade-in" style="animation-delay: 0.6s;">
-                <div class="property-card">
-                    <div class="position-relative">
-                        <img src="https://images.unsplash.com/photo-1584738766473-61c083514bf4" alt="Property" class="property-image">
-                        <span class="property-badge">For Sale</span>
-                    </div>
-                    <div class="property-details">
-                        <h3 class="property-title">Beachfront Property</h3>
-                        <div class="property-location">
-                            <i class="bi bi-geo-alt"></i>
-                            <span>Batangas City</span>
-                        </div>
-                        <h4 class="property-price">₱18,500,000</h4>
-                        <div class="property-features">
-                            <div class="feature-item">
-                                <i class="bi bi-door-open"></i>
-                                <span>3 Beds</span>
-                            </div>
-                            <div class="feature-item">
-                                <i class="bi bi-droplet"></i>
-                                <span>2 Baths</span>
-                            </div>
-                            <div class="feature-item">
-                                <i class="bi bi-rulers"></i>
-                                <span>320 sq.m</span>
-                            </div>
-                        </div>
-                        <div class="property-actions">
-                            <a href="#" class="btn-view">View Details</a>
-                            <button class="btn-favorite">
-                                <i class="bi bi-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </section>
@@ -289,7 +201,7 @@
             </div>
         </div>
         <div class="copyright">
-            <p>&copy; 2023 EstateEase. All rights reserved.</p>
+            <p>&copy; 2025 EstateEase. All rights reserved.</p>
         </div>
     </div>
 </footer>

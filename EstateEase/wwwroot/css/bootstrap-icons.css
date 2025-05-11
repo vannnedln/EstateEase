@@ -1,0 +1,43 @@
+@font-face {
+  font-display: block;
+  font-family: "bootstrap-icons";
+  src: url("../fonts/bootstrap-icons/bootstrap-icons.woff2") format("woff2"),
+       url("../fonts/bootstrap-icons/bootstrap-icons.woff") format("woff");
+}
+
+.bi::before,
+[class^="bi-"]::before,
+[class*=" bi-"]::before {
+  display: inline-block;
+  font-family: bootstrap-icons !important;
+  font-style: normal;
+  font-weight: normal !important;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  vertical-align: -.125em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Include icon unicode definitions here */
+/* (You'll need to add the specific icons you use in your project) */
+.bi-house-check::before { content: "\f52a"; }
+.bi-people::before { content: "\f579"; }
+.bi-building::before { content: "\f41e"; }
+.bi-award::before { content: "\f3ec"; }
+.bi-arrow-right::before { content: "\f138"; }
+.bi-door-open::before { content: "\f4fe"; }
+.bi-droplet::before { content: "\f504"; }
+.bi-rulers::before { content: "\f5fa"; }
+.bi-heart::before { content: "\f417"; }
+.bi-geo-alt::before { content: "\f3e8"; }
+.bi-info-circle::before { content: "\f430"; }
+.bi-house::before { content: "\f425"; }
+.bi-facebook::before { content: "\f344"; }
+.bi-twitter::before { content: "\f5ef"; }
+.bi-instagram::before { content: "\f437"; }
+.bi-linkedin::before { content: "\f472"; }
+.bi-telephone::before { content: "\f5e4"; }
+.bi-envelope::before { content: "\f32f"; }
+/* Add other icons as needed */ 

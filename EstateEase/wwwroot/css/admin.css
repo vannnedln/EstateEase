@@ -8,6 +8,30 @@ body {
     /* Add padding to prevent content from hiding under header */
 }
 
+/* Button Styles */
+.btn {
+    border-radius: 0.75rem;
+}
+
+.btn-primary, 
+.btn-light,
+.btn-secondary,
+.btn-success,
+.btn-danger,
+.btn-warning,
+.btn-info,
+.btn-gradient {
+    border-radius: 0.75rem;
+}
+
+.btn-lg {
+    border-radius: 0.85rem;
+}
+
+.btn-sm {
+    border-radius: 0.65rem;
+}
+
 .header {
     background: #ffffff;
     border-bottom: 1px solid #e5e9f2;

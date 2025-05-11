@@ -245,7 +245,6 @@ namespace EstateEase.Controllers.Admin
                 // Handle property images
                 if (model.PropertyImages != null && model.PropertyImages.Any())
                 {
-                    bool isFirstImage = true; // Track if it's the first image
                     foreach (var image in model.PropertyImages)
                     {
                         if (image != null && image.Length > 0)
@@ -264,7 +263,6 @@ namespace EstateEase.Controllers.Admin
                                         CreatedAt = DateTime.Now
                                     };
                                     _context.PropertyImages.Add(propertyImage);
-                                    isFirstImage = false; // Subsequent images aren't main
                                 }
                             }
                             catch (Exception ex)
@@ -718,16 +716,16 @@ namespace EstateEase.Controllers.Admin
                             continue;
                             
                         System.Diagnostics.Debug.WriteLine($"Deleting image with ID: {imageId}");
-                        
+                                
                                 var image = await _context.PropertyImages.FindAsync(imageId);
                         if (image != null && image.PropertyId == id)
-                        {
+                                    {
                             string? imagePath = image.ImagePath;
-                            
+                                    
                             // Delete from database
                             _context.PropertyImages.Remove(image);
                             System.Diagnostics.Debug.WriteLine($"Image removed from context: {imageId}");
-                            
+                                        
                             // Delete file if it exists
                             if (!string.IsNullOrEmpty(imagePath))
                                             {
@@ -810,13 +808,13 @@ namespace EstateEase.Controllers.Admin
                                                     {
                                                 System.Diagnostics.Debug.WriteLine($"Old image file not found: {fullPath}");
                                             }
-                                        }
+                                                        }
                                         catch (Exception fileEx)
-                                        {
+                                                {
                                             // Log error but continue with operation
                                             System.Diagnostics.Debug.WriteLine($"Error deleting old image file: {fileEx.Message}");
-                                        }
-                                    }
+                                                    }
+                                                }
                                 }
                                 else
                                 {
@@ -839,7 +837,7 @@ namespace EstateEase.Controllers.Admin
                 System.Diagnostics.Debug.WriteLine("Checking for new property images");
                 
                 if (model.PropertyImages != null && model.PropertyImages.Any())
-                {
+                                {
                     System.Diagnostics.Debug.WriteLine($"Found {model.PropertyImages.Count} new property images in the model");
                     
                     foreach (var image in model.PropertyImages)
@@ -875,7 +873,7 @@ namespace EstateEase.Controllers.Admin
                     // Check for property images in the form directly (this handles the case when using the Add Property Images button)
                     var propertyImagesFiles = Request.Form.Files.Where(f => f.Name == "PropertyImages").ToList();
                     if (propertyImagesFiles.Any())
-                    {
+                {
                         System.Diagnostics.Debug.WriteLine($"Found {propertyImagesFiles.Count} property images in form files");
                         
                         foreach (var file in propertyImagesFiles)
@@ -884,7 +882,7 @@ namespace EstateEase.Controllers.Admin
                             {
                                 var imagePath = await SaveImage(file, "property");
                                 if (!string.IsNullOrEmpty(imagePath))
-                                {
+                    {
                                     var propertyImage = new PropertyImage
                                     {
                                         Id = Guid.NewGuid().ToString(),
@@ -898,7 +896,7 @@ namespace EstateEase.Controllers.Admin
                                     System.Diagnostics.Debug.WriteLine($"Added new property image from form to context: {propertyImage.Id}");
                                 }
                                 else
-                                {
+                            {
                                     System.Diagnostics.Debug.WriteLine($"Failed to save new property image from form: {file.FileName}");
                                 }
                             }
@@ -910,7 +908,7 @@ namespace EstateEase.Controllers.Admin
                 System.Diagnostics.Debug.WriteLine("Checking for new floor plan images");
                 
                 if (model.FloorPlanImage != null && model.FloorPlanImage.Any())
-                {
+                                {
                     System.Diagnostics.Debug.WriteLine($"Found {model.FloorPlanImage.Count} new floor plan images in the model");
                     
                     foreach (var image in model.FloorPlanImage)

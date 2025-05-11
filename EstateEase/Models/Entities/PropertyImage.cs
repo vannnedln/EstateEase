@@ -12,6 +12,7 @@ namespace EstateEase.Models.Entities
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
         public string ImageType { get; set; }
+    
 
         [ForeignKey("PropertyId")]
         public virtual Property Property { get; set; }
