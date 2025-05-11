@@ -117,7 +117,7 @@ namespace EstateEase.Models.ViewModels
         public string? Id { get; set; }
         public string ImagePath { get; set; }
         public string ImageType { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; }
     }
     
     // This class is just for documentation purposes, as we'll handle this in the controller

@@ -19,6 +19,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using EstateEase.Data;
+using EstateEase.Models.Entities;
+using Microsoft.AspNetCore.Hosting;
 
 namespace EstateEase.Areas.Identity.Pages.Account
 {
@@ -30,13 +35,17 @@ namespace EstateEase.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ApplicationDbContext _context;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IWebHostEnvironment webHostEnvironment,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +53,8 @@ namespace EstateEase.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _webHostEnvironment = webHostEnvironment;
+            _context = context;
         }
 
         /// <summary>
@@ -80,11 +91,6 @@ namespace EstateEase.Areas.Identity.Pages.Account
             [Display(Name = "Last Name")]
             [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
             public string LastName { get; set; }
-
-
-            [Phone]
-            [Display(Name = "Phone Number")]
-            public string PhoneNumber { get; set; }
 
             [Required]
             [EmailAddress]
@@ -130,7 +136,6 @@ namespace EstateEase.Areas.Identity.Pages.Account
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
                 // Add these lines to set the additional properties
-                user.PhoneNumber = Input.PhoneNumber;
                 ((IdentityUser)user).PhoneNumberConfirmed = false; // Will be confirmed later with SMS
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -143,6 +148,19 @@ namespace EstateEase.Areas.Identity.Pages.Account
 
                     // Add user to "User" role
                     await _userManager.AddToRoleAsync(user, "User");
+                    
+                    // Create a simple UserProfile
+                    var userProfile = new UserProfile
+                    {
+                        UserId = user.Id,
+                        FirstName = Input.FirstName,
+                        LastName = Input.LastName,
+                        CreatedAt = DateTime.Now
+                    };
+                    
+                    // Add to database and save
+                    _context.UserProfiles.Add(userProfile);
+                    await _context.SaveChangesAsync();
 
                     _logger.LogInformation("User created a new account with password.");
 

@@ -85,9 +85,44 @@ namespace EstateEase.Areas.Admin.Controllers
 
         public async Task<IActionResult> UserList()
         {
-            var userManager = HttpContext.RequestServices.GetRequiredService<UserManager<IdentityUser>>();
-            var usersInRole = await userManager.GetUsersInRoleAsync("User");
-            return View(usersInRole);
+            try
+            {
+                // Get all users in the "User" role
+                var usersInRole = await _userManager.GetUsersInRoleAsync("User");
+                var userIds = usersInRole.Select(u => u.Id).ToList();
+                
+                // Get all users with optional profiles
+                var userList = await _context.Users
+                    .Where(u => userIds.Contains(u.Id))
+                    .GroupJoin(
+                        _context.UserProfiles,
+                        user => user.Id,
+                        profile => profile.UserId,
+                        (user, profiles) => new { User = user, Profiles = profiles })
+                    .SelectMany(
+                        x => x.Profiles.DefaultIfEmpty(),
+                        (x, profile) => new UserListViewModel
+                        {
+                            Id = x.User.Id,
+                            UserName = x.User.UserName,
+                            Email = x.User.Email,
+                            FirstName = profile != null ? profile.FirstName : "(No name)",
+                            LastName = profile != null ? profile.LastName : "",
+                            ProfilePictureUrl = profile != null && !string.IsNullOrEmpty(profile.ProfilePictureUrl) 
+                                ? profile.ProfilePictureUrl 
+                                : "/images/avatar-01.png",
+                            CreatedAt = profile != null ? profile.CreatedAt : DateTime.Now
+                        })
+                    .ToListAsync();
+
+                return View(userList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in UserList action: {ex.Message}");
+                TempData["Error"] = "An error occurred while loading the user list.";
+                return View(new List<UserListViewModel>());
+            }
         }
 
         // GET: Admin/User/CreateAgent
@@ -177,6 +212,146 @@ namespace EstateEase.Areas.Admin.Controllers
             return View(model);
         }
 
+        // GET: Admin/User/Edit/5
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var userProfile = await _context.UserProfiles
+                .FirstOrDefaultAsync(p => p.UserId == id);
+
+            var model = new UserEditViewModel
+            {
+                Id = user.Id,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            if (userProfile != null)
+            {
+                model.FirstName = userProfile.FirstName;
+                model.LastName = userProfile.LastName;
+                model.Birthday = userProfile.Birthday;
+                model.Address = userProfile.Address;
+                model.Barangay = userProfile.Barangay;
+                model.City = userProfile.City;
+                model.PostalCode = userProfile.PostalCode;
+                model.Country = userProfile.Country;
+                model.CurrentProfilePictureUrl = userProfile.ProfilePictureUrl ?? "/images/avatar-01.png";
+            }
+
+            return View(model);
+        }
+
+        // POST: Admin/User/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(UserEditViewModel model)
+        {
+            // Skip validation to allow nullable fields
+            ModelState.Clear();
+
+            var user = await _userManager.FindByIdAsync(model.Id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Update IdentityUser properties
+            // Email is required for IdentityUser, don't make it null
+            if (!string.IsNullOrWhiteSpace(model.Email))
+            {
+                user.Email = model.Email;
+            }
+            
+            // Phone number can be null
+            user.PhoneNumber = string.IsNullOrWhiteSpace(model.PhoneNumber) ? null : model.PhoneNumber;
+            
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(model);
+            }
+
+            // Get or create UserProfile
+            var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == model.Id);
+            bool isNewProfile = false;
+            
+            if (userProfile == null)
+            {
+                userProfile = new UserProfile
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserId = model.Id,
+                    CreatedAt = DateTime.Now
+                };
+                isNewProfile = true;
+            }
+
+            // Update profile picture if provided
+            if (model.ProfilePicture != null && model.ProfilePicture.Length > 0)
+            {
+                // Create unique filename
+                string uniqueFileName = $"{Guid.NewGuid()}_{model.ProfilePicture.FileName}";
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/users");
+                
+                // Create directory if it doesn't exist
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                
+                // Save the file
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.ProfilePicture.CopyToAsync(fileStream);
+                }
+                
+                userProfile.ProfilePictureUrl = $"/uploads/users/{uniqueFileName}";
+            }
+
+            // Update UserProfile properties - make all fields nullable except FirstName (default to "(No name)")
+            userProfile.FirstName = string.IsNullOrWhiteSpace(model.FirstName) ? "(No name)" : model.FirstName;
+            userProfile.LastName = string.IsNullOrWhiteSpace(model.LastName) ? string.Empty : model.LastName;
+            userProfile.Birthday = model.Birthday; // Already nullable
+            userProfile.Address = string.IsNullOrWhiteSpace(model.Address) ? null : model.Address;
+            userProfile.Barangay = string.IsNullOrWhiteSpace(model.Barangay) ? null : model.Barangay;
+            userProfile.City = string.IsNullOrWhiteSpace(model.City) ? null : model.City;
+            userProfile.PostalCode = string.IsNullOrWhiteSpace(model.PostalCode) ? null : model.PostalCode;
+            userProfile.Country = string.IsNullOrWhiteSpace(model.Country) ? null : model.Country;
+            userProfile.UpdatedAt = DateTime.Now;
+
+            // Add or update the profile
+            if (isNewProfile)
+            {
+                _context.UserProfiles.Add(userProfile);
+            }
+            else
+            {
+                _context.UserProfiles.Update(userProfile);
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "User updated successfully";
+            return RedirectToAction(nameof(UserList));
+        }
+
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
@@ -227,6 +402,53 @@ namespace EstateEase.Areas.Admin.Controllers
             }
 
             return Json(new { success = false, message = "Failed to update user role" });
+        }
+
+        // GET: Admin/User/View/5
+        public async Task<IActionResult> View(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var userProfile = await _context.UserProfiles
+                .FirstOrDefaultAsync(p => p.UserId == id);
+
+            var model = new UserEditViewModel
+            {
+                Id = user.Id,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            if (userProfile != null)
+            {
+                model.FirstName = userProfile.FirstName;
+                model.LastName = userProfile.LastName;
+                model.Birthday = userProfile.Birthday;
+                model.Address = userProfile.Address;
+                model.Barangay = userProfile.Barangay;
+                model.City = userProfile.City;
+                model.PostalCode = userProfile.PostalCode;
+                model.Country = userProfile.Country;
+                model.CurrentProfilePictureUrl = userProfile.ProfilePictureUrl ?? "/images/avatar-01.png";
+            }
+            else
+            {
+                // Default values for users without a profile
+                model.FirstName = "(No name)";
+                model.LastName = "";
+                model.CurrentProfilePictureUrl = "/images/avatar-01.png";
+            }
+
+            return View(model);
         }
     }
 }

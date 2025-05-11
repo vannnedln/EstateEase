@@ -14,6 +14,7 @@ namespace EstateEase.Data
         public DbSet<Property> Properties { get; set; }
         public DbSet<PropertyImage> PropertyImages { get; set; }
         public DbSet<Agent> Agents { get; set; }
+        public DbSet<UserProfile> UserProfiles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -34,6 +35,42 @@ namespace EstateEase.Data
                 .WithOne()
                 .HasForeignKey<Agent>(a => a.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure one-to-one relationship between UserProfile and IdentityUser
+            builder.Entity<UserProfile>()
+                .HasOne(up => up.User)
+                .WithOne()
+                .HasForeignKey<UserProfile>(up => up.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure nullable fields in UserProfile
+            builder.Entity<UserProfile>()
+                .Property(up => up.Address)
+                .IsRequired(false);
+                
+            builder.Entity<UserProfile>()
+                .Property(up => up.Barangay)
+                .IsRequired(false);
+                
+            builder.Entity<UserProfile>()
+                .Property(up => up.City)
+                .IsRequired(false);
+                
+            builder.Entity<UserProfile>()
+                .Property(up => up.PostalCode)
+                .IsRequired(false);
+                
+            builder.Entity<UserProfile>()
+                .Property(up => up.Country)
+                .IsRequired(false);
+                
+            builder.Entity<UserProfile>()
+                .Property(up => up.PhoneNumber)
+                .IsRequired(false);
+                
+            builder.Entity<UserProfile>()
+                .Property(up => up.ProfilePictureUrl)
+                .IsRequired(false);
 
             // Configure one-to-many relationship between Agent and Properties
             builder.Entity<Property>()

@@ -111,7 +111,8 @@ namespace EstateEase.Controllers.Admin
                 {
                     Id = pi.Id,
                     ImagePath = pi.ImagePath,
-                    ImageType = pi.ImageType
+                    ImageType = pi.ImageType,
+                    CreatedAt = pi.CreatedAt
                 }).ToList()
             };
 
@@ -156,7 +157,8 @@ namespace EstateEase.Controllers.Admin
                 {
                     Id = pi.Id,
                     ImagePath = pi.ImagePath,
-                    ImageType = pi.ImageType
+                    ImageType = pi.ImageType,
+                    CreatedAt = pi.CreatedAt
                 }).ToList()
             });
 
@@ -709,15 +711,15 @@ namespace EstateEase.Controllers.Admin
                     
                     System.Diagnostics.Debug.WriteLine($"Found {deletedImageIds.Length} image IDs to delete");
                     
-                    foreach (var imageId in deletedImageIds)
-                    {
+                        foreach (var imageId in deletedImageIds)
+                        {
                         // Skip empty values
                         if (string.IsNullOrWhiteSpace(imageId))
                             continue;
                             
                         System.Diagnostics.Debug.WriteLine($"Deleting image with ID: {imageId}");
                         
-                        var image = await _context.PropertyImages.FindAsync(imageId);
+                                var image = await _context.PropertyImages.FindAsync(imageId);
                         if (image != null && image.PropertyId == id)
                         {
                             string? imagePath = image.ImagePath;
@@ -728,18 +730,18 @@ namespace EstateEase.Controllers.Admin
                             
                             // Delete file if it exists
                             if (!string.IsNullOrEmpty(imagePath))
-                            {
-                                try 
-                                {
+                                            {
+                                                try
+                                                {
                                     string fullPath = Path.Combine(_webHostEnvironment.WebRootPath, imagePath.TrimStart('/'));
                                     
                                     if (System.IO.File.Exists(fullPath))
                                     {
-                                        System.IO.File.Delete(fullPath);
+                                                            System.IO.File.Delete(fullPath);
                                         System.Diagnostics.Debug.WriteLine($"Image file deleted: {fullPath}");
-                                    }
-                                    else
-                                    {
+                                            }
+                                            else
+                                            {
                                         System.Diagnostics.Debug.WriteLine($"Image file not found: {fullPath}");
                                     }
                                 }
@@ -749,9 +751,9 @@ namespace EstateEase.Controllers.Admin
                                     System.Diagnostics.Debug.WriteLine($"Error deleting image file: {fileEx.Message}");
                                 }
                             }
-                        }
-                        else
-                        {
+                                }
+                                else
+                                {
                             System.Diagnostics.Debug.WriteLine($"Image not found or not associated with property: {imageId}");
                         }
                     }
@@ -794,18 +796,18 @@ namespace EstateEase.Controllers.Admin
                                     
                                     // Now delete the old image file
                                     if (!string.IsNullOrEmpty(oldImagePath))
-                                    {
-                                        try 
-                                        {
-                                            string fullPath = Path.Combine(_webHostEnvironment.WebRootPath, oldImagePath.TrimStart('/'));
-                                            
-                                            if (System.IO.File.Exists(fullPath))
                                             {
+                                                try
+                                                {
+                                            string fullPath = Path.Combine(_webHostEnvironment.WebRootPath, oldImagePath.TrimStart('/'));
+                                                    
+                                            if (System.IO.File.Exists(fullPath))
+                                                    {
                                                 System.IO.File.Delete(fullPath);
                                                 System.Diagnostics.Debug.WriteLine($"Old image file deleted: {fullPath}");
-                                            }
-                                            else
-                                            {
+                                                    }
+                                                    else
+                                                    {
                                                 System.Diagnostics.Debug.WriteLine($"Old image file not found: {fullPath}");
                                             }
                                         }
@@ -819,15 +821,15 @@ namespace EstateEase.Controllers.Admin
                                 else
                                 {
                                     System.Diagnostics.Debug.WriteLine($"Failed to save replacement image for {imageId}");
-                                }
-                            }
-                            else
-                            {
+                                                }
+                                            }
+                                            else
+                                            {
                                 System.Diagnostics.Debug.WriteLine($"Image not found or not associated with property: {imageId}");
-                            }
-                        }
-                        else
-                        {
+                                            }
+                                        }
+                                        else
+                                        {
                             System.Diagnostics.Debug.WriteLine($"Invalid replacement image name format: {file.Name}");
                         }
                     }
@@ -916,29 +918,29 @@ namespace EstateEase.Controllers.Admin
                         if (image != null && image.Length > 0)
                         {
                             var imagePath = await SaveImage(image, "floorplan");
-                            if (!string.IsNullOrEmpty(imagePath))
-                            {
+                                    if (!string.IsNullOrEmpty(imagePath))
+                                    {
                                 var propertyImage = new PropertyImage
-                                {
-                                    Id = Guid.NewGuid().ToString(),
-                                    PropertyId = id,
-                                    ImagePath = imagePath,
+                                        {
+                                            Id = Guid.NewGuid().ToString(),
+                                            PropertyId = id,
+                                            ImagePath = imagePath,
                                     ImageType = "FloorPlan",
-                                    CreatedAt = DateTime.Now
-                                };
-                                
+                                            CreatedAt = DateTime.Now
+                                        };
+                                        
                                 _context.PropertyImages.Add(propertyImage);
                                 System.Diagnostics.Debug.WriteLine($"Added new floor plan image to context: {propertyImage.Id}");
-                            }
-                            else
-                            {
+                                    }
+                                    else
+                                    {
                                 System.Diagnostics.Debug.WriteLine($"Failed to save new floor plan image: {image.FileName}");
                             }
                         }
-                    }
-                }
-                else
-                {
+                                    }
+                                }
+                                else
+                                {
                     System.Diagnostics.Debug.WriteLine("No floor plan images in model, checking form files directly");
                     
                     // Check for floor plan images in the form directly (this handles the case when using the Add Floor Plan Images button)
@@ -1029,17 +1031,17 @@ namespace EstateEase.Controllers.Admin
                 {
                     var deletedImageIds = deletedImageIdsString.Split(',', StringSplitOptions.RemoveEmptyEntries);
                     
-                    foreach (var imageId in deletedImageIds)
-                    {
+                foreach (var imageId in deletedImageIds)
+                {
                         // Skip empty values
                         if (string.IsNullOrWhiteSpace(imageId))
                             continue;
                             
-                        var image = await _context.PropertyImages.FindAsync(imageId);
-                        if (image == null || image.PropertyId != propertyId)
-                        {
+                    var image = await _context.PropertyImages.FindAsync(imageId);
+                    if (image == null || image.PropertyId != propertyId)
+                    {
                             System.Diagnostics.Debug.WriteLine($"Validation failed: Image {imageId} not found or doesn't belong to property {propertyId}");
-                            return false;
+                        return false;
                         }
                     }
                 }

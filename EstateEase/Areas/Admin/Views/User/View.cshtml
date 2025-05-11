@@ -1,0 +1,275 @@
+@model EstateEase.Models.ViewModels.UserEditViewModel
+@{
+    ViewData["Title"] = "View User Profile";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header position-relative overflow-hidden py-4"
+                    style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
+                    <h5 class="card-title mb-0 fw-bold ps-2 text-white">
+                        User Profile Details
+                    </h5>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-person-badge display-1 text-white"></i>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 shadow-sm" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill fs-4 me-2"></i>
+                                <div>@TempData["Success"]</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    
+                    <!-- Profile Picture -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-image me-2"></i>Profile Picture
+                        </h5>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 d-flex flex-column align-items-center">
+                                <div class="profile-picture-display w-100">
+                                    <div class="preview-container mb-3 d-flex justify-content-center">
+                                        <img src="@Model.CurrentProfilePictureUrl" 
+                                             alt="@(Model.FullName ?? "User Profile")" 
+                                             class="img-thumbnail rounded-circle" 
+                                             style="width: 200px; height: 200px; object-fit: cover;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Information -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-person me-2"></i>Personal Information
+                        </h5>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label class="form-label text-muted">First Name</label>
+                                    <p class="form-control-plaintext fs-5 border-bottom pb-2">@(string.IsNullOrEmpty(Model.FirstName) ? "Not provided" : Model.FirstName)</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label class="form-label text-muted">Last Name</label>
+                                    <p class="form-control-plaintext fs-5 border-bottom pb-2">@(string.IsNullOrEmpty(Model.LastName) ? "Not provided" : Model.LastName)</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label class="form-label text-muted">Email</label>
+                                    <p class="form-control-plaintext fs-5 border-bottom pb-2">@Model.Email</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label class="form-label text-muted">Phone Number</label>
+                                    <p class="form-control-plaintext fs-5 border-bottom pb-2">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label class="form-label text-muted">Date of Birth</label>
+                                    <p class="form-control-plaintext fs-5 border-bottom pb-2">@(Model.Birthday.HasValue ? Model.Birthday.Value.ToString("MMMM dd, yyyy") : "Not provided")</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Information -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-geo-alt me-2"></i>Address Information
+                        </h5>
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="field-group">
+                                    <label class="form-label text-muted">Address</label>
+                                    <p class="form-control-plaintext fs-5 border-bottom pb-2">@(string.IsNullOrEmpty(Model.Address) ? "Not provided" : Model.Address)</p>
+                                </div>
+                            </div>
+                                
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label class="form-label text-muted">City</label>
+                                    <p class="form-control-plaintext fs-5 border-bottom pb-2">@(string.IsNullOrEmpty(Model.City) ? "Not provided" : Model.City)</p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label class="form-label text-muted">Barangay</label>
+                                    <p class="form-control-plaintext fs-5 border-bottom pb-2">@(string.IsNullOrEmpty(Model.Barangay) ? "Not provided" : Model.Barangay)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label class="form-label text-muted">Postal Code</label>
+                                    <p class="form-control-plaintext fs-5 border-bottom pb-2">@(string.IsNullOrEmpty(Model.PostalCode) ? "Not provided" : Model.PostalCode)</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label class="form-label text-muted">Country</label>
+                                    <p class="form-control-plaintext fs-5 border-bottom pb-2">@(string.IsNullOrEmpty(Model.Country) ? "Not provided" : Model.Country)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="UserList" class="btn btn-light btn-lg px-5">
+                            <i class="bi bi-arrow-left me-2"></i>Back to List
+                        </a>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-lg px-5">
+                            <i class="bi bi-pencil me-2"></i>Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-gradient: linear-gradient(45deg, #2937f0, #9f1ae2);
+    }
+
+    /* Base Animation States */
+    .card {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s ease-out;
+    }
+
+    .section {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.5s ease-out;
+    }
+
+    /* Animation Classes */
+    .card.animate {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .section.animate {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Staggered Animations for Sections */
+    .section:nth-child(1) {
+        transition-delay: 0.2s;
+    }
+
+    .section:nth-child(2) {
+        transition-delay: 0.3s;
+    }
+
+    .section:nth-child(3) {
+        transition-delay: 0.4s;
+    }
+
+    /* Styling */
+    .btn-primary {
+        background: var(--primary-gradient);
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #232cc5, #8516bd);
+    }
+
+    .text-primary {
+        color: #2937f0 !important;
+    }
+
+    .section {
+        background: #fff;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .alert {
+        border-left: 4px solid;
+    }
+
+    .alert-success {
+        border-left-color: #198754;
+    }
+
+    /* Field styling */
+    .field-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-label {
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .form-control-plaintext {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .border-bottom {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    /* Section headers */
+    .section h5 {
+        position: relative;
+        padding-left: 1rem;
+    }
+
+    .section h5::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 1rem;
+        background: var(--primary-gradient);
+        border-radius: 3px;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Trigger card animation
+            const card = document.querySelector('.card');
+            requestAnimationFrame(() => {
+                card.classList.add('animate');
+            });
+
+            // Trigger section animations
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                requestAnimationFrame(() => {
+                    section.classList.add('animate');
+                });
+            });
+        });
+    </script>
+} 

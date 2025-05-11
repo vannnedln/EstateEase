@@ -1,0 +1,327 @@
+@model EstateEase.Models.ViewModels.UserEditViewModel
+@{
+    ViewData["Title"] = "Edit User";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header position-relative overflow-hidden py-4"
+                    style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
+                    <h5 class="card-title mb-0 fw-bold ps-2 text-white">
+                        Edit User Profile
+                    </h5>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-person-gear display-1 text-white"></i>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 shadow-sm" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-circle-fill fs-4 me-2"></i>
+                                <div asp-validation-summary="All" class="text-danger"></div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Edit" asp-controller="User" asp-area="Admin" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="CurrentProfilePictureUrl" />
+                        
+                        <!-- Profile Picture -->
+                        <div class="section mb-5">
+                            <h5 class="text-primary fw-bold mb-4">
+                                <i class="bi bi-image me-2"></i>Profile Picture
+                            </h5>
+                            <div class="row justify-content-center">
+                                <div class="col-md-6 d-flex flex-column align-items-center">
+                                    <div class="profile-picture-upload w-100">
+                                        <div class="preview-container mb-3 d-flex justify-content-center">
+                                            <img id="profilePreview" src="@Model.CurrentProfilePictureUrl" class="img-thumbnail rounded-circle" style="width: 200px; height: 200px; object-fit: cover;" />
+                                        </div>
+                                        <div class="form-group w-100 text-center">
+                                            <input type="file" asp-for="ProfilePicture" class="form-control" accept="image/*" onchange="previewImage(this)" data-val="false" data-val-required="" />
+                                            <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+                                            <small class="text-muted d-block mt-2">Leave empty to keep current profile picture</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Personal Information -->
+                        <div class="section mb-5">
+                            <h5 class="text-primary fw-bold mb-4">
+                                <i class="bi bi-person me-2"></i>Personal Information
+                            </h5>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="FirstName" class="form-control" placeholder="Enter first name" />
+                                        <label asp-for="FirstName">First Name</label>
+                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="LastName" class="form-control" placeholder="Enter last name" />
+                                        <label asp-for="LastName">Last Name</label>
+                                        <span asp-validation-for="LastName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="Email" class="form-control" placeholder="example@estateease.com" />
+                                        <label asp-for="Email">Email</label>
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="PhoneNumber" class="form-control" placeholder="+1 (123) 456-7890" />
+                                        <label asp-for="PhoneNumber">Phone Number</label>
+                                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="Birthday" class="form-control" type="date" />
+                                        <label asp-for="Birthday">Date of Birth</label>
+                                        <span asp-validation-for="Birthday" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Address Information -->
+                        <div class="section mb-5">
+                            <h5 class="text-primary fw-bold mb-4">
+                                <i class="bi bi-geo-alt me-2"></i>Address Information
+                            </h5>
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <input asp-for="Address" class="form-control" placeholder="Enter street address" />
+                                        <label asp-for="Address">Address Line</label>
+                                        <span asp-validation-for="Address" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                    
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="City" class="form-control" placeholder="Enter city" />
+                                        <label asp-for="City">City</label>
+                                        <span asp-validation-for="City" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="Barangay" class="form-control" placeholder="Enter barangay" />
+                                        <label asp-for="Barangay">Barangay</label>
+                                        <span asp-validation-for="Barangay" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="PostalCode" class="form-control" placeholder="Enter postal code" />
+                                        <label asp-for="PostalCode">Postal Code</label>
+                                        <span asp-validation-for="PostalCode" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="Country" class="form-control" placeholder="Enter country" />
+                                        <label asp-for="Country">Country</label>
+                                        <span asp-validation-for="Country" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-action="UserList" class="btn btn-light btn-lg px-5">
+                                <i class="bi bi-x-lg me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-gradient: linear-gradient(45deg, #2937f0, #9f1ae2);
+    }
+
+    /* Base Animation States */
+    .card {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s ease-out;
+    }
+
+    .section {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.5s ease-out;
+    }
+
+    /* Animation Classes */
+    .card.animate {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .section.animate {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Staggered Animations for Sections */
+    .section:nth-child(1) {
+        transition-delay: 0.2s;
+    }
+
+    .section:nth-child(2) {
+        transition-delay: 0.3s;
+    }
+
+    .section:nth-child(3) {
+        transition-delay: 0.4s;
+    }
+
+    /* Form Styles */
+    .form-floating > .form-control,
+    .form-floating > .form-select {
+        height: calc(3.5rem + 2px);
+        line-height: 1.25;
+    }
+
+    .form-floating > label {
+        padding: 1rem 0.75rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #9f1ae2;
+        box-shadow: 0 0 0 0.25rem rgba(159, 26, 226, 0.25);
+    }
+
+    .btn-primary {
+        background: var(--primary-gradient);
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #232cc5, #8516bd);
+    }
+
+    .text-primary {
+        color: #2937f0 !important;
+    }
+
+    .section {
+        background: #fff;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .alert {
+        border-left: 4px solid;
+    }
+
+    .alert-danger {
+        border-left-color: #dc3545;
+    }
+
+    .alert-success {
+        border-left-color: #198754;
+    }
+
+    /* Profile Picture Styles */
+    .profile-picture-upload {
+        text-align: center;
+    }
+
+    .preview-container {
+        margin-bottom: 1rem;
+    }
+
+    #profilePreview {
+        border: 3px solid #fff;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    #profilePreview:hover {
+        transform: scale(1.05);
+    }
+    .section h5 {
+        position: relative;
+        padding-left: 1rem;
+    }
+
+    .section h5::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 1rem;
+        background: var(--primary-gradient);
+        border-radius: 3px;
+    }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Disable validation for all form fields
+            $('form input, form select, form textarea').each(function() {
+                $(this).attr('data-val', 'false').removeAttr('data-val-required');
+            });
+            
+            // Trigger card animation
+            const card = document.querySelector('.card');
+            requestAnimationFrame(() => {
+                card.classList.add('animate');
+            });
+
+            // Trigger section animations
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                requestAnimationFrame(() => {
+                    section.classList.add('animate');
+                });
+            });
+        });
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profilePreview').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+} 
