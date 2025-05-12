@@ -41,10 +41,19 @@ namespace EstateEase.Controllers
                 return NotFound();
             }
 
+            // Fetch similar properties with the same property type, excluding the current property
+            var similarProperties = await _context.Properties
+                .Include(p => p.PropertyImages)
+                .Where(p => p.PropertyType == property.PropertyType && p.Id != property.Id && p.Status == "Available")
+                .OrderByDescending(p => p.CreatedAt)
+                .Take(3)
+                .ToListAsync();
+
             var viewModel = new PropertyDetailsViewModel
             {
                 Property = property,
-                IsUserLoggedIn = _signInManager.IsSignedIn(User)
+                IsUserLoggedIn = _signInManager.IsSignedIn(User),
+                SimilarProperties = similarProperties
             };
 
             return View(viewModel);
