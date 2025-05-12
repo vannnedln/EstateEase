@@ -123,7 +123,7 @@
                                 <i class="bi bi-geo-alt"></i>
                                 <span>@property.Address</span>
                             </div>
-                            <h4 class="property-price">₱@property.Price.ToString("N0")</h4>
+                            <h4 class="property-price">₱@property.Price.ToString("N0")@(property.SellingType == "Rent" ? "/mo" : "")</h4>
                             <div class="property-features">
                                 <div class="feature-item">
                                     <i class="bi bi-door-open"></i>

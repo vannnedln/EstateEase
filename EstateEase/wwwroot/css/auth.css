@@ -166,7 +166,7 @@ body {
     background: var(--primary-gradient);
     border: none;
     border-radius: 15px;
-    color: var(--white);
+    color: #ffffff;
     font-weight: 600;
     padding: 0.75rem 0;
     text-transform: none;
@@ -178,7 +178,13 @@ body {
         background: linear-gradient(45deg, var(--primary-hover), var(--secondary-hover));
         transform: translateY(-3px);
         box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-        color: var(--white);
+        color: #ffffff;
+    }
+    
+    .auth-submit-btn:disabled {
+        color: #ffffff;
+        opacity: 0.7;
+        cursor: not-allowed;
     }
 
 .auth-alt-link {
