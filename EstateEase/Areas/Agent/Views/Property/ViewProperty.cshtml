@@ -1,0 +1,572 @@
+@model EstateEase.Models.ViewModels.PropertyViewModel
+@{
+    ViewData["Title"] = "View Property";
+    Layout = "_AgentLayout";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header position-relative overflow-hidden py-4"
+                     style="background: linear-gradient(45deg, #4f5aff, #9f1ae2);">
+                    <h5 class="card-title mb-0 fw-bold ps-2 text-white">
+                        View Property Details
+                    </h5>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-building display-1 text-white"></i>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 shadow-sm"
+                             role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-circle-fill fs-4 me-2"></i>
+                                <div>@TempData["Error"]</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 shadow-sm"
+                             role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill fs-4 me-2"></i>
+                                <div>@TempData["Success"]</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <!-- Agent Contact Information -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-person-badge me-2"></i>Agent Information
+                        </h5>
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="card border-0 rounded-4 shadow-sm">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            @if (!string.IsNullOrEmpty(ViewBag.Agent.ProfilePictureUrl))
+                                            {
+                                                <img src="@ViewBag.Agent.ProfilePictureUrl" class="rounded-circle me-3" alt="Agent" 
+                                                     width="70" height="70" style="object-fit: cover; border: 3px solid #f8f9fa;">
+                                            }
+                                            else
+                                            {
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                     style="width: 70px; height: 70px; background: var(--primary-gradient);">
+                                                    <i class="bi bi-person text-white" style="font-size: 1.8rem;"></i>
+                                                </div>
+                                            }
+                                            <div>
+                                                <h6 class="mb-2 fw-bold">@ViewBag.Agent.FirstName @ViewBag.Agent.LastName</h6>
+                                                <p class="text-muted mb-1 small">
+                                                    <i class="bi bi-telephone me-2"></i>@(string.IsNullOrEmpty(ViewBag.Agent.PhoneNumber) ? "No phone number" : ViewBag.Agent.PhoneNumber)
+                                                </p>
+                                                <p class="text-muted mb-0 small">
+                                                    <i class="bi bi-envelope me-2"></i>@(string.IsNullOrEmpty(ViewBag.Agent.Email) ? "No email address" : ViewBag.Agent.Email)
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Basic Information -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-info-circle me-2"></i>Basic Information
+                        </h5>
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Title" readonly>
+                                    <label>Property Title</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <div class="form-control" style="min-height: 200px; overflow-y: auto; height: auto;">
+                                        @Html.Raw(Model.Content)
+                                    </div>
+                                    <label>Description</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Property Details -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-house-gear me-2"></i>Property Details
+                        </h5>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.PropertyType" readonly>
+                                    <label>Property Type</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.SellingType" readonly>
+                                    <label>Selling Type</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Bedrooms" readonly>
+                                    <label>Bedrooms</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Bathrooms" readonly>
+                                    <label>Bathrooms</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Kitchen" readonly>
+                                    <label>Kitchen</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Balcony" readonly>
+                                    <label>Balcony</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Hall" readonly>
+                                    <label>Hall</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.TotalFloors" readonly>
+                                    <label>Total Floors</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Size.ToString("N2")" readonly>
+                                    <label>Area (sq m)</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" style="height: 100px" readonly>@Model.Address</textarea>
+                                    <label>Address</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Price.ToString("N2")" readonly>
+                                    <label>Price (₱)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input class="form-control" value="@Model.Status" readonly>
+                                    <label>Status</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Property Features -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-list-check me-2"></i>Property Features
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasSwimmingPool ? "checked" : "") disabled>
+                                    <label class="form-check-label">Swimming Pool</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasParking ? "checked" : "") disabled>
+                                    <label class="form-check-label">Parking</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasGym ? "checked" : "") disabled>
+                                    <label class="form-check-label">Gym</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasSecurity ? "checked" : "") disabled>
+                                    <label class="form-check-label">Security</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasElevator ? "checked" : "") disabled>
+                                    <label class="form-check-label">Elevator</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @(Model.HasCCTV ? "checked" : "") disabled>
+                                    <label class="form-check-label">CCTV</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Images & Plans -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-images me-2"></i>Property Images
+                        </h5>
+                        <div class="row g-4">
+                            @if (Model.ExistingImages != null && Model.ExistingImages.Any(i => 
+                                i.ImageType != "FloorPlan" && 
+                                !i.ImageType.Contains("floor", StringComparison.OrdinalIgnoreCase) && 
+                                !i.ImageType.Contains("ground", StringComparison.OrdinalIgnoreCase) && 
+                                !i.ImageType.Contains("basement", StringComparison.OrdinalIgnoreCase)))
+                            {
+                                @foreach (var image in Model.ExistingImages.Where(i => 
+                                    i.ImageType != "FloorPlan" && 
+                                    !i.ImageType.Contains("floor", StringComparison.OrdinalIgnoreCase) && 
+                                    !i.ImageType.Contains("ground", StringComparison.OrdinalIgnoreCase) && 
+                                    !i.ImageType.Contains("basement", StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    <div class="col-md-4">
+                                        <div class="card h-100 border-0 shadow-sm hover-elevate-up">
+                                            <div class="card-body p-0">
+                                                <img src="@Url.Content(image.ImagePath)" class="card-img"
+                                                     alt="Property Image"
+                                                     onerror="this.src='/uploads/properties/placeholder.jpg'; this.onerror=null;">
+                                                
+                                                <div class="position-absolute bottom-0 start-0 p-3">
+                                                    <span class="badge rounded-pill bg-primary">
+                                                        <i class="bi bi-image me-1"></i>
+                                                        Property Image
+                                                    </span>
+                                                </div>
+                                                
+                                                <div class="position-absolute top-0 end-0 p-3">
+                                                    <button type="button" class="btn btn-sm btn-light rounded-circle img-view-btn" 
+                                                           data-image-url="@Url.Content(image.ImagePath)" 
+                                                           data-image-type="Property Image"
+                                                           title="View Full Size">
+                                                        <i class="bi bi-arrows-fullscreen"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        No property images available.
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Floor Plans -->
+                    @if (Model.ExistingImages != null && Model.ExistingImages.Any(x => x.ImageType == "FloorPlan"))
+                    {
+                        <div class="section mb-5">
+                            <h5 class="text-primary fw-bold mb-4">
+                                <i class="bi bi-layers me-2"></i>Floor Plans
+                            </h5>
+                            <div class="row g-4">
+                                @foreach (var image in Model.ExistingImages.Where(x => x.ImageType == "FloorPlan"))
+                                {
+                                    <div class="col-md-4">
+                                        <div class="card h-100 border-0 shadow-sm hover-elevate-up">
+                                            <div class="card-body p-0">
+                                                <img src="@Url.Content(image.ImagePath)" class="card-img"
+                                                     alt="Floor Plan"
+                                                     onerror="this.src='/uploads/properties/placeholder.jpg'; this.onerror=null;">
+                                                
+                                                <div class="position-absolute bottom-0 start-0 p-3">
+                                                    <span class="badge rounded-pill bg-primary">
+                                                        <i class="bi bi-layers me-1"></i>Floor Plan
+                                                    </span>
+                                                </div>
+                                                
+                                                <div class="position-absolute top-0 end-0 p-3">
+                                                    <button type="button" class="btn btn-sm btn-light rounded-circle img-view-btn" 
+                                                           data-image-url="@Url.Content(image.ImagePath)" 
+                                                           data-image-type="Floor Plan"
+                                                           title="View Full Size">
+                                                        <i class="bi bi-arrows-fullscreen"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Featured Status -->
+                    <div class="section mb-5">
+                        <h5 class="text-primary fw-bold mb-4">
+                            <i class="bi bi-star me-2"></i>Featured Status
+                        </h5>
+                        <div class="form-floating">
+                            <input class="form-control" value="@(Model.IsFeatured ? "Yes" : "No")" readonly>
+                            <label>Featured Property</label>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="PropertyList" class="btn btn-light btn-lg px-5">
+                            <i class="bi bi-arrow-left me-2"></i>Back to List
+                        </a>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-lg px-5">
+                            <i class="bi bi-pencil-square me-2"></i>Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image View Modal -->
+<div class="modal fade" id="imageViewModal" tabindex="-1" aria-labelledby="imageViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0 bg-light">
+                <h5 class="modal-title" id="imageViewModalLabel">Property Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 d-flex justify-content-center align-items-center bg-dark" style="min-height: 75vh;">
+                <img id="modalImage" src="" alt="Property Image" class="img-fluid" style="max-height: 75vh;">
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <a id="downloadImageLink" href="#" download class="btn btn-gradient btn-sm">
+                    <i class="bi bi-download me-1"></i> Download Image
+                </a>
+                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(45deg, #4f5aff, #9f1ae2);
+        }
+        
+        .section {
+            background: #fff;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        .form-floating > .form-control,
+        .form-floating > .form-select {
+            height: calc(3.5rem + 2px);
+            line-height: 1.25;
+        }
+
+        .form-floating > label {
+            padding: 1rem 0.75rem;
+        }
+
+        .form-check.form-switch {
+            padding-left: 3rem;
+        }
+
+        .form-switch .form-check-input {
+            width: 2.5em;
+            margin-left: -3rem;
+        }
+
+        .section h5 {
+            position: relative;
+            padding-left: 1rem;
+        }
+
+        .section h5::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 1rem;
+            background: linear-gradient(45deg, #4f5aff, #9f1ae2);
+            border-radius: 3px;
+        }
+        
+        /* Image consistency styles */
+        .card-body.p-0 {
+            height: 250px;
+            overflow: hidden;
+        }
+        
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        
+        .hover-elevate-up {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-elevate-up:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        /* Modal styles */
+        #imageViewModal .modal-content {
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+        
+        #imageViewModal .modal-body {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #modalImage {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .img-view-btn {
+            opacity: 0.7;
+            transition: all 0.2s ease;
+        }
+        
+        .img-view-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .card:hover .img-view-btn {
+            opacity: 1;
+        }
+        
+        /* Gradient button */
+        .btn-gradient {
+            background: linear-gradient(45deg, #4f5aff, #9f1ae2);
+            color: white;
+            border: none;
+            box-shadow: 0 3px 10px rgba(79, 90, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gradient:hover {
+            background: linear-gradient(45deg, #3a45e0, #8516bd);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 90, 255, 0.5);
+        }
+        
+        /* Button styling */
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #3a45e0, #8516bd);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 90, 255, 0.4);
+        }
+
+        /* Base Animation States */
+        .card, .section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+        }
+
+        /* Animation Classes */
+        .card.animate, .section.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Staggered Animations for Sections */
+        .section:nth-child(1) { transition-delay: 0.2s; }
+        .section:nth-child(2) { transition-delay: 0.3s; }
+        .section:nth-child(3) { transition-delay: 0.4s; }
+        .section:nth-child(4) { transition-delay: 0.5s; }
+        .section:nth-child(5) { transition-delay: 0.6s; }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // Image modal functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Apply animations
+            document.querySelector('.card').classList.add('animate');
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('animate');
+            });
+            
+            // Get the modal elements
+            const modal = document.getElementById('imageViewModal');
+            const modalTitle = document.getElementById('imageViewModalLabel');
+            const modalImage = document.getElementById('modalImage');
+            const downloadLink = document.getElementById('downloadImageLink');
+            
+            // Initialize the Bootstrap modal
+            const imageModal = new bootstrap.Modal(modal);
+            
+            // Add click event listeners to all image view buttons
+            document.querySelectorAll('.img-view-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const imageUrl = this.getAttribute('data-image-url');
+                    const imageType = this.getAttribute('data-image-type');
+                    
+                    // Set modal content
+                    modalTitle.textContent = imageType;
+                    modalImage.src = imageUrl;
+                    downloadLink.href = imageUrl;
+                    
+                    // Ensure image loads properly
+                    modalImage.onload = function() {
+                        // Show the modal
+                        imageModal.show();
+                    };
+                    
+                    // Fallback in case the image doesn't load
+                    modalImage.onerror = function() {
+                        this.src = '/uploads/properties/placeholder.jpg';
+                        imageModal.show();
+                    };
+                });
+            });
+        });
+    </script>
+} 

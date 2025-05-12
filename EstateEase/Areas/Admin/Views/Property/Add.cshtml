@@ -88,9 +88,9 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <div class="form-group mb-3">
-                                        <label for="Content" class="form-label">Description</label>
-                                        <textarea asp-for="Content" class="form-control" rows="10" style="height: 200px;"></textarea>
+                                    <div class="form-floating">
+                                        <textarea asp-for="Content" class="form-control" placeholder="Enter Description" rows="10" style="height: 300px; resize: vertical;"></textarea>
+                                        <label asp-for="Content">Description</label>
                                         <span asp-validation-for="Content" class="text-danger"></span>
                                     </div>
                                 </div>

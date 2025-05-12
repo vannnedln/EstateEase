@@ -4,301 +4,473 @@
 @{
     ViewData["Title"] = "Add Property";
     Layout = "_AgentLayout";
-    var tinyMCEApiKey = Configuration.GetValue<string>("TinyMCE:ApiKey");
 }
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header py-4 bg-primary text-white">
-                <h5 class="card-title mb-0 fw-bold">Add Property</h5>
-            </div>
-
-            <div class="card-body p-5">
-                <h5 class="card-title mb-5 fw-bold">Property Details</h5>
-                @if (TempData["Error"] != null)
-                {
-                    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-                        <i class="bi bi-exclamation-circle me-2"></i>
-                        @TempData["Error"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header position-relative overflow-hidden py-4"
+                     style="background: linear-gradient(45deg, #4f5aff, #9f1ae2);">
+                    <h5 class="card-title mb-0 fw-bold ps-2 text-white">
+                        Add New Property
+                    </h5>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-building display-1 text-white"></i>
                     </div>
-                }
-                @if (TempData["Success"] != null)
-                {
-                    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
-                        <i class="bi bi-check-circle me-2"></i>
-                        @TempData["Success"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                }
+                </div>
 
-                <form method="post" enctype="multipart/form-data" asp-action="Add" asp-controller="Property"
-                    asp-area="Agent" class="needs-validation">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-5"></div>
-
-                    <div class="row g-5">
-                        <div class="col-xl-12">
-                            <div class="form-group row mb-3">
-                                <label asp-for="Title" class="col-lg-2 col-form-label">Title</label>
-                                <div class="col-lg-9">
-                                    <input asp-for="Title" class="form-control" placeholder="Enter Title">
-                                    <span asp-validation-for="Title" class="text-danger"></span>
-                                </div>
+                <div class="card-body p-4">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 shadow-sm"
+                             role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-circle-fill fs-4 me-2"></i>
+                                <div>@TempData["Error"]</div>
                             </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
 
-                            <div class="form-group row mb-3">
-                                <label asp-for="Content" class="col-lg-2 col-form-label">Content</label>
-                                <div class="col-lg-9">
-                                    <textarea asp-for="Content" class="form-control tinymce" rows="10"></textarea>
-                                    <span asp-validation-for="Content" class="text-danger"></span>
-                                </div>
+                    @foreach (var key in TempData.Keys.Where(k => k.StartsWith("Error_")))
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 shadow-sm"
+                             role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-circle-fill fs-4 me-2"></i>
+                                <div>@TempData[key]</div>
                             </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    @if (TempData["InnerError"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 shadow-sm"
+                             role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-circle-fill fs-4 me-2"></i>
+                                <div>Additional error details: @TempData["InnerError"]</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 shadow-sm"
+                             role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill fs-4 me-2"></i>
+                                <div>@TempData["Success"]</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form method="post" asp-controller="Property" asp-action="Add" asp-area="Agent" enctype="multipart/form-data" class="needs-validation">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 shadow-sm mb-4">
                         </div>
 
-                        <div class="col-xl-6">
-                            <div class="form-group row mb-3">
-                                <label asp-for="PropertyType" class="col-lg-3 col-form-label">Property Type</label>
-                                <div class="col-lg-9">
-                                    <select asp-for="PropertyType" class="form-control">
-                                        <option value="" disabled selected>Select Type</option>
-                                        <option value="Single-Family Detached House">
-                                            Single-Family Detached House
-                                        </option>
-                                        <option value="Townhouse ">Townhouse </option>
-                                        <option value="Duplex ">Duplex </option>
-                                        <option value="Bungalow ">Bungalow </option>
-                                        <option value="Villa">Villa</option>
-                                    </select>
-                                    <span asp-validation-for="PropertyType" class="text-danger"></span>
+                        <!-- Basic Information -->
+                        <div class="section mb-5">
+                            <h5 class="text-primary fw-bold mb-4">
+                                <i class="bi bi-info-circle me-2"></i>Basic Information
+                            </h5>
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <input asp-for="Title" class="form-control" placeholder="Enter Title">
+                                        <label asp-for="Title">Property Title</label>
+                                        <span asp-validation-for="Title" class="text-danger"></span>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="form-group row mb-3">
-                                <label asp-for="Bedrooms" class="col-lg-3 col-form-label">Bedrooms</label>
-                                <div class="col-lg-9">
-                                    <input asp-for="Bedrooms" class="form-control" type="number"
-                                        placeholder="Enter number of bedrooms">
-                                    <span asp-validation-for="Bedrooms" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                            <div class="form-group row mb-3">
-                                <label asp-for="Bathrooms" class="col-lg-3 col-form-label">Bathrooms</label>
-                                <div class="col-lg-9">
-                                    <input asp-for="Bathrooms" class="form-control" type="number"
-                                        placeholder="Enter number of bathrooms">
-                                    <span asp-validation-for="Bathrooms" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                            <div class="form-group row mb-3">
-                                <label asp-for="SellingType" class="col-lg-3 col-form-label">Selling Type</label>
-                                <div class="col-lg-9">
-                                    <select asp-for="SellingType" class="form-control">
-                                        <option value="" disabled selected>Select Type</option>
-                                        <option value="Rent">Rent</option>
-                                        <option value="Sale">Sale</option>
-                                    </select>
-                                    <span asp-validation-for="SellingType" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                            <div class="form-group row mb-3">
-                                <label asp-for="Address" class="col-lg-3 col-form-label">Address</label>
-                                <div class="col-lg-9">
-                                    <textarea asp-for="Address" class="form-control" placeholder="Enter Address"
-                                        rows="4"></textarea>
-                                    <span asp-validation-for="Address" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-6">
-                            <div class="form-group row mb-3">
-                                <label asp-for="Balcony" class="col-lg-3 col-form-label">Balcony</label>
-                                <div class="col-lg-9">
-                                    <input asp-for="Balcony" class="form-control" type="number"
-                                        placeholder="Enter number of balcony">
-                                    <span asp-validation-for="Balcony" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                            <div class="form-group row mb-3">
-                                <label asp-for="Kitchen" class="col-lg-3 col-form-label">Kitchen</label>
-                                <div class="col-lg-9">
-                                    <input asp-for="Kitchen" class="form-control" type="number"
-                                        placeholder="Enter number of kitchen">
-                                    <span asp-validation-for="Kitchen" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                            <div class="form-group row mb-3">
-                                <label asp-for="Hall" class="col-lg-3 col-form-label">Hall</label>
-                                <div class="col-lg-9">
-                                    <input asp-for="Hall" class="form-control" type="number"
-                                        placeholder="Enter number of hall">
-                                    <span asp-validation-for="Hall" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="form-group row mb-3">
-                                <label asp-for="TotalFloors" class="col-lg-3 col-form-label">Total Floors</label>
-                                <div class="col-lg-9">
-                                    <input asp-for="TotalFloors" class="form-control" type="number"
-                                        placeholder="Enter number of floors">
-                                    <span asp-validation-for="TotalFloors" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                            <div class="form-group row mb-3">
-                                <label asp-for="Price" class="col-lg-3 col-form-label">Price (₱)</label>
-                                <div class="col-lg-9">
-                                    <input asp-for="Price" class="form-control" type="number" placeholder="Enter Price"
-                                        min="0" step="any">
-                                    <span asp-validation-for="Price" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                            <div class="form-group row mb-3">
-                                <label asp-for="Size" class="col-lg-3 col-form-label">Area (sq m)</label>
-                                <div class="col-lg-9">
-                                    <input asp-for="Size" class="form-control" type="number" step="0.01"
-                                        placeholder="Enter property area">
-                                    <span asp-validation-for="Size" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-12">
-                            <hr class="section-divider my-4" style="height: 2px;">
-                            <h5 class="card-title mb-4 fw-bold">Property Features</h5>
-
-                            <div class="form-group row mb-3">
-                                <div class="col-lg-9 offset-lg-2">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-check mb-3">
-                                                <input asp-for="HasSwimmingPool" class="form-check-input"
-                                                    type="checkbox">
-                                                <label asp-for="HasSwimmingPool" class="form-check-label">
-                                                    Swimming Pool
-                                                </label>
-                                            </div>
-                                            <div class="form-check mb-3">
-                                                <input asp-for="HasParking" class="form-check-input" type="checkbox">
-                                                <label asp-for="HasParking" class="form-check-label">Parking</label>
-                                            </div>
-                                            <div class="form-check mb-3">
-                                                <input asp-for="HasGym" class="form-check-input" type="checkbox">
-                                                <label asp-for="HasGym" class="form-check-label">Gym</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-check mb-3">
-                                                <input asp-for="HasSecurity" class="form-check-input" type="checkbox">
-                                                <label asp-for="HasSecurity" class="form-check-label">Security</label>
-                                            </div>
-                                            <div class="form-check mb-3">
-                                                <input asp-for="HasElevator" class="form-check-input" type="checkbox">
-                                                <label asp-for="HasElevator" class="form-check-label">Elevator</label>
-                                            </div>
-                                            <div class="form-check mb-3">
-                                                <input asp-for="HasCCTV" class="form-check-input" type="checkbox">
-                                                <label asp-for="HasCCTV" class="form-check-label">CCTV</label>
-                                            </div>
-                                        </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <textarea asp-for="Content" class="form-control" placeholder="Enter Description" rows="10" style="height: 300px; resize: vertical;"></textarea>
+                                        <label asp-for="Content">Description</label>
+                                        <span asp-validation-for="Content" class="text-danger"></span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-xl-12">
-                        <hr class="section-divider my-4" style="height: 2px;">
-                        <h5 class="card-title mt-4 mb-4 fw-bold">Image & Status</h5>
-                        <div class="row">
-                            <div class="col-xl-6">
-                                <div class="form-group row mb-3">
-                                    <label class="col-lg-3 col-form-label">Property Images</label>
-                                    <div class="col-lg-9">
-                                        <input type="file" asp-for="PropertyImages" class="form-control mb-2" multiple>
-                                        <span asp-validation-for="PropertyImages" class="text-danger"></span>
+                        <!-- Property Details -->
+                        <div class="section mb-5">
+                            <h5 class="text-primary fw-bold mb-4">
+                                <i class="bi bi-house-gear me-2"></i>Property Details
+                            </h5>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select asp-for="PropertyType" class="form-select">
+                                            <option value="" disabled selected>Select Type</option>
+                                            <option value="Single-Family Detached House">
+                                                Single-Family Detached House
+                                            </option>
+                                            <option value="Townhouse">Townhouse</option>
+                                            <option value="Duplex">Duplex</option>
+                                            <option value="Bungalow">Bungalow</option>
+                                            <option value="Villa">Villa</option>
+                                        </select>
+                                        <label asp-for="PropertyType">Property Type</label>
+                                        <span asp-validation-for="PropertyType" class="text-danger"></span>
                                     </div>
                                 </div>
-
-                                <div class="form-group row mb-3">
-                                    <label class="col-lg-3 col-form-label">Floor Plan</label>
-                                    <div class="col-lg-9">
-                                        <input type="file" asp-for="FloorPlanImage" class="form-control mb-2" multiple>
-                                        <small class="form-text text-muted">Upload multiple floor plans</small>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select asp-for="SellingType" class="form-select">
+                                            <option value="" disabled selected>Select Type</option>
+                                            <option value="Rent">Rent</option>
+                                            <option value="Sale">Sale</option>
+                                        </select>
+                                        <label asp-for="SellingType">Selling Type</label>
+                                        <span asp-validation-for="SellingType" class="text-danger"></span>
                                     </div>
                                 </div>
-
-                                <div class="form-group row mb-3">
-                                    <label asp-for="Status" class="col-lg-3 col-form-label">Status</label>
-                                    <div class="col-lg-9">
-                                        <select asp-for="Status" class="form-control">
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input asp-for="Bedrooms" class="form-control" type="number"
+                                               placeholder="Bedrooms">
+                                        <label asp-for="Bedrooms">Bedrooms</label>
+                                        <span asp-validation-for="Bedrooms" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input asp-for="Bathrooms" class="form-control" type="number"
+                                               placeholder="Bathrooms">
+                                        <label asp-for="Bathrooms">Bathrooms</label>
+                                        <span asp-validation-for="Bathrooms" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input asp-for="Kitchen" class="form-control" type="number"
+                                               placeholder="Kitchen">
+                                        <label asp-for="Kitchen">Kitchen</label>
+                                        <span asp-validation-for="Kitchen" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-floating">
+                                        <input asp-for="Balcony" class="form-control" type="number"
+                                               placeholder="Balcony">
+                                        <label asp-for="Balcony">Balcony</label>
+                                        <span asp-validation-for="Balcony" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-floating">
+                                        <input asp-for="Hall" class="form-control" type="number" placeholder="Hall">
+                                        <label asp-for="Hall">Hall</label>
+                                        <span asp-validation-for="Hall" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-floating">
+                                        <input asp-for="TotalFloors" class="form-control" type="number"
+                                               placeholder="Total Floors">
+                                        <label asp-for="TotalFloors">Total Floors</label>
+                                        <span asp-validation-for="TotalFloors" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-floating">
+                                        <input asp-for="Size" class="form-control" type="number" step="0.01"
+                                               placeholder="Area">
+                                        <label asp-for="Size">Area (sq m)</label>
+                                        <span asp-validation-for="Size" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <textarea asp-for="Address" class="form-control" placeholder="Address"
+                                                  style="height: 100px"></textarea>
+                                        <label asp-for="Address">Address</label>
+                                        <span asp-validation-for="Address" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="Price" class="form-control" type="number" placeholder="Price"
+                                               min="0" step="any">
+                                        <label asp-for="Price">Price (₱)</label>
+                                        <span asp-validation-for="Price" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select asp-for="Status" class="form-select">
                                             <option value="" disabled selected>Select Status</option>
                                             <option value="Available">Available</option>
                                             <option value="Sold">Sold</option>
                                             <option value="Rented">Rented</option>
                                         </select>
+                                        <label asp-for="Status">Status</label>
                                         <span asp-validation-for="Status" class="text-danger"></span>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="col-xl-6">
-                                <div class="form-group row mb-3">
-                                    <label asp-for="IsFeatured" class="col-lg-3 col-form-label">
-                                        Featured Property
-                                    </label>
-                                    <div class="col-lg-9">
-                                        <select asp-for="IsFeatured" class="form-control">
-                                            <option value="" disabled selected>Select...</option>
-                                            <option value="true">Yes</option>
-                                            <option value="false">No</option>
-                                        </select>
+                        <!-- Property Features -->
+                        <div class="section mb-5">
+                            <h5 class="text-primary fw-bold mb-4">
+                                <i class="bi bi-list-check me-2"></i>Property Features
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        <input asp-for="HasSwimmingPool" class="form-check-input" type="checkbox"
+                                               role="switch">
+                                        <label asp-for="HasSwimmingPool" class="form-check-label">Swimming Pool</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        <input asp-for="HasParking" class="form-check-input" type="checkbox"
+                                               role="switch">
+                                        <label asp-for="HasParking" class="form-check-label">Parking</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        <input asp-for="HasGym" class="form-check-input" type="checkbox" role="switch">
+                                        <label asp-for="HasGym" class="form-check-label">Gym</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        <input asp-for="HasSecurity" class="form-check-input" type="checkbox"
+                                               role="switch">
+                                        <label asp-for="HasSecurity" class="form-check-label">Security</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        <input asp-for="HasElevator" class="form-check-input" type="checkbox"
+                                               role="switch">
+                                        <label asp-for="HasElevator" class="form-check-label">Elevator</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        <input asp-for="HasCCTV" class="form-check-input" type="checkbox" role="switch">
+                                        <label asp-for="HasCCTV" class="form-check-label">CCTV</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-xl-12">
-                        <hr class="section-divider my-4" style="height: 2px;">
-                        <div class="form-group row">
-                            <div class="col-lg-9 offset-lg-5">
-                                <button type="submit" class="btn btn-primary px-5 custom-rounded">Add Property</button>
-                                <a asp-controller="Property" asp-action="Index" asp-area="Agent"
-                                    class="btn btn-outline-danger ms-2 custom-rounded">Cancel</a>
+                        <!-- Images & Plans -->
+                        <div class="section mb-5">
+                            <h5 class="text-primary fw-bold mb-4">
+                                <i class="bi bi-images me-2"></i>Images & Floor Plans
+                            </h5>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Property Images</label>
+                                        <input type="file" asp-for="PropertyImages" class="form-control" multiple>
+                                        <div class="form-text">Upload multiple property images</div>
+                                        <span asp-validation-for="PropertyImages" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Floor Plan Image</label>
+                                        <input type="file" asp-for="FloorPlanImage" class="form-control" multiple>
+                                        <div class="form-text">Upload multiple floor plans</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+
+                        <!-- Featured Status -->
+                        <div class="section mb-5">
+                            <h5 class="text-primary fw-bold mb-4">
+                                <i class="bi bi-star me-2"></i>Featured Status
+                            </h5>
+                            <div class="form-floating">
+                                <select asp-for="IsFeatured" class="form-select">
+                                    <option value="" disabled selected>Select...</option>
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                                <label asp-for="IsFeatured">Featured Property</label>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-controller="Property" asp-action="PropertyList" asp-area="Agent" class="btn btn-light btn-lg px-5">
+                                <i class="bi bi-x-lg me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-check-lg me-2"></i>Add Property
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<style>
+    :root {
+        --primary-gradient: linear-gradient(45deg, #4f5aff, #9f1ae2);
+    }
+
+    /* Base Animation States */
+    .card {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s ease-out;
+    }
+
+    .section {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.5s ease-out;
+    }
+
+    /* Animation Classes */
+    .card.animate {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .section.animate {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Staggered Animations for Sections */
+    .section:nth-child(1) {
+        transition-delay: 0.2s;
+    }
+
+    .section:nth-child(2) {
+        transition-delay: 0.3s;
+    }
+
+    .section:nth-child(3) {
+        transition-delay: 0.4s;
+    }
+
+    .section:nth-child(4) {
+        transition-delay: 0.5s;
+    }
+
+    .section:nth-child(5) {
+        transition-delay: 0.6s;
+    }
+
+    /* Existing Styles */
+    .form-floating > .form-control,
+    .form-floating > .form-select {
+        height: calc(3.5rem + 2px);
+        line-height: 1.25;
+    }
+
+    .form-floating > label {
+        padding: 1rem 0.75rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #9f1ae2;
+        box-shadow: 0 0 0 0.25rem rgba(159, 26, 226, 0.25);
+    }
+
+    .btn-primary {
+        background: var(--primary-gradient);
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #4f5aff, #8516bd);
+        }
+
+    .form-check-input:checked {
+        background-color: #9f1ae2;
+        border-color: #9f1ae2;
+    }
+
+    .text-primary {
+        color: #4f5aff !important;
+    }
+
+    .section {
+        background: #fff;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .form-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .alert {
+        border-left: 4px solid;
+    }
+
+    .alert-danger {
+        border-left-color: #dc3545;
+    }
+
+    .alert-success {
+        border-left-color: #198754;
+    }
+
+    .form-check.form-switch {
+        padding-left: 3rem;
+    }
+
+    .form-switch .form-check-input {
+        width: 2.5em;
+        margin-left: -3rem;
+    }
+
+    /* Section Headers */
+    .section h5 {
+        position: relative;
+        padding-left: 1rem;
+    }
+
+        .section h5::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 1rem;
+            background: var(--primary-gradient);
+            border-radius: 3px;
+        }
+</style>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.tiny.cloud/1/@tinyMCEApiKey/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
-        tinymce.init({
-            selector: '.tinymce',
-            height: 300,
-            plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'help', 'wordcount'
-            ],
-            toolbar: 'undo redo | blocks | ' +
-                'bold italic backcolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help',
-            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+        // Card animation code
+        document.addEventListener('DOMContentLoaded', function() {
+            const card = document.querySelector('.card');
+            card.classList.add('animate');
+
+            // Section animations
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.add('animate');
+            });
         });
     </script>
 }

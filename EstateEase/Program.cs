@@ -93,12 +93,12 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Add area support in route mapping
+// Add area support in route mapping first
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
-// Add default route
+// Then add default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

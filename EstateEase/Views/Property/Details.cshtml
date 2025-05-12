@@ -9,19 +9,23 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true">
     <style>
+        :root {
+            --secondary-gradient: linear-gradient(135deg, #11998e, #38ef7d);
+        }
+        
         .property-image-main {
-            height: 500px;
+            height: 400px;
             object-fit: cover;
             border-radius: 1rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             transition: var(--transition);
         }
         
         .image-thumbnail {
-            height: 80px;
+            height: 70px;
             object-fit: cover;
             cursor: pointer;
-            border-radius: 0.75rem;
+            border-radius: 0.5rem;
             border: 2px solid transparent;
             transition: var(--transition);
         }
@@ -36,12 +40,13 @@
             margin-bottom: 1.5rem;
             position: relative;
             padding-bottom: 0.5rem;
+            color: #333;
         }
         
         .detail-section-title:after {
             content: '';
             position: absolute;
-            width: 60px;
+            width: 50px;
             height: 3px;
             background: var(--primary-gradient);
             bottom: 0;
@@ -52,27 +57,29 @@
         .property-feature-icon {
             background: var(--primary-gradient);
             color: white;
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             margin-bottom: 0.5rem;
+            font-size: 1.25rem;
         }
         
         .property-info-card {
             border: none;
             border-radius: 1rem;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             transition: var(--transition);
             height: 100%;
+            background: white;
         }
         
         .property-info-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
         
         .amenity-item {
@@ -81,6 +88,117 @@
         
         .amenity-item:hover {
             transform: translateY(-3px);
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        .detail-label {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            color: #666;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .verified-badge {
+            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+            color: white;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .verified-badge i {
+            margin-right: 0.25rem;
+        }
+        
+        .property-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .room-feature {
+            text-align: center;
+        }
+        
+        .action-button {
+            padding: 1rem 2rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+        }
+        
+        /* Gradient Button Styles */
+        .btn-gradient {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gradient:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.3);
+            color: white;
+        }
+        
+        .btn-gradient-alt {
+            background: var(--secondary-gradient);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gradient-alt:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.3);
+            color: white;
+        }
+        
+        /* Fix for z-index and layout issues */
+        .top-section {
+            margin-bottom: 3rem; /* Reduced from 6rem to 3rem to move content higher */
+        }
+        
+        .sidebar-card {
+            position: relative;
+            z-index: 10; /* Higher z-index to ensure it's above the property details */
+        }
+        
+        .details-container {
+            position: relative;
+            z-index: 1;
+            clear: both; /* Ensure it starts on a new line */
         }
     </style>
 }
@@ -94,7 +212,7 @@
         </ol>
     </nav>
 
-    <div class="row">
+    <div class="row g-4 top-section">
         <!-- Property Images Gallery -->
         <div class="col-lg-8 mb-4 fade-in" style="animation-delay: 0.2s;">
             @if (Model.Property.PropertyImages != null && Model.Property.PropertyImages.Any())
@@ -141,7 +259,7 @@
             }
             else
             {
-                <div class="bg-light rounded-4 d-flex align-items-center justify-content-center" style="height: 500px;">
+                <div class="bg-light rounded-4 d-flex align-items-center justify-content-center" style="height: 400px;">
                     <p class="text-muted">No images available</p>
                 </div>
             }
@@ -149,12 +267,18 @@
 
         <!-- Property Quick Info -->
         <div class="col-lg-4 fade-in" style="animation-delay: 0.3s;">
-            <div class="property-info-card">
+            <div class="property-info-card sidebar-card">
                 <div class="card-body p-4">
-                    <h2 class="card-title fw-bold mb-2 gradient-text">@Model.Property.Title</h2>
+                    @if (Model.Property.Agent == null)
+                    {
+                        <div class="verified-badge mb-3">
+                            <i class="bi bi-patch-check-fill"></i> Verified Property
+                        </div>
+                    }
+                    <h2 class="card-title fw-bold mb-2">@Model.Property.Title</h2>
                     <p class="text-muted mb-3"><i class="bi bi-geo-alt me-2"></i>@Model.Property.Address</p>
                     
-                    <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-4">
                         <span class="badge bg-primary py-2 px-3">@Model.Property.PropertyType</span>
                         <span class="badge bg-success py-2 px-3">@Model.Property.Status</span>
                         <span class="badge bg-info py-2 px-3">For @Model.Property.SellingType</span>
@@ -162,43 +286,16 @@
                     
                     <h3 class="gradient-text fw-bold mb-4 fs-2">₱@Model.Property.Price.ToString("N0")@(Model.Property.SellingType == "Rent" ? "/mo" : "")</h3>
                     
-                    <div class="row text-center g-3 mb-4">
-                        <div class="col-4">
-                            <div class="p-3 border rounded-4 h-100">
-                                <div class="property-feature-icon mx-auto">
-                                    <i class="bi bi-building"></i>
-                                </div>
-                                <div class="small">@Model.Property.TotalFloors Floors</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="p-3 border rounded-4 h-100">
-                                <div class="property-feature-icon mx-auto">
-                                    <i class="bi bi-rulers"></i>
-                                </div>
-                                <div class="small">@Model.Property.Size m²</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="p-3 border rounded-4 h-100">
-                                <div class="property-feature-icon mx-auto">
-                                    <i class="bi bi-calendar"></i>
-                                </div>
-                                <div class="small">@Model.Property.CreatedAt.Year</div>
-                            </div>
-                        </div>
-                    </div>
-                    
                     @if (Model.IsUserLoggedIn)
                     {
                         <div class="d-grid gap-3 mt-4">
-                            <button class="btn btn-success py-3" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                            <button class="btn btn-gradient-alt action-button" data-bs-toggle="modal" data-bs-target="#scheduleModal">
                                 <i class="bi bi-calendar-plus me-2"></i>Schedule Viewing
                             </button>
-                            <button class="btn btn-outline-primary py-3" data-bs-toggle="modal" data-bs-target="#inquiryModal">
+                            <button class="btn btn-gradient action-button" data-bs-toggle="modal" data-bs-target="#inquiryModal">
                                 <i class="bi bi-chat-left-text me-2"></i>Send Inquiry
                             </button>
-                            <button class="btn @(Model.Property.SellingType == "Rent" ? "btn-gradient" : "btn-gradient") py-3" data-bs-toggle="modal" data-bs-target="#actionModal">
+                            <button class="btn btn-gradient action-button" data-bs-toggle="modal" data-bs-target="#actionModal">
                                 <i class="bi @(Model.Property.SellingType == "Rent" ? "bi-house-check" : "bi-bag-check") me-2"></i>
                                 @(Model.Property.SellingType == "Rent" ? "Rent Now" : "Buy Now")
                             </button>
@@ -213,139 +310,153 @@
                     }
                 </div>
             </div>
+                </div>
+            </div>
 
-            <!-- Agent Info -->
-            @if (Model.Property.Agent != null)
-            {
-                <div class="property-info-card mt-4 fade-in" style="animation-delay: 0.5s;">
-                    <div class="card-body p-4">
-                        <h5 class="detail-section-title">Listed by</h5>
-                        <div class="d-flex align-items-center">
-                            @if (!string.IsNullOrEmpty(Model.Property.Agent.ProfilePictureUrl))
-                            {
-                                <img src="@Model.Property.Agent.ProfilePictureUrl" class="rounded-circle me-3" alt="Agent" width="70" height="70" style="object-fit: cover; border: 3px solid #f8f9fa;">
-                            }
-                            else
-                            {
-                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                     style="width: 70px; height: 70px; background: var(--primary-gradient);">
-                                    <i class="bi bi-person text-white" style="font-size: 1.8rem;"></i>
-                                </div>
-                            }
+    <!-- Content Layout Section -->
+    <div class="row mt-2">
+        <!-- Left Column - Property Details -->
+        <div class="col-lg-8">
+            <!-- Property Details -->
+            <div class="property-section mb-4 fade-in" style="animation-delay: 0.6s;">
+                <h3 class="detail-section-title">Property Details</h3>
+                <div class="row g-4">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="bi bi-house"></i>
+                            </div>
                             <div>
-                                <h6 class="mb-2 fw-bold">@Model.Property.Agent.FirstName @Model.Property.Agent.LastName</h6>
-                                <p class="text-muted mb-1 small">
-                                    <i class="bi bi-telephone me-2"></i>@Model.Property.Agent.PhoneNumber
-                                </p>
-                                <p class="text-muted mb-0 small">
-                                    <i class="bi bi-envelope me-2"></i>@Model.Property.Agent.Email
-                                </p>
+                                <div class="detail-label">Type</div>
+                                <div class="detail-value">@Model.Property.PropertyType</div>
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="bi bi-rulers"></i>
+                            </div>
+                            <div>
+                                <div class="detail-label">Size</div>
+                                <div class="detail-value">@Model.Property.Size m²</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="bi bi-building"></i>
+                            </div>
+                            <div>
+                                <div class="detail-label">Total Floors</div>
+                                <div class="detail-value">@Model.Property.TotalFloors</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="bi bi-tag"></i>
+                                </div>
+                            <div>
+                                <div class="detail-label">Status</div>
+                                <div class="detail-value">@Model.Property.Status</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="bi bi-calendar"></i>
+                            </div>
+                            <div>
+                                <div class="detail-label">Listed</div>
+                                <div class="detail-value">@Model.Property.CreatedAt.ToString("MMM dd, yyyy")</div>
                 </div>
-            }
         </div>
     </div>
-
-    <!-- Property Details -->
-    <div class="row mt-5">
-        <div class="col-lg-8 fade-in" style="animation-delay: 0.6s;">
-            <div class="property-info-card mb-4">
-                <div class="card-header bg-white p-4 border-0">
-                    <h4 class="mb-0 detail-section-title">Property Details</h4>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="bi bi-cash"></i>
+                            </div>
+                            <div>
+                                <div class="detail-label">Price</div>
+                                <div class="detail-value">₱@Model.Property.Price.ToString("N0")@(Model.Property.SellingType == "Rent" ? "/mo" : "")</div>
                 </div>
-                <div class="card-body p-4">
-                    <div class="row mb-5">
-                        <div class="col-md-6">
-                            <ul class="list-unstyled">
-                                <li class="mb-3 p-2 rounded-3 hover-light">
-                                    <i class="bi bi-house me-3 text-primary"></i>
-                                    <strong>Type:</strong> @Model.Property.PropertyType
-                                </li>
-                                <li class="mb-3 p-2 rounded-3 hover-light">
-                                    <i class="bi bi-rulers me-3 text-primary"></i>
-                                    <strong>Size:</strong> @Model.Property.Size m²
-                                </li>
-                                <li class="mb-3 p-2 rounded-3 hover-light">
-                                    <i class="bi bi-building me-3 text-primary"></i>
-                                    <strong>Total Floors:</strong> @Model.Property.TotalFloors
-                                </li>
-                                <li class="mb-3 p-2 rounded-3 hover-light">
-                                    <i class="bi bi-tag me-3 text-primary"></i>
-                                    <strong>Status:</strong> @Model.Property.Status
-                                </li>
-                            </ul>
                         </div>
-                        <div class="col-md-6">
-                            <ul class="list-unstyled">
-                                <li class="mb-3 p-2 rounded-3 hover-light">
-                                    <i class="bi bi-calendar me-3 text-primary"></i>
-                                    <strong>Listed:</strong> @Model.Property.CreatedAt.ToString("MMM dd, yyyy")
-                                </li>
-                                <li class="mb-3 p-2 rounded-3 hover-light">
-                                    <i class="bi bi-cash me-3 text-primary"></i>
-                                    <strong>Price:</strong> ₱@Model.Property.Price.ToString("N0")@(Model.Property.SellingType == "Rent" ? "/mo" : "")
-                                </li>
-                                <li class="mb-3 p-2 rounded-3 hover-light">
-                                    <i class="bi bi-shop me-3 text-primary"></i>
-                                    <strong>For:</strong> @Model.Property.SellingType
-                                </li>
-                            </ul>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="bi bi-shop"></i>
+                            </div>
+                            <div>
+                                <div class="detail-label">For</div>
+                                <div class="detail-value">@Model.Property.SellingType</div>
+                            </div>
+                        </div>
+                    </div>
                         </div>
                     </div>
 
-                    <h5 class="detail-section-title">Rooms & Spaces</h5>
-                    <div class="row g-4 mb-5">
+            <!-- Rooms & Spaces -->
+            <div class="property-section mb-4 fade-in" style="animation-delay: 0.7s;">
+                <h3 class="detail-section-title">Rooms & Spaces</h3>
+                <div class="row g-4 text-center">
                         <div class="col col-md col-lg" style="min-width: 120px;">
-                            <div class="p-3 border rounded-4 text-center h-100 property-info-card">
+                        <div class="property-info-card p-3">
                                 <div class="property-feature-icon mx-auto">
                                     <i class="bi bi-door-closed"></i>
-                                </div>
-                                <div class="mt-2 fw-bold">@Model.Property.Bedrooms</div>
-                                <div class="small text-muted">Bedrooms</div>
+                            </div>
+                            <div class="mt-2 fw-bold fs-4">@Model.Property.Bedrooms</div>
+                            <div class="text-muted">Bedrooms</div>
                             </div>
                         </div>
                         <div class="col col-md col-lg" style="min-width: 120px;">
-                            <div class="p-3 border rounded-4 text-center h-100 property-info-card">
+                        <div class="property-info-card p-3">
                                 <div class="property-feature-icon mx-auto">
                                     <i class="bi bi-water"></i>
-                                </div>
-                                <div class="mt-2 fw-bold">@Model.Property.Bathrooms</div>
-                                <div class="small text-muted">Bathrooms</div>
+                            </div>
+                            <div class="mt-2 fw-bold fs-4">@Model.Property.Bathrooms</div>
+                            <div class="text-muted">Bathrooms</div>
                             </div>
                         </div>
                         <div class="col col-md col-lg" style="min-width: 120px;">
-                            <div class="p-3 border rounded-4 text-center h-100 property-info-card">
+                        <div class="property-info-card p-3">
                                 <div class="property-feature-icon mx-auto">
                                     <i class="bi bi-cup-hot"></i>
-                                </div>
-                                <div class="mt-2 fw-bold">@Model.Property.Kitchen</div>
-                                <div class="small text-muted">Kitchen</div>
+                            </div>
+                            <div class="mt-2 fw-bold fs-4">@Model.Property.Kitchen</div>
+                            <div class="text-muted">Kitchen</div>
                             </div>
                         </div>
                         <div class="col col-md col-lg" style="min-width: 120px;">
-                            <div class="p-3 border rounded-4 text-center h-100 property-info-card">
+                        <div class="property-info-card p-3">
                                 <div class="property-feature-icon mx-auto">
                                     <i class="bi bi-people"></i>
-                                </div>
-                                <div class="mt-2 fw-bold">@Model.Property.Hall</div>
-                                <div class="small text-muted">Hall</div>
+                            </div>
+                            <div class="mt-2 fw-bold fs-4">@Model.Property.Hall</div>
+                            <div class="text-muted">Hall</div>
                             </div>
                         </div>
                         <div class="col col-md col-lg" style="min-width: 120px;">
-                            <div class="p-3 border rounded-4 text-center h-100 property-info-card">
+                        <div class="property-info-card p-3">
                                 <div class="property-feature-icon mx-auto">
                                     <i class="bi bi-door-open"></i>
-                                </div>
-                                <div class="mt-2 fw-bold">@Model.Property.Balcony</div>
-                                <div class="small text-muted">Balcony</div>
+                            </div>
+                            <div class="mt-2 fw-bold fs-4">@Model.Property.Balcony</div>
+                            <div class="text-muted">Balcony</div>
+                        </div>
                             </div>
                         </div>
                     </div>
 
-                    <h5 class="detail-section-title">Amenities</h5>
-                    <div class="row mb-5">
+            <!-- Amenities -->
+            <div class="property-section mb-4 fade-in" style="animation-delay: 0.8s;">
+                <h3 class="detail-section-title">Amenities</h3>
+                <div class="row">
                         <div class="col-md-6">
                             <ul class="list-unstyled">
                                 <li class="mb-3 p-3 rounded-4 amenity-item @(Model.Property.HasSwimmingPool ? "bg-light" : "")">
@@ -377,16 +488,22 @@
                                     <span class="@(Model.Property.HasCCTV ? "fw-medium" : "text-muted")">CCTV</span>
                                 </li>
                             </ul>
+                    </div>
                         </div>
                     </div>
 
-                    <h5 class="detail-section-title">Description</h5>
-                    <div class="mb-5 p-3 rounded-4 bg-light">
+            <!-- Description -->
+            <div class="property-section mb-4 fade-in" style="animation-delay: 0.9s;">
+                <h3 class="detail-section-title">Description</h3>
+                <div class="p-3 rounded-4 bg-light">
                         @Html.Raw(Model.Property.Content)
+                </div>
                     </div>
 
-                    <h5 class="detail-section-title">Location</h5>
-                    <div class="ratio ratio-16x9 mb-4 rounded-4 overflow-hidden shadow-sm">
+            <!-- Location -->
+            <div class="property-section mb-4 fade-in" style="animation-delay: 1s;">
+                <h3 class="detail-section-title">Location</h3>
+                <div class="ratio ratio-16x9 rounded-4 overflow-hidden shadow-sm">
                         <iframe 
                             src="https://maps.google.com/maps?q=@Uri.EscapeDataString(Model.Property.Address)&t=&z=13&ie=UTF8&iwloc=&output=embed" 
                             frameborder="0" 
@@ -397,15 +514,61 @@
                     </div>
                 </div>
             </div>
+
+        <!-- Right Column - Agent Info -->
+        <div class="col-lg-4">
+            <!-- Listed By Section -->
+            <div class="property-section mb-4 fade-in" style="animation-delay: 0.6s;">
+                <h3 class="detail-section-title">Listed by</h3>
+                @if (Model.Property.Agent != null)
+                {
+                    <div class="d-flex align-items-center">
+                        @if (!string.IsNullOrEmpty(Model.Property.Agent.ProfilePictureUrl))
+                        {
+                            <img src="@Model.Property.Agent.ProfilePictureUrl" class="rounded-circle me-3" alt="Agent" width="70" height="70" style="object-fit: cover; border: 3px solid #f8f9fa;">
+                        }
+                        else
+                        {
+                            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                 style="width: 70px; height: 70px; background: var(--primary-gradient);">
+                                <i class="bi bi-person text-white" style="font-size: 1.8rem;"></i>
+                            </div>
+                        }
+                        <div>
+                            <h6 class="mb-2 fw-bold">@Model.Property.Agent.FirstName @Model.Property.Agent.LastName</h6>
+                            <p class="text-muted mb-1 small">
+                                <i class="bi bi-telephone me-2"></i>@Model.Property.Agent.PhoneNumber
+                            </p>
+                            <p class="text-muted mb-0 small">
+                                <i class="bi bi-envelope me-2"></i>@Model.Property.Agent.Email
+                            </p>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                             style="width: 70px; height: 70px; background: var(--primary-gradient);">
+                            <i class="bi bi-shield text-white" style="font-size: 1.8rem;"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-2 fw-bold">EstateEase Official</h6>
+                            <p class="text-muted mb-1 small">
+                                <i class="bi bi-patch-check-fill me-2 text-primary"></i>Verified Property
+                            </p>
+                            <p class="text-muted mb-0 small">
+                                <i class="bi bi-envelope me-2"></i>sales@estateease.com
+                            </p>
+                        </div>
+                    </div>
+                }
         </div>
 
-        <div class="col-lg-4 fade-in" style="animation-delay: 0.7s;">
-            <!-- Similar Properties -->
-            <div class="property-info-card mb-4">
-                <div class="card-header bg-white p-4 border-0">
-                    <h4 class="mb-0 detail-section-title">Similar Properties</h4>
-                </div>
-                <div class="card-body p-4">
+            <!-- Contact Actions - Replaced with Similar Properties -->
+            <div class="property-section mb-4 fade-in" style="animation-delay: 0.7s;">
+                <h3 class="detail-section-title">Similar Properties</h3>
+                
                     @if (Model.SimilarProperties != null && Model.SimilarProperties.Any())
                     {
                         <div class="similar-properties">
@@ -433,7 +596,7 @@
                                                     @property.Title
                                                 </a>
                                             </h6>
-                                            <div class="small text-primary mb-1">₱@property.Price.ToString("N0")@(property.SellingType == "Rent" ? "/mo" : "")</div>
+                                        <div class="text-primary mb-1 fw-bold">₱@property.Price.ToString("N0")@(property.SellingType == "Rent" ? "/mo" : "")</div>
                                             <div class="d-flex gap-2 mt-2">
                                                 <span class="badge bg-light text-dark">@property.Bedrooms <i class="bi bi-door-closed small"></i></span>
                                                 <span class="badge bg-light text-dark">@property.Bathrooms <i class="bi bi-water small"></i></span>
@@ -444,7 +607,7 @@
                                 </div>
                             }
                             
-                            <div class="text-center mt-4">
+                        <div class="text-center mt-3">
                                 <a asp-controller="Home" asp-action="Properties" asp-route-propertyType="@Model.Property.PropertyType" class="btn btn-sm btn-outline-primary rounded-pill px-4">
                                     See More Similar Properties
                                 </a>
@@ -453,7 +616,7 @@
                     }
                     else
                     {
-                        <div class="text-center py-4">
+                    <div class="text-center py-3">
                             <div class="property-feature-icon mx-auto mb-3" style="width: 60px; height: 60px;">
                                 <i class="bi bi-houses fs-4"></i>
                             </div>
@@ -463,7 +626,6 @@
                             </a>
                         </div>
                     }
-                </div>
             </div>
         </div>
     </div>
@@ -482,6 +644,20 @@
                 <div class="modal-body">
                     <form id="scheduleForm">
                         <input type="hidden" id="propertyId" value="@Model.Property.Id">
+                        
+                        @if (Model.Property.Agent == null)
+                        {
+                            <div class="alert alert-info rounded-3 mb-4">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <i class="bi bi-info-circle-fill"></i>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0">This is an official EstateEase listing. Your viewing request will be handled by our in-house team.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                         
                         <div class="mb-4">
                             <label for="appointmentDate" class="form-label fw-medium">Preferred Date</label>
@@ -502,37 +678,6 @@
                 <div class="modal-footer border-0">
                     <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-gradient rounded-3 px-4 py-2" id="submitAppointment">Schedule Viewing</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Send Inquiry Modal -->
-    <div class="modal fade" id="inquiryModal" tabindex="-1" aria-labelledby="inquiryModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0 shadow">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title gradient-text" id="inquiryModalLabel">Send Inquiry</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="inquiryForm">
-                        <input type="hidden" id="inquiryPropertyId" value="@Model.Property.Id">
-                        
-                        <div class="mb-4">
-                            <label for="inquirySubject" class="form-label fw-medium">Subject</label>
-                            <input type="text" class="form-control rounded-3 py-2" id="inquirySubject" required placeholder="Question about @Model.Property.Title">
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label for="inquiryMessage" class="form-label fw-medium">Message</label>
-                            <textarea class="form-control rounded-3" id="inquiryMessage" rows="5" required placeholder="Your questions about this property..."></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-gradient rounded-3 px-4 py-2" id="submitInquiry">Send Inquiry</button>
                 </div>
             </div>
         </div>
@@ -575,6 +720,25 @@
                             </div>
                         </div>
                         
+                        @if (Model.Property.Agent == null)
+                        {
+                            <div class="mb-4">
+                                <div class="alert alert-success rounded-3">
+                                    <div class="d-flex">
+                                        <div class="me-3">
+                                            <i class="bi bi-shield-check fs-3"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Direct from EstateEase</h6>
+                                            <p class="mb-0">
+                                                This property is managed directly by EstateEase. All payments will be securely processed through our platform.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        
                         <div class="mb-4">
                             <label class="form-label fw-medium">Payment Method</label>
                             <div class="form-check mb-2">
@@ -609,9 +773,40 @@
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn @(Model.Property.SellingType == "Rent" ? "btn-success" : "btn-primary") rounded-3 px-4 py-2" id="submitAction">
+                    <button type="button" class="btn btn-gradient rounded-3 px-4 py-2" id="submitAction">
                         @(Model.Property.SellingType == "Rent" ? "Proceed with Rental" : "Proceed with Purchase")
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Send Inquiry Modal -->
+    <div class="modal fade" id="inquiryModal" tabindex="-1" aria-labelledby="inquiryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title gradient-text" id="inquiryModalLabel">Send Inquiry</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="inquiryForm">
+                        <input type="hidden" id="inquiryPropertyId" value="@Model.Property.Id">
+                        
+                        <div class="mb-4">
+                            <label for="inquirySubject" class="form-label fw-medium">Subject</label>
+                            <input type="text" class="form-control rounded-3 py-2" id="inquirySubject" required placeholder="Question about @Model.Property.Title">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="inquiryMessage" class="form-label fw-medium">Message</label>
+                            <textarea class="form-control rounded-3" id="inquiryMessage" rows="5" required placeholder="Your questions about this property..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-gradient rounded-3 px-4 py-2" id="submitInquiry">Send Inquiry</button>
                 </div>
             </div>
         </div>
@@ -650,7 +845,7 @@
                     }
                     
                     // Here you would add the AJAX call to submit the inquiry
-                    alert("Inquiry sent! The agent will respond to you soon.");
+                    alert("Inquiry sent! " + (@Model.Property.Agent != null ? "The agent" : "Our team") + " will respond to you soon.");
                     $("#inquiryModal").modal("hide");
                 });
                 
@@ -673,8 +868,17 @@
                         paymentText = "Mortgage/Home Loan";
                     }
                     
+                    const isAdminListing = @(Model.Property.Agent == null ? "true" : "false");
+                    let confirmationMessage = "";
+                    
+                    if (isAdminListing) {
+                        confirmationMessage = "Your @(Model.Property.SellingType == "Rent" ? "rental" : "purchase") request has been submitted with " + paymentText + " as your payment method.\nThe EstateEase team will process your payment and contact you shortly.";
+                    } else {
+                        confirmationMessage = "Your @(Model.Property.SellingType == "Rent" ? "rental" : "purchase") request has been submitted with " + paymentText + " as your payment method.\nOur team will contact you shortly to proceed with the transaction.";
+                    }
+                    
                     // Here you would add the AJAX call to submit the action
-                    alert("Your @(Model.Property.SellingType == "Rent" ? "rental" : "purchase") request has been submitted with " + paymentText + " as your payment method.\nOur team will contact you shortly to proceed with the transaction.");
+                    alert(confirmationMessage);
                     $("#actionModal").modal("hide");
                 });
                 </text>

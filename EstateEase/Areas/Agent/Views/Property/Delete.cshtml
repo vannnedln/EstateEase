@@ -1,0 +1,177 @@
+@model EstateEase.Models.Entities.Property
+@{
+    ViewData["Title"] = "Delete Property";
+    Layout = "_AgentLayout";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header position-relative overflow-hidden py-4"
+                     style="background: linear-gradient(45deg, #ff4f4f, #e21a1a);">
+                    <h5 class="card-title mb-0 fw-bold ps-2 text-white">
+                        <i class="bi bi-trash me-2"></i>Delete Property
+                    </h5>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-exclamation-triangle display-1 text-white"></i>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 shadow-sm"
+                             role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-circle-fill fs-4 me-2"></i>
+                                <div>@TempData["Error"]</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <div class="alert alert-danger border-0 rounded-3 shadow-sm mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                            <div>
+                                <h5 class="alert-heading">Warning: This action cannot be undone!</h5>
+                                <p class="mb-0">You are about to permanently delete this property and all its associated images. This action cannot be reversed.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="property-details mb-4">
+                        <h4 class="text-danger">Property Details</h4>
+                        <hr />
+                        <dl class="row">
+                            <dt class="col-sm-3">Title</dt>
+                            <dd class="col-sm-9">@Model.Title</dd>
+
+                            <dt class="col-sm-3">Property Type</dt>
+                            <dd class="col-sm-9">@Model.PropertyType</dd>
+
+                            <dt class="col-sm-3">Address</dt>
+                            <dd class="col-sm-9">@Model.Address</dd>
+
+                            <dt class="col-sm-3">Price</dt>
+                            <dd class="col-sm-9">₱@Model.Price.ToString("N2")</dd>
+
+                            <dt class="col-sm-3">Status</dt>
+                            <dd class="col-sm-9">@Model.Status</dd>
+
+                            <dt class="col-sm-3">Images</dt>
+                            <dd class="col-sm-9">@(Model.PropertyImages?.Count ?? 0) images will be deleted</dd>
+                        </dl>
+                    </div>
+
+                    <div class="images-preview mb-4">
+                        <h5 class="text-danger">Images to be deleted</h5>
+                        <div class="row g-3">
+                            @if (Model.PropertyImages != null && Model.PropertyImages.Any())
+                            {
+                                foreach (var image in Model.PropertyImages.Take(4)) // Show up to 4 images as preview
+                                {
+                                    <div class="col-md-3">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="card-body p-0" style="height: 150px; overflow: hidden;">
+                                                <img src="@Url.Content(image.ImagePath)" class="card-img"
+                                                     alt="@image.ImageType"
+                                                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;"
+                                                     onerror="this.src='/uploads/properties/placeholder.jpg'; this.onerror=null;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Model.PropertyImages.Count > 4)
+                                {
+                                    <div class="col-md-3">
+                                        <div class="card h-100 border-0 shadow-sm bg-light d-flex justify-content-center align-items-center" style="height: 150px;">
+                                            <div class="text-center p-3">
+                                                <h5>+@(Model.PropertyImages.Count - 4)</h5>
+                                                <p class="mb-0">more images</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        No images found for this property.
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <form method="post" class="d-flex justify-content-end gap-3">
+                        <a asp-action="PropertyList" class="btn btn-light btn-lg px-4">
+                            <i class="bi bi-x-lg me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger btn-lg px-4">
+                            <i class="bi bi-trash me-2"></i>Delete Property
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        :root {
+            --danger-gradient: linear-gradient(45deg, #ff4f4f, #e21a1a);
+        }
+        
+        .property-details dt {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .property-details dd {
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn-danger {
+            background: var(--danger-gradient);
+            border: none;
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #e01b1b, #a51515);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+        
+        .alert-danger {
+            border-left: 4px solid #dc3545;
+        }
+
+        /* Base Animation States */
+        .card {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+        }
+
+        /* Animation Classes */
+        .card.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+} 
+
+@section Scripts {
+    <script>
+        // Card animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const card = document.querySelector('.card');
+            card.classList.add('animate');
+        });
+    </script>
+} 
