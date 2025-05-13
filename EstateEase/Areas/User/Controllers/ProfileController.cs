@@ -93,21 +93,24 @@ namespace EstateEase.Areas.User.Controllers
                 userProfile = new Models.Entities.UserProfile
                 {
                     UserId = userId,
-                    CreatedAt = System.DateTime.UtcNow
+                    CreatedAt = System.DateTime.UtcNow,
+                    Bio = model.Bio ?? ""
                 };
                 isNewProfile = true;
             }
-
-            // Update profile data
-            userProfile.FirstName = model.FirstName;
-            userProfile.LastName = model.LastName;
-            userProfile.Address = model.AddressLine1;
-            userProfile.Barangay = model.AddressLine2;
-            userProfile.City = model.City;
-            userProfile.PostalCode = model.PostalCode;
-            userProfile.Country = model.Country;
-            userProfile.Bio = model.Bio;
-            userProfile.UpdatedAt = System.DateTime.UtcNow;
+            else
+            {
+                // Update profile data
+                userProfile.FirstName = model.FirstName;
+                userProfile.LastName = model.LastName;
+                userProfile.Address = model.AddressLine1;
+                userProfile.Barangay = model.AddressLine2;
+                userProfile.City = model.City;
+                userProfile.PostalCode = model.PostalCode;
+                userProfile.Country = model.Country;
+                userProfile.Bio = model.Bio ?? userProfile.Bio ?? "";
+                userProfile.UpdatedAt = System.DateTime.UtcNow;
+            }
 
             if (isNewProfile)
             {
@@ -136,6 +139,6 @@ namespace EstateEase.Areas.User.Controllers
         public string City { get; set; }
         public string PostalCode { get; set; }
         public string Country { get; set; }
-        public string Bio { get; set; }
+        public string Bio { get; set; } = "";
     }
 } 

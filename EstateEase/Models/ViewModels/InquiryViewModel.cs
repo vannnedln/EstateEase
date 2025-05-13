@@ -20,7 +20,7 @@ namespace EstateEase.Models.ViewModels
         [Display(Name = "Client Phone")]
         public string ClientPhone { get; set; }
 
-        public int? PropertyId { get; set; }
+        public string PropertyId { get; set; }
 
         [Display(Name = "Property Title")]
         public string PropertyTitle { get; set; }

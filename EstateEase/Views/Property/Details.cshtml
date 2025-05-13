@@ -859,6 +859,7 @@
                 <div class="modal-body">
                     <form id="inquiryForm">
                         <input type="hidden" id="inquiryPropertyId" value="@Model.Property.Id">
+                        @Html.AntiForgeryToken()
                         
                         <div class="mb-4">
                             <label for="inquirySubject" class="form-label fw-medium">Subject</label>

@@ -17,6 +17,7 @@ namespace EstateEase.Data
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<UserProperty> UserProperties { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Inquiry> Inquiries { get; set; }
     
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -73,6 +74,10 @@ namespace EstateEase.Data
                 
             builder.Entity<UserProfile>()
                 .Property(up => up.ProfilePictureUrl)
+                .IsRequired(false);
+                
+            builder.Entity<UserProfile>()
+                .Property(up => up.Bio)
                 .IsRequired(false);
 
             // Configure one-to-many relationship between Agent and Properties

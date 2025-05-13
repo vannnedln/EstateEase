@@ -62,7 +62,7 @@
                                 <h6 class="text-muted mb-2">Inquiry Details</h6>
                                 <p><strong>Subject:</strong> @Model.Subject</p>
                                 <p><strong>Received:</strong> @Model.CreatedAt.ToString("MMM dd, yyyy hh:mm tt")</p>
-                                @if (Model.PropertyId.HasValue)
+                                @if (!string.IsNullOrEmpty(Model.PropertyId))
                                 {
                                     <div class="d-flex align-items-center mt-3">
                                         <div class="property-image rounded me-2" style="background-image: url('/images/property-placeholder.jpg')"></div>
