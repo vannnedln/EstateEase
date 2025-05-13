@@ -35,14 +35,6 @@ namespace EstateEase.Models.Entities
         [StringLength(50)]
         public string LicenseNumber { get; set; }
 
-        [EmailAddress]
-        [StringLength(100)]
-        public string Email { get; set; }
-
-        [Phone]
-        [StringLength(20)]
-        public string PhoneNumber { get; set; }
-
         public DateTime? DateOfBirth { get; set; }
 
         [StringLength(500)]
