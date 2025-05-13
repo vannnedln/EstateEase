@@ -1000,7 +1000,7 @@ namespace EstateEase.Areas.Agent.Controllers
                 ProfilePictureUrl = agent.ProfilePictureUrl
             };
 
-            return View(viewModel);
+            return View("ViewProperty", viewModel);
         }
 
         [HttpPost]

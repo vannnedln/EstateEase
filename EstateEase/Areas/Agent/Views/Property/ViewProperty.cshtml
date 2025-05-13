@@ -42,43 +42,7 @@
                         </div>
                     }
 
-                    <!-- Agent Contact Information -->
-                    <div class="section mb-5">
-                        <h5 class="text-primary fw-bold mb-4">
-                            <i class="bi bi-person-badge me-2"></i>Agent Information
-                        </h5>
-                        <div class="row g-4">
-                            <div class="col-12">
-                                <div class="card border-0 rounded-4 shadow-sm">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center">
-                                            @if (!string.IsNullOrEmpty(ViewBag.Agent.ProfilePictureUrl))
-                                            {
-                                                <img src="@ViewBag.Agent.ProfilePictureUrl" class="rounded-circle me-3" alt="Agent" 
-                                                     width="70" height="70" style="object-fit: cover; border: 3px solid #f8f9fa;">
-                                            }
-                                            else
-                                            {
-                                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                                     style="width: 70px; height: 70px; background: var(--primary-gradient);">
-                                                    <i class="bi bi-person text-white" style="font-size: 1.8rem;"></i>
-                                                </div>
-                                            }
-                                            <div>
-                                                <h6 class="mb-2 fw-bold">@ViewBag.Agent.FirstName @ViewBag.Agent.LastName</h6>
-                                                <p class="text-muted mb-1 small">
-                                                    <i class="bi bi-telephone me-2"></i>@(string.IsNullOrEmpty(ViewBag.Agent.PhoneNumber) ? "No phone number" : ViewBag.Agent.PhoneNumber)
-                                                </p>
-                                                <p class="text-muted mb-0 small">
-                                                    <i class="bi bi-envelope me-2"></i>@(string.IsNullOrEmpty(ViewBag.Agent.Email) ? "No email address" : ViewBag.Agent.Email)
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
 
                     <!-- Basic Information -->
                     <div class="section mb-5">
@@ -501,26 +465,6 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(79, 90, 255, 0.4);
         }
-
-        /* Base Animation States */
-        .card, .section {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease-out;
-        }
-
-        /* Animation Classes */
-        .card.animate, .section.animate {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Staggered Animations for Sections */
-        .section:nth-child(1) { transition-delay: 0.2s; }
-        .section:nth-child(2) { transition-delay: 0.3s; }
-        .section:nth-child(3) { transition-delay: 0.4s; }
-        .section:nth-child(4) { transition-delay: 0.5s; }
-        .section:nth-child(5) { transition-delay: 0.6s; }
     </style>
 }
 
@@ -528,12 +472,6 @@
     <script>
         // Image modal functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Apply animations
-            document.querySelector('.card').classList.add('animate');
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.add('animate');
-            });
-            
             // Get the modal elements
             const modal = document.getElementById('imageViewModal');
             const modalTitle = document.getElementById('imageViewModalLabel');
