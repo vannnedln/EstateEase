@@ -4,38 +4,89 @@
     Layout = "_UserLayout";
 }
 
-<div class="container-fluid p-0">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold mb-0">My Properties</h2>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="content-title">My Properties</h2>
+            <p class="text-muted">Manage and view all your real estate assets in one place</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="#" class="btn btn-primary rounded-pill">
+                <i class="bi bi-search me-2"></i> Browse New Properties
+            </a>
+        </div>
     </div>
 
-    <!-- Filter and Stats -->
-    <div class="dashboard-card p-4 mb-4">
-        <div class="row g-4 align-items-center">
-            <div class="col-md-6">
-                <div class="d-flex gap-2">
-                    <a asp-action="Index" asp-route-ownershipFilter="All" 
-                       class="btn @(Model.OwnershipFilter == "All" ? "btn-primary" : "btn-outline-primary")">
-                        All (@Model.TotalCount)
-                    </a>
-                    <a asp-action="Index" asp-route-ownershipFilter="Bought" 
-                       class="btn @(Model.OwnershipFilter == "Bought" ? "btn-primary" : "btn-outline-primary")">
-                        Owned (@Model.OwnedCount)
-                    </a>
-                    <a asp-action="Index" asp-route-ownershipFilter="Rented" 
-                       class="btn @(Model.OwnershipFilter == "Rented" ? "btn-primary" : "btn-outline-primary")">
-                        Rented (@Model.RentedCount)
-                    </a>
+    <!-- Properties Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="dashboard-card p-4 h-100 position-relative overflow-hidden" style="background: linear-gradient(45deg, #4f5aff, #6f74ff);">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0 text-white">Total Properties</h5>
+                </div>
+                <h3 class="mb-0 fw-bold text-white">@Model.TotalCount</h3>
+                <p class="mb-0 text-white text-opacity-75">Properties in your portfolio</p>
+                <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                    <i class="bi bi-houses display-1 text-white"></i>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="d-flex justify-content-md-end">
-                    <div class="input-group" style="max-width: 300px;">
-                        <input type="text" class="form-control" placeholder="Search properties...">
-                        <button class="btn btn-outline-primary" type="button">
-                            <i class="bi bi-search"></i>
-                        </button>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-card p-4 h-100 position-relative overflow-hidden" style="background: linear-gradient(45deg, #f59e0b, #f97316);">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0 text-white">Owned</h5>
+                </div>
+                <h3 class="mb-0 fw-bold text-white">@Model.OwnedCount</h3>
+                <p class="mb-0 text-white text-opacity-75">Properties that you own</p>
+                <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                    <i class="bi bi-house-check display-1 text-white"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-card p-4 h-100 position-relative overflow-hidden" style="background: linear-gradient(45deg, #9f1ae2, #b54deb);">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0 text-white">Rented</h5>
+                </div>
+                <h3 class="mb-0 fw-bold text-white">@Model.RentedCount</h3>
+                <p class="mb-0 text-white text-opacity-75">Properties that you're renting</p>
+                <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                    <i class="bi bi-house-gear display-1 text-white"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter and Search -->
+    <div class="dashboard-card mb-4">
+        <div class="p-4">
+            <div class="row g-4 align-items-center">
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <a asp-action="Index" asp-route-ownershipFilter="All" 
+                           class="btn @(Model.OwnershipFilter == "All" ? "btn-primary" : "btn-outline-secondary")">
+                            All <span class="badge bg-white text-primary ms-1">@Model.TotalCount</span>
+                        </a>
+                        <a asp-action="Index" asp-route-ownershipFilter="Bought" 
+                           class="btn @(Model.OwnershipFilter == "Bought" ? "btn-primary" : "btn-outline-secondary")">
+                            Owned <span class="badge bg-white text-primary ms-1">@Model.OwnedCount</span>
+                        </a>
+                        <a asp-action="Index" asp-route-ownershipFilter="Rented" 
+                           class="btn @(Model.OwnershipFilter == "Rented" ? "btn-primary" : "btn-outline-secondary")">
+                            Rented <span class="badge bg-white text-primary ms-1">@Model.RentedCount</span>
+                        </a>
                     </div>
+                </div>
+                <div class="col-md-6">
+                    <form method="get" class="d-flex justify-content-md-end">
+                        <div class="input-group" style="max-width: 300px;">
+                            <input type="text" name="searchTerm" class="form-control" placeholder="Search properties..." 
+                                   value="@ViewBag.SearchTerm">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -47,16 +98,22 @@
         <div class="row g-4">
             @foreach (var property in Model.Properties)
             {
-                <div class="col-md-4">
-                    <div class="dashboard-card h-100">
-                        <div class="position-relative">
-                            <img src="@Url.Content(property.ImageUrl)" class="property-thumbnail" alt="@property.Title">
-                            <span class="badge position-absolute top-0 end-0 m-3 @(property.OwnershipType == "Bought" ? "bg-success" : "bg-primary")">
-                                @property.OwnershipType
-                            </span>
+                <div class="col-md-6 col-lg-4">
+                    <div class="dashboard-card h-100 overflow-hidden border-0 shadow-sm">
+                        <div class="position-relative overflow-hidden" style="height: 220px;">
+                            <img src="@Url.Content(property.ImageUrl)" class="w-100 h-100 object-fit-cover" alt="@property.Title">
+                            <div class="position-absolute top-0 start-0 w-100 p-3 d-flex justify-content-between align-items-start">
+                                <span class="badge px-3 py-2 rounded-pill" 
+                                      style="background: linear-gradient(45deg, @(property.OwnershipType == "Bought" ? "#f59e0b, #f97316" : "#4f5aff, #9f1ae2"));">
+                                    @(property.OwnershipType == "Bought" ? "Owned" : "Rented")
+                                </span>
+                                <button class="btn btn-sm btn-light rounded-circle shadow-sm" data-bs-toggle="tooltip" title="Add to favorites">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="p-3">
-                            <h5 class="fw-bold mb-2">@property.Title</h5>
+                        <div class="p-4">
+                            <h5 class="fw-bold mb-2 text-truncate">@property.Title</h5>
                             <p class="text-muted mb-3 small">
                                 <i class="bi bi-geo-alt me-1"></i>@property.Address
                             </p>
@@ -82,36 +139,62 @@
                                 </div>
                             </div>
                             
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div class="text-muted small">
-                                    <i class="bi bi-calendar3 me-1"></i>
-                                    @if (property.OwnershipType == "Bought")
-                                    {
-                                        <span>Purchased: @property.AcquisitionDate.ToString("MMM dd, yyyy")</span>
-                                    }
-                                    else
-                                    {
-                                        <span>
-                                            Rented: @property.AcquisitionDate.ToString("MMM dd, yyyy")
-                                            @if (property.ExpiryDate.HasValue)
-                                            {
-                                                <span>- @property.ExpiryDate.Value.ToString("MMM dd, yyyy")</span>
-                                            }
-                                        </span>
-                                    }
-                                </div>
+                            <div class="mb-3 text-muted small">
+                                <i class="bi bi-calendar3 me-1"></i>
+                                @if (property.OwnershipType == "Bought")
+                                {
+                                    <span>Purchased: <strong>@property.AcquisitionDate.ToString("MMM dd, yyyy")</strong></span>
+                                }
+                                else
+                                {
+                                    <span>
+                                        Rented: <strong>@property.AcquisitionDate.ToString("MMM dd, yyyy")</strong>
+                                        @if (property.ExpiryDate.HasValue)
+                                        {
+                                            <span>- <strong>@property.ExpiryDate.Value.ToString("MMM dd, yyyy")</strong></span>
+                                        }
+                                    </span>
+                                }
                             </div>
                             
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="fw-semibold text-primary fs-5">₱@property.Price.ToString("N0")</div>
-                                <a asp-action="Details" asp-route-id="@property.Id" class="btn btn-sm btn-primary">
-                                    View Details
-                                </a>
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div class="fw-semibold fs-5" style="color: var(--primary);">₱@property.Price.ToString("N0")</div>
+                                <div class="btn-group">
+                                    <a asp-action="Details" asp-route-id="@property.Id" class="btn btn-primary">
+                                        <i class="bi bi-eye me-1"></i> Details
+                                    </a>
+                                    <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="visually-hidden">Toggle Dropdown</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-calendar-check me-2"></i>Schedule Visit</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>Remove</a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             }
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            <nav aria-label="Properties pagination">
+                <ul class="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     }
     else
@@ -122,7 +205,71 @@
             </div>
             <h4>No Properties Found</h4>
             <p class="text-muted mb-4">You don't have any properties in this category yet.</p>
-            <a href="#" class="btn btn-primary">Browse Properties</a>
+            <a href="#" class="btn btn-primary rounded-pill">
+                <i class="bi bi-search me-2"></i> Browse Properties
+            </a>
         </div>
     }
-</div> 
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltips.forEach(tooltip => {
+                new bootstrap.Tooltip(tooltip);
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        .content-title {
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-card {
+            background: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .dashboard-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            transform: translateY(-3px);
+        }
+        
+        .object-fit-cover {
+            object-fit: cover;
+        }
+        
+        .card-header {
+            border-bottom: none;
+        }
+        
+        .text-opacity-75 {
+            opacity: 0.75;
+        }
+        
+        .btn-group .btn {
+            border-radius: 0.5rem;
+            margin-right: 0.25rem;
+        }
+        
+        .pagination .page-link {
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+    </style>
+} 
