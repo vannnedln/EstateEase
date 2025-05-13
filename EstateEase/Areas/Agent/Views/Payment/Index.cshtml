@@ -12,18 +12,18 @@
                     <h4 class="mb-1 fw-bold">Payment History</h4>
                     <p class="text-muted">View your commission earnings and transaction history</p>
                 </div>
-                <div>
-                    <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#filterModal">
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#filterModal">
                         <i class="bi bi-funnel me-2"></i>Filter
                     </button>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="dropdown">
+                        <button class="btn btn-primary rounded-pill dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-file-earmark-arrow-down me-2"></i>Export
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-excel me-2"></i>Excel</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-pdf me-2"></i>PDF</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-printer me-2"></i>Print</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="exportDropdown">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-excel me-2 text-success"></i>Excel</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-pdf me-2 text-danger"></i>PDF</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-printer me-2 text-primary"></i>Print</a></li>
                         </ul>
                     </div>
                 </div>
@@ -31,71 +31,75 @@
         </div>
     </div>
 
-    <!-- Summary Stats Cards -->
+    <!-- Summary Cards -->
     <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100 fade-in">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 me-3">
-                            <div class="avatar-sm rounded-circle bg-primary bg-opacity-10 p-3">
-                                <i class="bi bi-currency-dollar text-primary fs-4"></i>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 dashboard-card shadow-sm h-100 fade-in">
+                <div class="card-body position-relative p-0">
+                    <div class="card-overlay gradient-primary"></div>
+                    <div class="card-content p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-white mb-1 text-uppercase">Total Earnings</p>
+                                <h2 class="fw-bold text-white mb-0">₱333,625.00</h2>
                             </div>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h5 class="fw-semibold mb-1">$24,568.00</h5>
-                            <p class="text-muted mb-0">Total Earnings</p>
+                            <div class="card-icon-lg">
+                                <i class="bi bi-currency-exchange"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100 fade-in">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 me-3">
-                            <div class="avatar-sm rounded-circle bg-success bg-opacity-10 p-3">
-                                <i class="bi bi-calendar-check text-success fs-4"></i>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 dashboard-card shadow-sm h-100 fade-in">
+                <div class="card-body position-relative p-0">
+                    <div class="card-overlay gradient-success"></div>
+                    <div class="card-content p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-white mb-1 text-uppercase">This Month</p>
+                                <h2 class="fw-bold text-white mb-0">₱138,625.00</h2>
                             </div>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h5 class="fw-semibold mb-1">$5,245.00</h5>
-                            <p class="text-muted mb-0">This Month</p>
+                            <div class="card-icon-lg">
+                                <i class="bi bi-calendar-check"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100 fade-in">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 me-3">
-                            <div class="avatar-sm rounded-circle bg-info bg-opacity-10 p-3">
-                                <i class="bi bi-house-check text-info fs-4"></i>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 dashboard-card shadow-sm h-100 fade-in">
+                <div class="card-body position-relative p-0">
+                    <div class="card-overlay gradient-info"></div>
+                    <div class="card-content p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-white mb-1 text-uppercase">Transactions</p>
+                                <h2 class="fw-bold text-white mb-0">@(Model?.Count() ?? 0)</h2>
                             </div>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h5 class="fw-semibold mb-1">12</h5>
-                            <p class="text-muted mb-0">Completed Transactions</p>
+                            <div class="card-icon-lg">
+                                <i class="bi bi-receipt"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100 fade-in">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 me-3">
-                            <div class="avatar-sm rounded-circle bg-warning bg-opacity-10 p-3">
-                                <i class="bi bi-percent text-warning fs-4"></i>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 dashboard-card shadow-sm h-100 fade-in">
+                <div class="card-body position-relative p-0">
+                    <div class="card-overlay gradient-warning"></div>
+                    <div class="card-content p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-white mb-1 text-uppercase">Commission Rate</p>
+                                <h2 class="fw-bold text-white mb-0">3.0%</h2>
                             </div>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h5 class="fw-semibold mb-1">2.5%</h5>
-                            <p class="text-muted mb-0">Average Commission</p>
+                            <div class="card-icon-lg">
+                                <i class="bi bi-percent"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -103,17 +107,105 @@
         </div>
     </div>
 
+    <!-- Transaction Type Distribution Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 fade-in">
+                <div class="card-header gradient-primary text-white p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">Transaction Overview</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-light dropdown-toggle rounded-pill" type="button" id="timeframeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-calendar3 me-2"></i>This Month
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="timeframeDropdown">
+                                <li><a class="dropdown-item" href="#">This Week</a></li>
+                                <li><a class="dropdown-item" href="#">This Month</a></li>
+                                <li><a class="dropdown-item" href="#">This Quarter</a></li>
+                                <li><a class="dropdown-item" href="#">This Year</a></li>
+                                <li><a class="dropdown-item" href="#">All Time</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="chart-container" style="position: relative; height: 180px;">
+                                <!-- This would be a chart in real application -->
+                                <div class="text-center pt-4">
+                                    <div class="pie-chart-placeholder">
+                                        <div class="pie-segment segment-sales" style="transform: rotate(0deg);"></div>
+                                        <div class="pie-segment segment-rentals" style="transform: rotate(225deg);"></div>
+                                        <div class="chart-center">
+                                            <span>@(Model?.Count() ?? 0)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-semibold mb-3">Transaction Breakdown</h6>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="color-indicator bg-success me-2"></div>
+                                    <span>Sales</span>
+                                </div>
+                                <div>
+                                    <span class="fw-semibold">@(Model?.Count(p => p.TransactionType == "Sale") ?? 0)</span>
+                                    <span class="text-muted ms-1">(@(Model?.Any() == true ? Math.Round((double)Model.Count(p => p.TransactionType == "Sale") / Model.Count() * 100, 0) : 0)%)</span>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="color-indicator bg-info me-2"></div>
+                                    <span>Rentals</span>
+                                </div>
+                                <div>
+                                    <span class="fw-semibold">@(Model?.Count(p => p.TransactionType == "Rental") ?? 0)</span>
+                                    <span class="text-muted ms-1">(@(Model?.Any() == true ? Math.Round((double)Model.Count(p => p.TransactionType == "Rental") / Model.Count() * 100, 0) : 0)%)</span>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="color-indicator bg-secondary me-2"></div>
+                                    <span>Other</span>
+                                </div>
+                                <div>
+                                    <span class="fw-semibold">@(Model?.Count(p => p.TransactionType != "Sale" && p.TransactionType != "Rental") ?? 0)</span>
+                                    <span class="text-muted ms-1">(@(Model?.Any() == true ? Math.Round((double)Model.Count(p => p.TransactionType != "Sale" && p.TransactionType != "Rental") / Model.Count() * 100, 0) : 0)%)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Table -->
     <div class="row">
         <div class="col-12">
-            <div class="card border-0 shadow-sm fade-in">
+            <div class="card border-0 shadow-sm rounded-4 fade-in">
+                <div class="card-header gradient-primary text-white p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">Recent Transactions</h5>
+                        <div class="search-container">
+                            <div class="input-group search-group">
+                                <span class="input-group-text bg-transparent border-0 text-white"><i class="bi bi-search"></i></span>
+                                <input type="text" id="paymentSearch" class="form-control bg-transparent border-0 text-white" placeholder="Search transactions...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table id="paymentTable" class="table table-hover align-middle mb-0">
-                            <thead class="bg-light">
+                            <thead class="table-light">
                                 <tr>
-                                    <th style="width: 60px;">ID</th>
+                                    <th>ID</th>
                                     <th>Property</th>
-                                    <th>Transaction Type</th>
+                                    <th>Type</th>
                                     <th>Amount</th>
                                     <th>Commission</th>
                                     <th>Client</th>
@@ -126,35 +218,49 @@
                                 {
                                     @foreach (var payment in Model)
                                     {
-                                        string typeClass = payment.TransactionType == "Sale" ? "badge bg-success bg-opacity-10 text-success" :
-                                            payment.TransactionType == "Rental" ? "badge bg-info bg-opacity-10 text-info" :
-                                            "badge bg-secondary bg-opacity-10 text-secondary";
+                                        string typeClass = payment.TransactionType == "Sale" ? "badge bg-success-subtle text-success" :
+                                            payment.TransactionType == "Rental" ? "badge bg-info-subtle text-info" :
+                                            "badge bg-secondary-subtle text-secondary";
                                         
                                         <tr>
-                                            <td>@payment.Id</td>
+                                            <td><span class="text-primary fw-semibold">#@payment.Id</span></td>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <div class="bg-light rounded" style="width: 40px; height: 40px; overflow: hidden;">
+                                                    <div class="avatar-property me-3">
                                                         <img src="@(string.IsNullOrEmpty(payment.PropertyImageUrl) ? "/images/property-placeholder.jpg" : payment.PropertyImageUrl)" 
-                                                            alt="Property" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                                                            alt="Property" class="img-fluid">
                                                     </div>
-                                                    <div class="ms-3">
+                                                    <div>
                                                         <h6 class="mb-1 fw-semibold text-truncate" style="max-width: 200px;">@payment.PropertyTitle</h6>
                                                         <p class="text-muted small mb-0 text-truncate" style="max-width: 200px;">@payment.PropertyAddress</p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td><span class="@typeClass">@payment.TransactionType</span></td>
-                                            <td>@payment.Amount.ToString("C2")</td>
-                                            <td>@payment.Commission.ToString("C2") (@payment.CommissionPercentage%)</td>
-                                            <td>@payment.ClientName</td>
+                                            <td class="fw-semibold">₱@payment.Amount.ToString("#,##0.00")</td>
+                                            <td class="text-success fw-semibold">₱@payment.Commission.ToString("#,##0.00")</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-circle me-2">
+                                                        @if (!string.IsNullOrEmpty(payment.ClientName))
+                                                        {
+                                                            <span>@(payment.ClientName[0].ToString().ToUpper())</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>U</span>
+                                                        }
+                                                    </div>
+                                                    <span>@payment.ClientName</span>
+                                                </div>
+                                            </td>
                                             <td>@payment.TransactionDate.ToString("MMM dd, yyyy")</td>
                                             <td>
-                                                <div class="d-flex gap-1">
-                                                    <a asp-action="Details" asp-route-id="@payment.Id" class="btn btn-sm btn-outline-info">
+                                                <div class="action-buttons">
+                                                    <a asp-action="Details" asp-route-id="@payment.Id" class="btn btn-sm btn-light rounded-circle" title="View Details">
                                                         <i class="bi bi-eye"></i>
                                                     </a>
-                                                    <a asp-action="Download" asp-route-id="@payment.Id" class="btn btn-sm btn-outline-primary">
+                                                    <a asp-action="Download" asp-route-id="@payment.Id" class="btn btn-sm btn-primary rounded-circle" title="Download Invoice">
                                                         <i class="bi bi-download"></i>
                                                     </a>
                                                 </div>
@@ -166,10 +272,12 @@
                                 {
                                     <tr>
                                         <td colspan="8" class="text-center py-5">
-                                            <div class="d-flex flex-column align-items-center">
-                                                <i class="bi bi-cash-coin text-muted mb-3" style="font-size: 3rem;"></i>
-                                                <h5 class="fw-normal text-muted mb-2">No payment history found</h5>
-                                                <p class="text-muted mb-3">You don't have any completed transactions yet.</p>
+                                            <div class="empty-state">
+                                                <div class="empty-state-icon">
+                                                    <i class="bi bi-cash-coin"></i>
+                                                </div>
+                                                <h5>No payment history found</h5>
+                                                <p class="text-muted">You don't have any completed transactions yet.</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -186,16 +294,16 @@
 <!-- Filter Modal -->
 <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header gradient-primary text-white border-0">
                 <h5 class="modal-title" id="filterModalLabel">Filter Payments</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form>
                     <div class="mb-3">
-                        <label for="dateRangeFilter" class="form-label">Date Range</label>
-                        <select class="form-select" id="dateRangeFilter">
+                        <label for="dateRangeFilter" class="form-label fw-semibold">Date Range</label>
+                        <select class="form-select rounded-3" id="dateRangeFilter">
                             <option value="all">All Time</option>
                             <option value="today">Today</option>
                             <option value="week">This Week</option>
@@ -205,8 +313,8 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="transactionTypeFilter" class="form-label">Transaction Type</label>
-                        <select class="form-select" id="transactionTypeFilter">
+                        <label for="transactionTypeFilter" class="form-label fw-semibold">Transaction Type</label>
+                        <select class="form-select rounded-3" id="transactionTypeFilter">
                             <option value="all" selected>All Types</option>
                             <option value="sale">Sale</option>
                             <option value="rental">Rental</option>
@@ -214,30 +322,271 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="amountMinFilter" class="form-label">Amount Range</label>
+                        <label for="amountRangeFilter" class="form-label fw-semibold">Amount Range</label>
                         <div class="row g-2">
                             <div class="col">
-                                <input type="number" class="form-control" id="amountMinFilter" placeholder="Min">
+                                <div class="input-group">
+                                    <span class="input-group-text">₱</span>
+                                    <input type="number" class="form-control rounded-end" id="amountMinFilter" placeholder="Min">
+                                </div>
                             </div>
                             <div class="col">
-                                <input type="number" class="form-control" id="amountMaxFilter" placeholder="Max">
+                                <div class="input-group">
+                                    <span class="input-group-text">₱</span>
+                                    <input type="number" class="form-control rounded-end" id="amountMaxFilter" placeholder="Max">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary">Apply Filters</button>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary rounded-pill">Apply Filters</button>
             </div>
         </div>
     </div>
 </div>
 
+@section Styles {
+    <style>
+        /* Gradient colors */
+        .gradient-primary {
+            background: linear-gradient(135deg, #2937f0 0%, #9f1ae2 100%);
+        }
+        
+        .gradient-success {
+            background: linear-gradient(135deg, #0cbc87 0%, #09845f 100%);
+        }
+        
+        .gradient-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #0f798c 100%);
+        }
+        
+        .gradient-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        }
+        
+        /* Card styling */
+        .card {
+            overflow: hidden;
+            border-radius: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .card-header {
+            border-bottom: 0;
+        }
+        
+        .rounded-4 {
+            border-radius: 16px !important;
+        }
+        
+        /* Dashboard cards */
+        .dashboard-card {
+            position: relative;
+            cursor: pointer;
+            height: 100%;
+        }
+        
+        .card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .card-content {
+            position: relative;
+            z-index: 2;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .card-icon-lg {
+            font-size: 3.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover .card-icon-lg {
+            transform: scale(1.2);
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Search styling */
+        .search-container {
+            max-width: 250px;
+        }
+        
+        .search-group {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+        }
+        
+        .search-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .search-group input:focus {
+            box-shadow: none;
+        }
+        
+        /* Avatar styling */
+        .avatar-circle {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #2937f0 0%, #9f1ae2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .avatar-property {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+        
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .action-buttons .btn {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+        
+        /* Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Badge styling */
+        .badge {
+            padding: 0.5em 1em;
+            font-weight: 500;
+            border-radius: 50px;
+        }
+        
+        /* Pie chart placeholder */
+        .pie-chart-placeholder {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: #f1f1f1;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        
+        .pie-segment {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .segment-sales {
+            background: linear-gradient(135deg, #0cbc87 0%, #09845f 100%);
+            clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 50% 100%);
+        }
+        
+        .segment-rentals {
+            background: linear-gradient(135deg, #17a2b8 0%, #0f798c 100%);
+            clip-path: polygon(50% 50%, 50% 0%, 0% 0%, 0% 100%, 50% 100%);
+        }
+        
+        .chart-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .color-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        
+        /* Customize scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 8px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 8px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+}
+
 @section Scripts {
     <script>
         $(document).ready(function() {
-            $('#paymentTable').DataTable({
+            // Initialize DataTable
+            var table = $('#paymentTable').DataTable({
+                "dom": '<"top"f>rt<"bottom"ip>',
                 "responsive": true,
                 "lengthMenu": [10, 25, 50, 100],
                 "language": {
@@ -246,11 +595,21 @@
                     "lengthMenu": "_MENU_ transactions per page"
                 }
             });
-
+            
+            // Use the custom search box
+            $('#paymentSearch').on('keyup', function() {
+                table.search(this.value).draw();
+            });
+            
             // Animation
             setTimeout(function() {
                 $('.fade-in').addClass('show');
             }, 100);
+            
+            // Filter dropdown events
+            $('#dateRangeFilter, #transactionTypeFilter').on('change', function() {
+                // This would implement actual filtering in a full application
+            });
         });
     </script>
 } 
