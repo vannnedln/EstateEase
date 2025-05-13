@@ -34,180 +34,108 @@ namespace EstateEase.Areas.User.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var userId = _userManager.GetUserId(User);
+            
+            var identityUser = await _userManager.FindByIdAsync(userId);
+            if (identityUser == null)
             {
                 return NotFound();
             }
 
-            // Join data from both AspNetUsers and UserProfiles tables
-            var userWithProfile = await (from u in _context.Users
-                                        where u.Id == user.Id
-                                        join p in _context.UserProfiles on u.Id equals p.UserId into profileJoin
-                                        from profile in profileJoin.DefaultIfEmpty()
-                                        select new { User = u, Profile = profile }).FirstOrDefaultAsync();
+            // Get the user profile from UserProfiles table
+            var userProfile = await _context.UserProfiles
+                .FirstOrDefaultAsync(p => p.UserId == userId);
 
-            var model = new UserSettingsViewModel
+            // Create the view model with data from both tables
+            var viewModel = new UserSettingsViewModel
             {
-                Id = userWithProfile.User.Id,
-                Email = userWithProfile.User.Email,
-                PhoneNumber = userWithProfile.User.PhoneNumber
+                Id = userId,
+                Email = identityUser.Email,
+                PhoneNumber = identityUser.PhoneNumber
             };
 
-            if (userWithProfile.Profile != null)
+            // If user profile exists, populate the view model with profile data
+            if (userProfile != null)
             {
-                // Populate all fields from UserProfile entity
-                model.FirstName = userWithProfile.Profile.FirstName;
-                model.LastName = userWithProfile.Profile.LastName;
-                model.Birthday = userWithProfile.Profile.Birthday;
-                model.Address = userWithProfile.Profile.Address;
-                model.Barangay = userWithProfile.Profile.Barangay;
-                model.City = userWithProfile.Profile.City;
-                model.PostalCode = userWithProfile.Profile.PostalCode;
-                model.Country = userWithProfile.Profile.Country;
-                model.CurrentProfilePictureUrl = userWithProfile.Profile.ProfilePictureUrl ?? "/images/avatar-01.png";
-            }
-            else
-            {
-                // Default values for users without a profile
-                model.FirstName = "";
-                model.LastName = "";
-                model.Address = "";
-                model.Barangay = "";
-                model.City = "";
-                model.PostalCode = "";
-                model.Country = "Philippines"; // Default country
-                model.CurrentProfilePictureUrl = "/images/avatar-01.png";
+                viewModel.FirstName = userProfile.FirstName;
+                viewModel.LastName = userProfile.LastName;
+                viewModel.Address = userProfile.Address;
+                viewModel.Barangay = userProfile.Barangay;
+                viewModel.City = userProfile.City;
+                viewModel.PostalCode = userProfile.PostalCode;
+                viewModel.Country = userProfile.Country;
+                viewModel.Birthday = userProfile.Birthday;
+                viewModel.CurrentProfilePictureUrl = userProfile.ProfilePictureUrl;
+                viewModel.Bio = userProfile.Bio;
             }
 
-            return View(model);
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(UserSettingsViewModel model)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                // Disable model validation temporarily to allow nullable fields
-                // but keep required validation
-                var keysToRemove = ModelState.Keys
-                    .Where(k => k != "Id" && k != "Email")
-                    .ToList();
-                    
-                foreach (var key in keysToRemove)
-                {
-                    ModelState.Remove(key);
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
-
-                var user = await _userManager.GetUserAsync(User);
-                if (user == null)
-                {
-                    return NotFound();
-                }
-
-                // Update AspNetUsers fields
-                user.PhoneNumber = string.IsNullOrWhiteSpace(model.PhoneNumber) ? null : model.PhoneNumber;
-                
-                var result = await _userManager.UpdateAsync(user);
-                if (!result.Succeeded)
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-                    return View(model);
-                }
-
-                // Get or create UserProfile
-                var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == user.Id);
-                bool isNewProfile = false;
-                
-                if (userProfile == null)
-                {
-                    userProfile = new UserProfile
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        UserId = user.Id,
-                        CreatedAt = DateTime.Now
-                    };
-                    isNewProfile = true;
-                }
-
-                // Update profile picture if provided as part of the form submission
-                if (model.ProfilePicture != null && model.ProfilePicture.Length > 0)
-                {
-                    try
-                    {
-                        // Create unique filename
-                        string uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(model.ProfilePicture.FileName)}";
-                        string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "users");
-                        
-                        // Create directory if it doesn't exist
-                        if (!Directory.Exists(uploadsFolder))
-                        {
-                            Directory.CreateDirectory(uploadsFolder);
-                        }
-                        
-                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                        
-                        // Save the file
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await model.ProfilePicture.CopyToAsync(fileStream);
-                        }
-                        
-                        userProfile.ProfilePictureUrl = $"/uploads/users/{uniqueFileName}";
-                    }
-                    catch (Exception ex)
-                    {
-                        // Log the error but continue with the rest of the profile update
-                        // This way, even if image upload fails, other profile data is still updated
-                        ModelState.AddModelError("ProfilePicture", $"Profile picture upload failed: {ex.Message}");
-                    }
-                }
-                else if (!string.IsNullOrEmpty(model.CurrentProfilePictureUrl))
-                {
-                    // Keep existing profile picture if available
-                    userProfile.ProfilePictureUrl = model.CurrentProfilePictureUrl;
-                }
-
-                // Update UserProfile properties
-                userProfile.FirstName = string.IsNullOrWhiteSpace(model.FirstName) ? "(No name)" : model.FirstName;
-                userProfile.LastName = string.IsNullOrWhiteSpace(model.LastName) ? string.Empty : model.LastName;
-                userProfile.Birthday = model.Birthday; // Already nullable
-                userProfile.Address = string.IsNullOrWhiteSpace(model.Address) ? null : model.Address;
-                userProfile.Barangay = string.IsNullOrWhiteSpace(model.Barangay) ? null : model.Barangay;
-                userProfile.City = string.IsNullOrWhiteSpace(model.City) ? null : model.City;
-                userProfile.PostalCode = string.IsNullOrWhiteSpace(model.PostalCode) ? null : model.PostalCode;
-                userProfile.Country = string.IsNullOrWhiteSpace(model.Country) ? "Philippines" : model.Country;
-                userProfile.UpdatedAt = DateTime.Now;
-
-                // Add or update the profile
-                if (isNewProfile)
-                {
-                    _context.UserProfiles.Add(userProfile);
-                }
-                else
-                {
-                    _context.UserProfiles.Update(userProfile);
-                }
-
-                await _context.SaveChangesAsync();
-
-                TempData["Success"] = "Profile settings updated successfully";
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
                 return View(model);
             }
+
+            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Update phone number in AspNetUsers
+            if (user.PhoneNumber != model.PhoneNumber)
+            {
+                user.PhoneNumber = model.PhoneNumber;
+                await _userManager.UpdateAsync(user);
+            }
+
+            // Get or create user profile
+            var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
+            bool isNewProfile = false;
+
+            if (userProfile == null)
+            {
+                userProfile = new UserProfile
+                {
+                    UserId = userId,
+                    CreatedAt = DateTime.UtcNow
+                };
+                isNewProfile = true;
+            }
+
+            // Update user profile
+            userProfile.FirstName = model.FirstName;
+            userProfile.LastName = model.LastName;
+            userProfile.Address = model.Address;
+            userProfile.Barangay = model.Barangay;
+            userProfile.City = model.City;
+            userProfile.PostalCode = model.PostalCode;
+            userProfile.Country = model.Country;
+            userProfile.Birthday = model.Birthday;
+            userProfile.ProfilePictureUrl = model.CurrentProfilePictureUrl;
+            userProfile.Bio = model.Bio;
+            userProfile.UpdatedAt = DateTime.UtcNow;
+            
+            if (isNewProfile)
+            {
+                _context.UserProfiles.Add(userProfile);
+            }
+            else
+            {
+                _context.UserProfiles.Update(userProfile);
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Profile settings updated successfully!";
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -219,84 +147,81 @@ namespace EstateEase.Areas.User.Controllers
                 return Json(new { success = false, message = "No file uploaded" });
             }
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            // Validate file type
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var extension = Path.GetExtension(profilePicture.FileName).ToLowerInvariant();
+            
+            if (!allowedExtensions.Contains(extension))
             {
-                return Json(new { success = false, message = "User not found" });
+                return Json(new { success = false, message = "Invalid file type. Allowed types: .jpg, .jpeg, .png, .gif" });
+            }
+
+            // Validate file size (max 5MB)
+            if (profilePicture.Length > 5 * 1024 * 1024)
+            {
+                return Json(new { success = false, message = "File size exceeds the limit of 5MB" });
             }
 
             try
             {
-                // Get or create UserProfile
-                var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == user.Id);
-                bool isNewProfile = false;
+                var userId = _userManager.GetUserId(User);
+                var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
+                
+                // Create directory if it doesn't exist
+                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "profiles");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                // Generate unique filename
+                var fileName = $"{userId}_{DateTime.UtcNow.Ticks}{extension}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                // Delete old profile picture if exists
+                if (userProfile != null && !string.IsNullOrEmpty(userProfile.ProfilePictureUrl))
+                {
+                    var oldFilePath = Path.Combine(_webHostEnvironment.WebRootPath, userProfile.ProfilePictureUrl.TrimStart('/'));
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                }
+
+                // Save new profile picture
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await profilePicture.CopyToAsync(fileStream);
+                }
+
+                // Update user profile
+                var pictureUrl = $"/uploads/profiles/{fileName}";
                 
                 if (userProfile == null)
                 {
                     userProfile = new UserProfile
                     {
-                        Id = Guid.NewGuid().ToString(),
-                        UserId = user.Id,
-                        FirstName = "(No name)",
-                        LastName = "",
-                        CreatedAt = DateTime.Now,
-                        Country = "Philippines"
+                        UserId = userId,
+                        ProfilePictureUrl = pictureUrl,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
                     };
-                    isNewProfile = true;
-                }
-
-                // Get file extension and validate
-                var extension = Path.GetExtension(profilePicture.FileName).ToLowerInvariant();
-                string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
-                
-                if (!allowedExtensions.Contains(extension))
-                {
-                    return Json(new { success = false, message = "Invalid file format. Only JPG, PNG and GIF images are allowed." });
-                }
-
-                // Create unique filename
-                string uniqueFileName = $"{Guid.NewGuid()}{extension}";
-                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "users");
-                
-                // Create directory if it doesn't exist
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-                
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                
-                // Save the file
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await profilePicture.CopyToAsync(fileStream);
-                }
-                
-                // Update profile picture URL
-                userProfile.ProfilePictureUrl = $"/uploads/users/{uniqueFileName}";
-                userProfile.UpdatedAt = DateTime.Now;
-
-                // Add or update the profile
-                if (isNewProfile)
-                {
                     _context.UserProfiles.Add(userProfile);
                 }
                 else
                 {
+                    userProfile.ProfilePictureUrl = pictureUrl;
+                    userProfile.UpdatedAt = DateTime.UtcNow;
                     _context.UserProfiles.Update(userProfile);
                 }
 
                 await _context.SaveChangesAsync();
 
-                return Json(new { 
-                    success = true, 
-                    message = "Profile picture updated successfully",
-                    pictureUrl = userProfile.ProfilePictureUrl
-                });
+                return Json(new { success = true, pictureUrl = pictureUrl });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"Error: {ex.Message}" });
+                return Json(new { success = false, message = $"Error uploading profile picture: {ex.Message}" });
             }
         }
     }
@@ -315,8 +240,6 @@ namespace EstateEase.Areas.User.Controllers
         public string Country { get; set; }
         public DateTime? Birthday { get; set; }
         public string CurrentProfilePictureUrl { get; set; }
-        
-        [Display(Name = "Profile Picture")]
-        public IFormFile ProfilePicture { get; set; }
+        public string Bio { get; set; }
     }
 } 

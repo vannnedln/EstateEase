@@ -1,8 +1,8 @@
+using EstateEase.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace EstateEase.Areas.User.Controllers
@@ -11,38 +11,53 @@ namespace EstateEase.Areas.User.Controllers
     [Authorize(Roles = "User")]
     public class ProfileController : Controller
     {
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public ProfileController(UserManager<IdentityUser> userManager)
+        public ProfileController(
+            ApplicationDbContext context,
+            UserManager<IdentityUser> userManager)
         {
+            _context = context;
             _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var userId = _userManager.GetUserId(User);
+            
+            // Get user from AspNetUsers
+            var identityUser = await _userManager.FindByIdAsync(userId);
+            if (identityUser == null)
             {
                 return NotFound();
             }
 
-            var claims = await _userManager.GetClaimsAsync(user);
-            
-            var model = new UserProfileViewModel
+            // Get the user profile from UserProfiles table
+            var userProfile = await _context.UserProfiles
+                .FirstOrDefaultAsync(p => p.UserId == userId);
+
+            // Create the view model with data from both tables
+            var viewModel = new UserProfileViewModel
             {
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                FirstName = claims.FirstOrDefault(c => c.Type == "FirstName")?.Value,
-                LastName = claims.FirstOrDefault(c => c.Type == "LastName")?.Value,
-                AddressLine1 = claims.FirstOrDefault(c => c.Type == "AddressLine1")?.Value,
-                AddressLine2 = claims.FirstOrDefault(c => c.Type == "AddressLine2")?.Value,
-                City = claims.FirstOrDefault(c => c.Type == "City")?.Value,
-                PostalCode = claims.FirstOrDefault(c => c.Type == "PostalCode")?.Value,
-                Country = claims.FirstOrDefault(c => c.Type == "Country")?.Value,
-                Bio = claims.FirstOrDefault(c => c.Type == "Bio")?.Value
+                Email = identityUser.Email,
+                PhoneNumber = identityUser.PhoneNumber
             };
 
-            return View(model);
+            // If user profile exists, populate the view model with profile data
+            if (userProfile != null)
+            {
+                viewModel.FirstName = userProfile.FirstName;
+                viewModel.LastName = userProfile.LastName;
+                viewModel.AddressLine1 = userProfile.Address;
+                viewModel.AddressLine2 = userProfile.Barangay;
+                viewModel.City = userProfile.City;
+                viewModel.PostalCode = userProfile.PostalCode;
+                viewModel.Country = userProfile.Country;
+                viewModel.Bio = userProfile.Bio;
+            }
+
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -54,51 +69,59 @@ namespace EstateEase.Areas.User.Controllers
                 return View(model);
             }
 
-            var user = await _userManager.GetUserAsync(User);
+            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.FindByIdAsync(userId);
+            
             if (user == null)
             {
                 return NotFound();
             }
 
-            user.PhoneNumber = model.PhoneNumber;
-            
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
+            // Update phone number in AspNetUsers
+            if (user.PhoneNumber != model.PhoneNumber)
             {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-                return View(model);
+                user.PhoneNumber = model.PhoneNumber;
+                await _userManager.UpdateAsync(user);
             }
 
-            // Get current claims
-            var claims = await _userManager.GetClaimsAsync(user);
-            
-            // Update all profile claims
-            await UpdateClaim(user, claims, "FirstName", model.FirstName);
-            await UpdateClaim(user, claims, "LastName", model.LastName);
-            await UpdateClaim(user, claims, "AddressLine1", model.AddressLine1);
-            await UpdateClaim(user, claims, "AddressLine2", model.AddressLine2);
-            await UpdateClaim(user, claims, "City", model.City);
-            await UpdateClaim(user, claims, "PostalCode", model.PostalCode);
-            await UpdateClaim(user, claims, "Country", model.Country);
-            await UpdateClaim(user, claims, "Bio", model.Bio);
+            // Get or create user profile
+            var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
+            bool isNewProfile = false;
+
+            if (userProfile == null)
+            {
+                userProfile = new Models.Entities.UserProfile
+                {
+                    UserId = userId,
+                    CreatedAt = System.DateTime.UtcNow
+                };
+                isNewProfile = true;
+            }
+
+            // Update profile data
+            userProfile.FirstName = model.FirstName;
+            userProfile.LastName = model.LastName;
+            userProfile.Address = model.AddressLine1;
+            userProfile.Barangay = model.AddressLine2;
+            userProfile.City = model.City;
+            userProfile.PostalCode = model.PostalCode;
+            userProfile.Country = model.Country;
+            userProfile.Bio = model.Bio;
+            userProfile.UpdatedAt = System.DateTime.UtcNow;
+
+            if (isNewProfile)
+            {
+                _context.UserProfiles.Add(userProfile);
+            }
+            else
+            {
+                _context.UserProfiles.Update(userProfile);
+            }
+
+            await _context.SaveChangesAsync();
 
             TempData["Success"] = "Profile updated successfully";
             return RedirectToAction(nameof(Index));
-        }
-
-        private async Task UpdateClaim(IdentityUser user, IList<Claim> currentClaims, string claimType, string claimValue)
-        {
-            var existingClaim = currentClaims.FirstOrDefault(c => c.Type == claimType);
-            
-            if (existingClaim != null)
-            {
-                await _userManager.RemoveClaimAsync(user, existingClaim);
-            }
-            
-            await _userManager.AddClaimAsync(user, new Claim(claimType, claimValue ?? string.Empty));
         }
     }
 

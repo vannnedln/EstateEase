@@ -179,6 +179,14 @@
                                             <span asp-validation-for="Birthday" class="text-danger"></span>
                                         </div>
                                     </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <textarea asp-for="Bio" class="form-control rounded-3" placeholder="Enter your bio" style="height: 120px;"></textarea>
+                                            <label asp-for="Bio">Bio</label>
+                                            <span asp-validation-for="Bio" class="text-danger"></span>
+                                            <small class="text-muted">Tell something about yourself. This will be visible on your profile page.</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -259,6 +267,7 @@
     <input type="hidden" asp-for="PostalCode" />
     <input type="hidden" asp-for="Country" />
     <input type="hidden" asp-for="Birthday" />
+    <input type="hidden" asp-for="Bio" />
     <input type="hidden" name="ProfilePicture" id="hiddenProfilePicture" />
 </form>
 

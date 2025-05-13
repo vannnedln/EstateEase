@@ -52,6 +52,9 @@ namespace EstateEase.Models.Entities
         [StringLength(500)]
         public string ProfilePictureUrl { get; set; }
         
+        [StringLength(1000)]
+        public string Bio { get; set; } = null;
+        
         // Computed property for full name
         [NotMapped]
         public string FullName => $"{FirstName} {LastName}";
