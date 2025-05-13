@@ -16,7 +16,9 @@ namespace EstateEase.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var agents = await _context.Agents.ToListAsync();
+            var agents = await _context.Agents
+                .Include(a => a.User)
+                .ToListAsync();
             return View(agents);
         }
     }

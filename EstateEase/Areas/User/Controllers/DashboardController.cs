@@ -56,23 +56,6 @@ namespace EstateEase.Areas.User.Controllers
                                 : "/uploads/properties/placeholder.jpg")
                             : "/uploads/properties/placeholder.jpg"
                     })
-                    .ToListAsync(),
-                
-                // Upcoming appointments
-                UpcomingAppointments = await _context.Appointments
-                    .Include(a => a.Property)
-                    .Where(a => a.UserId == userId && a.AppointmentDate >= DateTime.Now)
-                    .OrderBy(a => a.AppointmentDate)
-                    .Take(3)
-                    .Select(a => new AppointmentSummaryViewModel
-                    {
-                        Id = a.Id,
-                        PropertyId = a.PropertyId,
-                        PropertyTitle = a.Property.Title,
-                        PropertyAddress = a.Property.Address,
-                        AppointmentDate = a.AppointmentDate,
-                        Status = a.Status
-                    })
                     .ToListAsync()
             };
             

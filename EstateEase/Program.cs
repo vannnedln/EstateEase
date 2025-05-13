@@ -47,6 +47,7 @@ builder.Services.AddControllersWithViews();
 // Add this line before building the application
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddHttpClient<IReCaptchaService, ReCaptchaService>();
+builder.Services.AddScoped<IPropertyService, PropertyService>();
 
 builder.Services.Configure<FormOptions>(options =>
 {

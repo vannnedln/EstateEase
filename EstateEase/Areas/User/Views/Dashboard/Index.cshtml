@@ -16,7 +16,7 @@
 
     <!-- Overview Stats -->
     <div class="row g-4 mb-5">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="dashboard-stat">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
@@ -33,7 +33,7 @@
                 </a>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="dashboard-stat" style="background: linear-gradient(45deg, #9f1ae2, #4f5aff)">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
@@ -42,23 +42,6 @@
                     </div>
                     <div class="rounded-circle bg-white bg-opacity-25 p-3">
                         <i class="bi bi-house-gear fs-3 text-white"></i>
-                    </div>
-                </div>
-                <a href="#" class="text-white text-decoration-none d-flex align-items-center fw-medium">
-                    <span>View all</span>
-                    <i class="bi bi-chevron-right ms-1"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="dashboard-stat" style="background: linear-gradient(45deg, #10b981, #3b82f6)">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <h3 class="h1 mb-0 fw-bold">@(Model.UpcomingAppointments?.Count ?? 0)</h3>
-                        <p class="mb-0 text-white-50">Upcoming Appointments</p>
-                    </div>
-                    <div class="rounded-circle bg-white bg-opacity-25 p-3">
-                        <i class="bi bi-calendar-check fs-3 text-white"></i>
                     </div>
                 </div>
                 <a href="#" class="text-white text-decoration-none d-flex align-items-center fw-medium">
@@ -115,77 +98,6 @@
                 You don't have any properties yet. Browse our listings to find your perfect home!
             </div>
             <a href="#" class="btn btn-primary">Browse Properties</a>
-        }
-    </div>
-
-    <!-- Upcoming Appointments -->
-    <div class="mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold mb-0">Upcoming Appointments</h3>
-            <a href="#" class="btn btn-outline-primary btn-sm">View All</a>
-        </div>
-
-        @if (Model.UpcomingAppointments?.Any() == true)
-        {
-            <div class="dashboard-card table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Property</th>
-                            <th>Date & Time</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var appointment in Model.UpcomingAppointments)
-                        {
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div>
-                                            <div class="fw-medium mb-1">@appointment.PropertyTitle</div>
-                                            <div class="text-muted small">@appointment.PropertyAddress</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex flex-column">
-                                        <span class="fw-medium">@appointment.AppointmentDate.ToString("MMM dd, yyyy")</span>
-                                        <span class="text-muted small">@appointment.AppointmentDate.ToString("h:mm tt")</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    @{
-                                        string statusClass = appointment.Status.ToLower() switch
-                                        {
-                                            "confirmed" => "confirmed",
-                                            "pending" => "pending",
-                                            "cancelled" => "cancelled",
-                                            _ => "pending"
-                                        };
-                                    }
-                                    <span class="appointment-status @statusClass">@appointment.Status</span>
-                                </td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-primary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger">Cancel</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-        else
-        {
-            <div class="alert alert-info">
-                <i class="bi bi-info-circle me-2"></i>
-                You don't have any upcoming appointments. Schedule a property viewing today!
-            </div>
-            <a href="#" class="btn btn-primary">Schedule Viewing</a>
         }
     </div>
 </div> 

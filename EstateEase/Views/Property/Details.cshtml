@@ -278,20 +278,17 @@
                     <h2 class="card-title fw-bold mb-2">@Model.Property.Title</h2>
                     <p class="text-muted mb-3"><i class="bi bi-geo-alt me-2"></i>@Model.Property.Address</p>
                     
-                    <div class="d-flex align-items-center gap-2 mb-4">
-                        <span class="badge bg-primary py-2 px-3">@Model.Property.PropertyType</span>
-                        <span class="badge bg-success py-2 px-3">@Model.Property.Status</span>
-                        <span class="badge bg-info py-2 px-3">For @Model.Property.SellingType</span>
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+                        <span class="badge bg-primary py-2 px-3 mb-1">@Model.Property.PropertyType</span>
+                        <span class="badge bg-success py-2 px-3 mb-1">@Model.Property.Status</span>
+                        <span class="badge bg-info py-2 px-3 mb-1">For @Model.Property.SellingType</span>
                     </div>
                     
-                    <h3 class="gradient-text fw-bold mb-4 fs-2">₱@Model.Property.Price.ToString("N0")@(Model.Property.SellingType == "Rent" ? "/mo" : "")</h3>
+                    <h3 class="gradient-text fw-bold mb-5 fs-2">₱@Model.Property.Price.ToString("N0")@(Model.Property.SellingType == "Rent" ? "/mo" : "")</h3>
                     
                     @if (Model.IsUserLoggedIn)
                     {
-                        <div class="d-grid gap-3 mt-4">
-                            <button class="btn btn-gradient-alt action-button" data-bs-toggle="modal" data-bs-target="#scheduleModal">
-                                <i class="bi bi-calendar-plus me-2"></i>Schedule Viewing
-                            </button>
+                        <div class="d-grid gap-4 mt-5">
                             <button class="btn btn-gradient action-button" data-bs-toggle="modal" data-bs-target="#inquiryModal">
                                 <i class="bi bi-chat-left-text me-2"></i>Send Inquiry
                             </button>
@@ -305,13 +302,13 @@
                     {
                         <div class="alert alert-info mb-3 rounded-4 border-0 shadow-sm mt-4">
                             <i class="bi bi-info-circle me-2"></i>
-                            <a asp-area="Identity" asp-page="/Account/Login" class="alert-link">Sign in</a> to schedule a viewing or contact the agent.
+                            <a asp-area="Identity" asp-page="/Account/Login" class="alert-link">Sign in</a> to contact the agent and buy the property.
                         </div>
                     }
                 </div>
             </div>
-                </div>
-            </div>
+        </div>
+    </div>
 
     <!-- Content Layout Section -->
     <div class="row mt-2">
@@ -373,9 +370,9 @@
                             <div>
                                 <div class="detail-label">Listed</div>
                                 <div class="detail-value">@Model.Property.CreatedAt.ToString("MMM dd, yyyy")</div>
-                </div>
-        </div>
-    </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-md-3 col-sm-6">
                         <div class="detail-item">
                             <div class="detail-icon">
@@ -384,7 +381,7 @@
                             <div>
                                 <div class="detail-label">Price</div>
                                 <div class="detail-value">₱@Model.Property.Price.ToString("N0")@(Model.Property.SellingType == "Rent" ? "/mo" : "")</div>
-                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-3 col-sm-6">
@@ -398,8 +395,8 @@
                             </div>
                         </div>
                     </div>
-                        </div>
-                    </div>
+                </div>
+            </div>
 
             <!-- Rooms & Spaces -->
             <div class="property-section mb-4 fade-in" style="animation-delay: 0.7s;">
@@ -536,12 +533,21 @@
                         }
                         <div>
                             <h6 class="mb-2 fw-bold">@Model.Property.Agent.FirstName @Model.Property.Agent.LastName</h6>
-                            <p class="text-muted mb-1 small">
-                                <i class="bi bi-telephone me-2"></i>@Model.Property.Agent.PhoneNumber
-                            </p>
-                            <p class="text-muted mb-0 small">
-                                <i class="bi bi-envelope me-2"></i>@Model.Property.Agent.Email
-                            </p>
+                            @if (Model.Property.Agent.User != null)
+                            {
+                                @if (!string.IsNullOrEmpty(Model.Property.Agent.User.PhoneNumber))
+                                {
+                                    <p class="text-muted mb-1 small">
+                                        <i class="bi bi-telephone me-2"></i>@Model.Property.Agent.User.PhoneNumber
+                                    </p>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.Property.Agent.User.Email))
+                                {
+                                    <p class="text-muted mb-0 small">
+                                        <i class="bi bi-envelope me-2"></i>@Model.Property.Agent.User.Email
+                                    </p>
+                                }
+                            }
                         </div>
                     </div>
                 }
@@ -563,69 +569,69 @@
                         </div>
                     </div>
                 }
-        </div>
+            </div>
 
-            <!-- Contact Actions - Replaced with Similar Properties -->
+            <!-- Similar Properties -->
             <div class="property-section mb-4 fade-in" style="animation-delay: 0.7s;">
                 <h3 class="detail-section-title">Similar Properties</h3>
                 
-                    @if (Model.SimilarProperties != null && Model.SimilarProperties.Any())
-                    {
-                        <div class="similar-properties">
-                            @foreach (var property in Model.SimilarProperties.Take(3))
-                            {
-                                <div class="similar-property-item mb-4">
-                                    <div class="row g-3">
-                                        <div class="col-4">
-                                            <a asp-controller="Property" asp-action="Details" asp-route-id="@property.Id">
-                                                @if (property.PropertyImages != null && property.PropertyImages.Any())
-                                                {
-                                                    <img src="@property.PropertyImages.First().ImagePath" class="img-fluid rounded-3" alt="@property.Title">
-                                                }
-                                                else
-                                                {
-                                                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height: 80px;">
-                                                        <i class="bi bi-house text-muted"></i>
-                                                    </div>
-                                                }
+                @if (Model.SimilarProperties != null && Model.SimilarProperties.Any())
+                {
+                    <div class="similar-properties">
+                        @foreach (var property in Model.SimilarProperties.Take(3))
+                        {
+                            <div class="similar-property-item mb-4">
+                                <div class="row g-3">
+                                    <div class="col-4">
+                                        <a asp-controller="Property" asp-action="Details" asp-route-id="@property.Id">
+                                            @if (property.PropertyImages != null && property.PropertyImages.Any())
+                                            {
+                                                <img src="@property.PropertyImages.First().ImagePath" class="img-fluid rounded-3" alt="@property.Title">
+                                            }
+                                            else
+                                            {
+                                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height: 80px;">
+                                                    <i class="bi bi-house text-muted"></i>
+                                                </div>
+                                            }
+                                        </a>
+                                    </div>
+                                    <div class="col-8">
+                                        <h6 class="mb-1">
+                                            <a asp-controller="Property" asp-action="Details" asp-route-id="@property.Id" class="text-decoration-none text-dark stretched-link">
+                                                @property.Title
                                             </a>
-                                        </div>
-                                        <div class="col-8">
-                                            <h6 class="mb-1">
-                                                <a asp-controller="Property" asp-action="Details" asp-route-id="@property.Id" class="text-decoration-none text-dark stretched-link">
-                                                    @property.Title
-                                                </a>
-                                            </h6>
+                                        </h6>
                                         <div class="text-primary mb-1 fw-bold">₱@property.Price.ToString("N0")@(property.SellingType == "Rent" ? "/mo" : "")</div>
-                                            <div class="d-flex gap-2 mt-2">
-                                                <span class="badge bg-light text-dark">@property.Bedrooms <i class="bi bi-door-closed small"></i></span>
-                                                <span class="badge bg-light text-dark">@property.Bathrooms <i class="bi bi-water small"></i></span>
-                                                <span class="badge bg-light text-dark">@property.Size m²</span>
-                                            </div>
+                                        <div class="d-flex gap-2 mt-2">
+                                            <span class="badge bg-light text-dark">@property.Bedrooms <i class="bi bi-door-closed small"></i></span>
+                                            <span class="badge bg-light text-dark">@property.Bathrooms <i class="bi bi-water small"></i></span>
+                                            <span class="badge bg-light text-dark">@property.Size m²</span>
                                         </div>
                                     </div>
                                 </div>
-                            }
-                            
+                            </div>
+                        }
+                        
                         <div class="text-center mt-3">
-                                <a asp-controller="Home" asp-action="Properties" asp-route-propertyType="@Model.Property.PropertyType" class="btn btn-sm btn-outline-primary rounded-pill px-4">
-                                    See More Similar Properties
-                                </a>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                    <div class="text-center py-3">
-                            <div class="property-feature-icon mx-auto mb-3" style="width: 60px; height: 60px;">
-                                <i class="bi bi-houses fs-4"></i>
-                            </div>
-                            <p class="text-muted mb-3">No similar properties found</p>
-                            <a asp-controller="Home" asp-action="Properties" class="btn btn-sm btn-outline-primary rounded-pill px-4">
-                                Browse All Properties
+                            <a asp-controller="Home" asp-action="Properties" asp-route-propertyType="@Model.Property.PropertyType" class="btn btn-sm btn-outline-primary rounded-pill px-4">
+                                See More Similar Properties
                             </a>
                         </div>
-                    }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-3">
+                        <div class="property-feature-icon mx-auto mb-3" style="width: 60px; height: 60px;">
+                            <i class="bi bi-houses fs-4"></i>
+                        </div>
+                        <p class="text-muted mb-3">No similar properties found</p>
+                        <a asp-controller="Home" asp-action="Properties" class="btn btn-sm btn-outline-primary rounded-pill px-4">
+                            Browse All Properties
+                        </a>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -633,56 +639,6 @@
 
 @if (Model.IsUserLoggedIn)
 {
-    <!-- Schedule Viewing Modal -->
-    <div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0 shadow">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title gradient-text" id="scheduleModalLabel">Schedule a Viewing</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="scheduleForm">
-                        <input type="hidden" id="propertyId" value="@Model.Property.Id">
-                        
-                        @if (Model.Property.Agent == null)
-                        {
-                            <div class="alert alert-info rounded-3 mb-4">
-                                <div class="d-flex">
-                                    <div class="me-3">
-                                        <i class="bi bi-info-circle-fill"></i>
-                                    </div>
-                                    <div>
-                                        <p class="mb-0">This is an official EstateEase listing. Your viewing request will be handled by our in-house team.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                        
-                        <div class="mb-4">
-                            <label for="appointmentDate" class="form-label fw-medium">Preferred Date</label>
-                            <input type="date" class="form-control rounded-3 py-2" id="appointmentDate" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label for="appointmentTime" class="form-label fw-medium">Preferred Time</label>
-                            <input type="time" class="form-control rounded-3 py-2" id="appointmentTime" required>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label for="appointmentNotes" class="form-label fw-medium">Additional Notes</label>
-                            <textarea class="form-control rounded-3" id="appointmentNotes" rows="3" placeholder="Any special requests or questions..."></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-gradient rounded-3 px-4 py-2" id="submitAppointment">Schedule Viewing</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Rent/Buy Modal -->
     <div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -814,75 +770,15 @@
 }
 
 @section Scripts {
+    <script src="~/js/property-details.js"></script>
     <script>
         $(document).ready(function() {
-            // Add hover effect to property details items
-            $('.hover-light').hover(
-                function() { $(this).addClass('bg-light'); },
-                function() { $(this).removeClass('bg-light'); }
-            );
-            
-            @if (Model.IsUserLoggedIn)
-            {
-                <text>
-                // Handle appointment submission
-                $("#submitAppointment").click(function() {
-                    if (!$("#scheduleForm")[0].checkValidity()) {
-                        $("#scheduleForm")[0].reportValidity();
-                        return;
-                    }
-                    
-                    // Here you would add the AJAX call to submit the appointment
-                    alert("Appointment request submitted! We'll contact you to confirm.");
-                    $("#scheduleModal").modal("hide");
-                });
-                
-                // Handle inquiry submission
-                $("#submitInquiry").click(function() {
-                    if (!$("#inquiryForm")[0].checkValidity()) {
-                        $("#inquiryForm")[0].reportValidity();
-                        return;
-                    }
-                    
-                    // Here you would add the AJAX call to submit the inquiry
-                    alert("Inquiry sent! " + (@Model.Property.Agent != null ? "The agent" : "Our team") + " will respond to you soon.");
-                    $("#inquiryModal").modal("hide");
-                });
-                
-                // Handle rent/buy action submission
-                $("#submitAction").click(function() {
-                    if (!$("#actionForm")[0].checkValidity()) {
-                        $("#actionForm")[0].reportValidity();
-                        return;
-                    }
-                    
-                    // Get selected payment method
-                    let paymentMethod = $("input[name='paymentMethod']:checked").attr('id');
-                    let paymentText = "";
-                    
-                    if (paymentMethod === "paymentBank") {
-                        paymentText = "Bank Transfer";
-                    } else if (paymentMethod === "paymentCard") {
-                        paymentText = "Credit/Debit Card";
-                    } else if (paymentMethod === "paymentMortgage") {
-                        paymentText = "Mortgage/Home Loan";
-                    }
-                    
-                    const isAdminListing = @(Model.Property.Agent == null ? "true" : "false");
-                    let confirmationMessage = "";
-                    
-                    if (isAdminListing) {
-                        confirmationMessage = "Your @(Model.Property.SellingType == "Rent" ? "rental" : "purchase") request has been submitted with " + paymentText + " as your payment method.\nThe EstateEase team will process your payment and contact you shortly.";
-                    } else {
-                        confirmationMessage = "Your @(Model.Property.SellingType == "Rent" ? "rental" : "purchase") request has been submitted with " + paymentText + " as your payment method.\nOur team will contact you shortly to proceed with the transaction.";
-                    }
-                    
-                    // Here you would add the AJAX call to submit the action
-                    alert(confirmationMessage);
-                    $("#actionModal").modal("hide");
-                });
-                </text>
-            }
+            // Initialize the property details functionality with configuration
+            initPropertyDetails({
+                isUserLoggedIn: @Json.Serialize(Model.IsUserLoggedIn),
+                hasAgent: @Json.Serialize(Model.Property.Agent != null),
+                isRental: @Json.Serialize(Model.Property.SellingType == "Rent")
+            });
         });
     </script>
 } 

@@ -20,12 +20,10 @@ namespace EstateEase.Controllers
             var properties = await _context.Properties.CountAsync();
             var agents = await _context.Agents.CountAsync();
             var userProperties = await _context.UserProperties.CountAsync();
-            var appointments = await _context.Appointments.CountAsync();
 
             ViewBag.Properties = properties;
             ViewBag.Agents = agents;
             ViewBag.UserProperties = userProperties;
-            ViewBag.Appointments = appointments;
 
             return View();
         }

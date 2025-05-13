@@ -8,7 +8,6 @@ namespace EstateEase.Models.ViewModels
         public int OwnedPropertiesCount { get; set; }
         public int RentedPropertiesCount { get; set; }
         public List<PropertySummaryViewModel> RecentProperties { get; set; } = new List<PropertySummaryViewModel>();
-        public List<AppointmentSummaryViewModel> UpcomingAppointments { get; set; } = new List<AppointmentSummaryViewModel>();
     }
 
     public class PropertySummaryViewModel
@@ -21,16 +20,6 @@ namespace EstateEase.Models.ViewModels
         public string OwnershipType { get; set; }  // "Bought" or "Rented"
         public DateTime AcquisitionDate { get; set; }
         public string ImageUrl { get; set; }
-    }
-
-    public class AppointmentSummaryViewModel
-    {
-        public string Id { get; set; }
-        public string PropertyId { get; set; }
-        public string PropertyTitle { get; set; }
-        public string PropertyAddress { get; set; }
-        public DateTime AppointmentDate { get; set; }
-        public string Status { get; set; }  // "Confirmed", "Pending", "Cancelled"
     }
 
     public class UserPropertiesViewModel
@@ -81,38 +70,5 @@ namespace EstateEase.Models.ViewModels
         public string Id { get; set; }
         public string ImagePath { get; set; }
         public string ImageType { get; set; }
-    }
-
-    public class AppointmentsViewModel
-    {
-        public List<UserAppointmentViewModel> Appointments { get; set; } = new List<UserAppointmentViewModel>();
-        public string StatusFilter { get; set; } = "All";
-        public int TotalCount { get; set; }
-        public int UpcomingCount { get; set; }
-        public int PendingCount { get; set; }
-        public int CompletedCount { get; set; }
-        public int CancelledCount { get; set; }
-    }
-
-    public class UserAppointmentViewModel
-    {
-        public string Id { get; set; }
-        public string PropertyId { get; set; }
-        public string PropertyTitle { get; set; }
-        public string PropertyAddress { get; set; }
-        public string PropertyImage { get; set; }
-        public decimal PropertyPrice { get; set; }
-        public string PropertyType { get; set; }
-        public int PropertyBedrooms { get; set; }
-        public int PropertyBathrooms { get; set; }
-        public decimal PropertySize { get; set; }
-        public string AgentId { get; set; }
-        public string AgentName { get; set; }
-        public string AgentEmail { get; set; }
-        public string AgentPhone { get; set; }
-        public DateTime AppointmentDate { get; set; }
-        public string Status { get; set; }  // "Confirmed", "Pending", "Completed", "Cancelled"
-        public string Notes { get; set; }
-        public DateTime CreatedAt { get; set; }
     }
 } 
