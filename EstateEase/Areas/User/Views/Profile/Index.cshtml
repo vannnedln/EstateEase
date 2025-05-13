@@ -1,12 +1,137 @@
-<div class="row">
-    <div class="col-md-6 mb-3">
-        <label asp-for="City" class="form-label fw-medium">City</label>
-        <input asp-for="City" class="form-control shadow-sm" />
-        <span asp-validation-for="City" class="text-danger small"></span>
+@model EstateEase.Areas.User.Controllers.UserProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "_UserLayout";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-md-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1 fw-bold">My Profile</h4>
+                    <p class="text-muted">View your account information</p>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-6 mb-3">
-        <label asp-for="PostalCode" class="form-label fw-medium">Postal Code</label>
-        <input asp-for="PostalCode" class="form-control shadow-sm" />
-        <span asp-validation-for="PostalCode" class="text-danger small"></span>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-4 border-0" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
+                <strong>@TempData["Success"]</strong>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden h-100">
+                <div class="card-header text-white p-4 position-relative" style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
+                    <h5 class="fw-bold mb-1">Profile Information</h5>
+                    <p class="mb-0 opacity-75 small">Your personal details</p>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-person-circle display-1 text-white"></i>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="d-inline-block rounded-circle border border-3 border-primary p-1" style="border-style: dashed !important;">
+                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white" style="width: 100px; height: 100px; font-size: 2.5rem;">
+                                @{
+                                    var initials = "U";
+                                    if (!string.IsNullOrEmpty(Model.FirstName) && !string.IsNullOrEmpty(Model.LastName))
+                                    {
+                                        initials = Model.FirstName[0].ToString() + Model.LastName[0].ToString();
+                                    }
+                                    else if (!string.IsNullOrEmpty(Model.FirstName))
+                                    {
+                                        initials = Model.FirstName[0].ToString();
+                                    }
+                                    else if (!string.IsNullOrEmpty(Model.Email))
+                                    {
+                                        initials = Model.Email[0].ToString().ToUpper();
+                                    }
+                                }
+                                @initials
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-1 small">Full Name</h6>
+                        <p class="mb-0 fw-semibold">@(string.IsNullOrEmpty(Model.FirstName) ? "-" : $"{Model.FirstName} {Model.LastName}")</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-1 small">Email</h6>
+                        <p class="mb-0 fw-semibold">@Model.Email</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-1 small">Phone Number</h6>
+                        <p class="mb-0 fw-semibold">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "-" : Model.PhoneNumber)</p>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <a asp-area="User" asp-controller="Settings" asp-action="Index" class="btn btn-outline-primary rounded-pill">
+                            <i class="bi bi-gear me-2"></i>Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+                <div class="card-header text-white p-4 position-relative" style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
+                    <h5 class="fw-bold mb-1">Address Information</h5>
+                    <p class="mb-0 opacity-75 small">Your address details</p>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-geo-alt display-1 text-white"></i>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted mb-1 small">Address</h6>
+                            <p class="mb-0 fw-semibold">@(string.IsNullOrEmpty(Model.AddressLine1) ? "-" : Model.AddressLine1)</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted mb-1 small">Address Line 2</h6>
+                            <p class="mb-0 fw-semibold">@(string.IsNullOrEmpty(Model.AddressLine2) ? "-" : Model.AddressLine2)</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted mb-1 small">City</h6>
+                            <p class="mb-0 fw-semibold">@(string.IsNullOrEmpty(Model.City) ? "-" : Model.City)</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted mb-1 small">Postal Code</h6>
+                            <p class="mb-0 fw-semibold">@(string.IsNullOrEmpty(Model.PostalCode) ? "-" : Model.PostalCode)</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted mb-1 small">Country</h6>
+                            <p class="mb-0 fw-semibold">@(string.IsNullOrEmpty(Model.Country) ? "-" : Model.Country)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header text-white p-4 position-relative" style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
+                    <h5 class="fw-bold mb-1">About Me</h5>
+                    <p class="mb-0 opacity-75 small">Your personal bio</p>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-file-person display-1 text-white"></i>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <p class="mb-0">@(string.IsNullOrEmpty(Model.Bio) ? "No bio information provided yet." : Model.Bio)</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div> 
