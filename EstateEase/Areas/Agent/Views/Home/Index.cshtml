@@ -7,7 +7,7 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
-                <h4 class="mb-0 fw-bold">Welcome Back, @User.Identity?.Name!</h4>
+                <h4 class="mb-0 fw-bold">Welcome Back, @ViewBag.AgentName!</h4>
                 <a asp-area="Agent" asp-controller="Property" asp-action="Add" class="btn btn-primary">
                     <i class="bi bi-plus-circle me-2"></i> Add New Property
                 </a>
@@ -16,102 +16,98 @@
         </div>
     </div>
 
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-circle-fill me-2"></i>
+                <strong>@TempData["Error"]</strong>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <div class="row">
         <!-- Properties Stats Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100 fade-in">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 me-3">
-                            <div class="avatar-sm rounded-circle bg-primary bg-opacity-10 p-3">
-                                <i class="bi bi-house-door text-primary fs-4"></i>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-0 dashboard-card shadow-sm h-100 fade-in">
+                <div class="card-body position-relative p-0">
+                    <div class="card-overlay gradient-primary"></div>
+                    <div class="card-content p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-white mb-1 text-uppercase">Active Properties</p>
+                                <h2 class="fw-bold text-white mb-0">@ViewBag.ActivePropertiesCount</h2>
                             </div>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h5 class="fw-semibold mb-1">12</h5>
-                            <p class="text-muted mb-0">Active Properties</p>
+                            <div class="card-icon-lg">
+                                <i class="bi bi-building"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent border-0 py-3">
-                    <a asp-area="Agent" asp-controller="Property" asp-action="Index" class="d-flex align-items-center justify-content-between text-decoration-none">
-                        <span class="text-primary fw-medium">View Details</span>
-                        <i class="bi bi-arrow-right text-primary"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Appointments Stats Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100 fade-in">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 me-3">
-                            <div class="avatar-sm rounded-circle bg-success bg-opacity-10 p-3">
-                                <i class="bi bi-calendar-check text-success fs-4"></i>
-                            </div>
+                <div class="card-footer border-0 bg-white py-3">
+                    <a asp-area="Agent" asp-controller="Property" asp-action="PropertyList" class="d-flex align-items-center justify-content-between text-decoration-none">
+                        <span class="text-primary fw-medium">View Properties</span>
+                        <div class="btn-circle btn-primary">
+                            <i class="bi bi-arrow-right"></i>
                         </div>
-                        <div class="flex-grow-1">
-                            <h5 class="fw-semibold mb-1">5</h5>
-                            <p class="text-muted mb-0">Pending Appointments</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent border-0 py-3">
-                    <a asp-area="Agent" asp-controller="Appointment" asp-action="Index" class="d-flex align-items-center justify-content-between text-decoration-none">
-                        <span class="text-success fw-medium">View Details</span>
-                        <i class="bi bi-arrow-right text-success"></i>
                     </a>
                 </div>
             </div>
         </div>
 
         <!-- Inquiries Stats Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100 fade-in">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 me-3">
-                            <div class="avatar-sm rounded-circle bg-info bg-opacity-10 p-3">
-                                <i class="bi bi-chat-dots text-info fs-4"></i>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-0 dashboard-card shadow-sm h-100 fade-in">
+                <div class="card-body position-relative p-0">
+                    <div class="card-overlay gradient-info"></div>
+                    <div class="card-content p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-white mb-1 text-uppercase">New Inquiries</p>
+                                <h2 class="fw-bold text-white mb-0">@ViewBag.NewInquiriesCount</h2>
                             </div>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h5 class="fw-semibold mb-1">8</h5>
-                            <p class="text-muted mb-0">New Inquiries</p>
+                            <div class="card-icon-lg">
+                                <i class="bi bi-chat-square-dots"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent border-0 py-3">
+                <div class="card-footer border-0 bg-white py-3">
                     <a asp-area="Agent" asp-controller="Inquiry" asp-action="Index" class="d-flex align-items-center justify-content-between text-decoration-none">
-                        <span class="text-info fw-medium">View Details</span>
-                        <i class="bi bi-arrow-right text-info"></i>
+                        <span class="text-info fw-medium">View Inquiries</span>
+                        <div class="btn-circle btn-info">
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
                     </a>
                 </div>
             </div>
         </div>
         
         <!-- Revenue Stats Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100 fade-in">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 me-3">
-                            <div class="avatar-sm rounded-circle bg-warning bg-opacity-10 p-3">
-                                <i class="bi bi-currency-dollar text-warning fs-4"></i>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-0 dashboard-card shadow-sm h-100 fade-in">
+                <div class="card-body position-relative p-0">
+                    <div class="card-overlay gradient-warning"></div>
+                    <div class="card-content p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-white mb-1 text-uppercase">Total Income</p>
+                                <h2 class="fw-bold text-white mb-0">₱@(ViewBag.TotalIncome.ToString("N2"))</h2>
+                                <small class="text-white-50">3% commission from sales</small>
                             </div>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h5 class="fw-semibold mb-1">$32,584</h5>
-                            <p class="text-muted mb-0">Monthly Revenue</p>
+                            <div class="card-icon-lg">
+                                <i class="bi bi-wallet2"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent border-0 py-3">
+                <div class="card-footer border-0 bg-white py-3">
                     <a asp-area="Agent" asp-controller="Payment" asp-action="Index" class="d-flex align-items-center justify-content-between text-decoration-none">
-                        <span class="text-warning fw-medium">View Details</span>
-                        <i class="bi bi-arrow-right text-warning"></i>
+                        <span class="text-warning fw-medium">View Payments</span>
+                        <div class="btn-circle btn-warning">
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
                     </a>
                 </div>
             </div>
@@ -122,10 +118,10 @@
         <!-- Recent Properties Section -->
         <div class="col-lg-8 mb-4">
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white">
+                <div class="card-header gradient-primary text-white">
                     <div class="d-flex align-items-center justify-content-between">
                         <h5 class="mb-0 fw-bold">Recent Properties</h5>
-                        <a asp-area="Agent" asp-controller="Property" asp-action="Index" class="btn btn-sm btn-light">View All</a>
+                        <a asp-area="Agent" asp-controller="Property" asp-action="PropertyList" class="btn btn-sm btn-light">View All</a>
                     </div>
                 </div>
                 <div class="card-body p-0">
@@ -142,75 +138,77 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-light rounded" style="width: 40px; height: 40px; overflow: hidden;">
-                                                <img src="~/images/property-placeholder.jpg" alt="Property" class="img-fluid" onerror="this.src='~/images/property-placeholder.jpg'">
+                                @if (ViewBag.RecentProperties != null && ViewBag.RecentProperties.Count > 0)
+                                {
+                                    @for (int i = 0; i < ViewBag.RecentProperties.Count; i++)
+                                    {
+                                        var property = ViewBag.RecentProperties[i];
+                                        <tr>
+                                            <td>@(i + 1)</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-light rounded" style="width: 40px; height: 40px; overflow: hidden;">
+                                                        @if (property.ExistingImages != null && property.ExistingImages.Count > 0)
+                                                        {
+                                                            <img src="@property.ExistingImages[0].ImagePath" alt="Property" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='/images/property-placeholder.jpg'">
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="/images/property-placeholder.jpg" alt="Property" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                                                        }
+                                                    </div>
+                                                    <div class="ms-2">
+                                                        <h6 class="mb-0 fw-semibold">@property.Title</h6>
+                                                        <small class="text-muted">@property.Address</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>@property.PropertyType</td>
+                                            <td>₱@(property.Price.ToString("N0"))</td>
+                                            <td>
+                                                @if (property.Status == "Available")
+                                                {
+                                                    <span class="badge bg-success bg-opacity-10 text-success">Active</span>
+                                                }
+                                                else if (property.Status == "Rented" || property.Status == "Sold")
+                                                {
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary">@property.Status</span>
+                                                }
+                                                else if (property.Status == "Pending")
+                                                {
+                                                    <span class="badge bg-warning bg-opacity-10 text-warning">Pending</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-info bg-opacity-10 text-info">@property.Status</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="d-flex gap-2">
+                                                    <a asp-area="Agent" asp-controller="Property" asp-action="Edit" asp-route-id="@property.Id" class="btn btn-sm btn-light"><i class="bi bi-pencil"></i></a>
+                                                    <a asp-area="Agent" asp-controller="Property" asp-action="View" asp-route-id="@property.Id" class="btn btn-sm btn-light"><i class="bi bi-eye"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">
+                                            <div class="py-3">
+                                                <i class="bi bi-house-add display-4 text-muted"></i>
+                                                <h6 class="mt-3">No properties found</h6>
+                                                <p class="text-muted mb-0">Add your first property to get started</p>
+                                                <div class="mt-3">
+                                                    <a asp-area="Agent" asp-controller="Property" asp-action="Add" class="btn btn-primary">
+                                                        <i class="bi bi-plus-circle me-1"></i> Add Property
+                                                    </a>
+                                                </div>
                                             </div>
-                                            <div class="ms-2">
-                                                <h6 class="mb-0 fw-semibold">Modern Apartment</h6>
-                                                <small class="text-muted">123 Main St, New York</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Apartment</td>
-                                    <td>$425,000</td>
-                                    <td><span class="badge bg-success bg-opacity-10 text-success">Active</span></td>
-                                    <td>
-                                        <div class="d-flex gap-2">
-                                            <a href="#" class="btn btn-sm btn-light"><i class="bi bi-pencil"></i></a>
-                                            <a href="#" class="btn btn-sm btn-light"><i class="bi bi-eye"></i></a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-light rounded" style="width: 40px; height: 40px; overflow: hidden;">
-                                                <img src="~/images/property-placeholder.jpg" alt="Property" class="img-fluid" onerror="this.src='~/images/property-placeholder.jpg'">
-                                            </div>
-                                            <div class="ms-2">
-                                                <h6 class="mb-0 fw-semibold">Luxury Villa</h6>
-                                                <small class="text-muted">456 Oak Ave, San Francisco</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Villa</td>
-                                    <td>$1,250,000</td>
-                                    <td><span class="badge bg-warning bg-opacity-10 text-warning">Pending</span></td>
-                                    <td>
-                                        <div class="d-flex gap-2">
-                                            <a href="#" class="btn btn-sm btn-light"><i class="bi bi-pencil"></i></a>
-                                            <a href="#" class="btn btn-sm btn-light"><i class="bi bi-eye"></i></a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-light rounded" style="width: 40px; height: 40px; overflow: hidden;">
-                                                <img src="~/images/property-placeholder.jpg" alt="Property" class="img-fluid" onerror="this.src='~/images/property-placeholder.jpg'">
-                                            </div>
-                                            <div class="ms-2">
-                                                <h6 class="mb-0 fw-semibold">Family Home</h6>
-                                                <small class="text-muted">789 Pine St, Chicago</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>House</td>
-                                    <td>$780,000</td>
-                                    <td><span class="badge bg-success bg-opacity-10 text-success">Active</span></td>
-                                    <td>
-                                        <div class="d-flex gap-2">
-                                            <a href="#" class="btn btn-sm btn-light"><i class="bi bi-pencil"></i></a>
-                                            <a href="#" class="btn btn-sm btn-light"><i class="bi bi-eye"></i></a>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -221,59 +219,36 @@
         <!-- Recent Activities Section -->
         <div class="col-lg-4 mb-4">
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white">
+                <div class="card-header gradient-info text-white">
                     <h5 class="mb-0 fw-bold">Recent Activities</h5>
                 </div>
                 <div class="card-body p-0">
                     <div class="list-group list-group-flush">
-                        <div class="list-group-item px-4 py-3 border-0">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle text-center p-2 me-3">
-                                    <i class="bi bi-chat-dots text-primary"></i>
+                        @if (ViewBag.RecentActivities != null && ViewBag.RecentActivities.Count > 0)
+                        {
+                            @foreach (var activity in ViewBag.RecentActivities)
+                            {
+                                <div class="list-group-item px-4 py-3 border-0">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-light rounded-circle text-center p-2 me-3">
+                                            <i class="bi @activity.IconClass"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <p class="mb-1 fw-medium">@activity.Message</p>
+                                            <small class="text-muted">@activity.Date.ToString("MMM dd, yyyy - hh:mm tt")</small>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex-grow-1">
-                                    <p class="mb-1 fw-medium">New inquiry for 123 Main Street</p>
-                                    <small class="text-muted">3 days ago</small>
-                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center py-5">
+                                <i class="bi bi-activity display-4 text-muted"></i>
+                                <p class="mt-3 text-muted">No recent activities</p>
                             </div>
-                        </div>
-                        <div class="list-group-item px-4 py-3 border-0">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-sm bg-success bg-opacity-10 rounded-circle text-center p-2 me-3">
-                                    <i class="bi bi-calendar-check text-success"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="mb-1 fw-medium">Viewing scheduled for 456 Oak Ave</p>
-                                    <small class="text-muted">Tomorrow at 2:00 PM</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="list-group-item px-4 py-3 border-0">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-sm bg-info bg-opacity-10 rounded-circle text-center p-2 me-3">
-                                    <i class="bi bi-house-check text-info"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="mb-1 fw-medium">New property listed successfully</p>
-                                    <small class="text-muted">1 week ago</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="list-group-item px-4 py-3 border-0">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-sm bg-warning bg-opacity-10 rounded-circle text-center p-2 me-3">
-                                    <i class="bi bi-currency-dollar text-warning"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="mb-1 fw-medium">Payment received for 789 Pine St</p>
-                                    <small class="text-muted">2 weeks ago</small>
-                                </div>
-                            </div>
-                        </div>
+                        }
                     </div>
-                </div>
-                <div class="card-footer bg-transparent border-0 py-3">
-                    <a href="#" class="btn btn-light btn-sm w-100">View All Activities</a>
                 </div>
             </div>
         </div>
@@ -282,6 +257,106 @@
 
 @section Styles {
     <style>
+        /* Gradient colors */
+        .gradient-primary {
+            background: linear-gradient(135deg, #2937f0 0%, #9f1ae2 100%);
+        }
+        
+        .gradient-info {
+            background: linear-gradient(135deg, #0dcaf0 0%, #0d6efd 100%);
+        }
+        
+        .gradient-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        }
+        
+        /* Card styling */
+        .card {
+            overflow: hidden;
+            border-radius: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        /* Dashboard cards */
+        .dashboard-card {
+            position: relative;
+        }
+        
+        .card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .card-content {
+            position: relative;
+            z-index: 2;
+            height: 130px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .card-icon-lg {
+            font-size: 3.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover .card-icon-lg {
+            transform: scale(1.2);
+            color: rgba(255, 255, 255, 0.9);
+        }
+                
+        .btn-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #2937f0;
+        }
+        
+        .btn-info {
+            background-color: #0dcaf0;
+        }
+        
+        .btn-warning {
+            background-color: #ffc107;
+        }
+        
+        a:hover .btn-circle {
+            transform: translateX(5px);
+        }
+        
+        /* Other styles */
+        .card-header {
+            border-bottom: 0;
+            padding: 1rem 1.5rem;
+        }
+        
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
         .avatar-sm {
             width: 48px;
             height: 48px;
@@ -299,12 +374,48 @@
             font-weight: 500;
             padding: 0.5em 0.75em;
         }
+        
+        /* Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Recent Properties and Activities cards */
+        .col-lg-8 .card-header, .col-lg-4 .card-header {
+            position: relative;
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .col-lg-8 .card-header::before, .col-lg-4 .card-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+        }
     </style>
 }
 
 @section Scripts {
     <script>
         $(document).ready(function () {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+            
             // Add animations
             setTimeout(function () {
                 $('.fade-in').each(function(index) {

@@ -1,0 +1,145 @@
+@model InquiryReplyViewModel
+@{
+    ViewData["Title"] = "Reply to Inquiry";
+    Layout = "_AgentLayout";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1 fw-bold">Reply to Inquiry</h4>
+                    <p class="text-muted">Respond to client inquiry #@Model.InquiryId</p>
+                </div>
+                <div>
+                    <a asp-action="Details" asp-route-id="@Model.InquiryId" class="btn btn-outline-primary rounded-pill">
+                        <i class="bi bi-arrow-left me-2"></i> Back to Inquiry
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 fade-in show">
+                <div class="card-header gradient-primary text-white p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">Reply to: @Model.InquirySubject</h5>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="recipient-info mb-4 p-3 bg-light rounded-4">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-circle me-3">
+                                @if (!string.IsNullOrEmpty(Model.ClientName))
+                                {
+                                    <span>@(Model.ClientName[0].ToString().ToUpper())</span>
+                                }
+                                else
+                                {
+                                    <span>U</span>
+                                }
+                            </div>
+                            <div>
+                                <h6 class="mb-1 fw-semibold">To: @Model.ClientName</h6>
+                                <p class="text-muted mb-0">@Model.ClientEmail</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Reply" asp-route-id="@Model.InquiryId" method="post">
+                        <input type="hidden" asp-for="InquiryId" />
+                        <input type="hidden" asp-for="InquirySubject" />
+                        <input type="hidden" asp-for="ClientName" />
+                        <input type="hidden" asp-for="ClientEmail" />
+
+                        <div class="form-group mb-4">
+                            <label asp-for="ReplyMessage" class="form-label fw-semibold">Your Reply</label>
+                            <textarea asp-for="ReplyMessage" class="form-control" rows="8" placeholder="Type your response here..."></textarea>
+                            <span asp-validation-for="ReplyMessage" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-action="Details" asp-route-id="@Model.InquiryId" class="btn btn-light">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send me-2"></i> Send Reply
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Gradient colors */
+        .gradient-primary {
+            background: linear-gradient(135deg, #2937f0 0%, #9f1ae2 100%);
+        }
+        
+        /* Card styling */
+        .card {
+            overflow: hidden;
+            border-radius: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .card-header {
+            border-bottom: 0;
+        }
+        
+        /* Avatar styling */
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2937f0 0%, #9f1ae2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        /* Form styling */
+        .form-control {
+            border-radius: 8px;
+            padding: 12px;
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(41, 55, 240, 0.2);
+            border-color: #2937f0;
+        }
+        
+        /* Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Focus on textarea when page loads
+            $('textarea').focus();
+        });
+    </script>
+} 

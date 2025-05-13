@@ -18,7 +18,7 @@
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-4 border-0" role="alert">
             <div class="d-flex align-items-center">
                 <i class="bi bi-check-circle-fill fs-5 me-2"></i>
                 <strong>@TempData["Success"]</strong>
@@ -29,153 +29,193 @@
 
     <div class="row">
         <div class="col-lg-4 mb-4">
-            <div class="card border-0 shadow-sm fade-in">
-                <div class="card-body text-center p-4">
-                    <div class="mb-3">
-                        <div class="position-relative d-inline-block">
-                            <img src="@(string.IsNullOrEmpty(Model.ProfilePictureUrl) ? "/images/avatar-01.png" : Model.ProfilePictureUrl)" 
-                                 alt="Profile Picture" class="rounded-circle" width="120" height="120" style="object-fit: cover;">
-                            <div class="position-absolute bottom-0 end-0">
-                                <label for="profilePicture" class="btn btn-sm btn-primary rounded-circle p-2 cursor-pointer">
-                                    <i class="bi bi-pencil"></i>
-                                </label>
-                                <input type="file" id="profilePicture" name="ProfilePicture" accept="image/*" class="d-none" 
-                                       onchange="previewImage(this)">
+            <!-- Profile Card -->
+            <div class="card border-0 shadow-sm rounded-4 fade-in">
+                <div class="card-header gradient-primary text-white p-4 text-center position-relative">
+                    <div class="profile-image-container mb-3">
+                        <img src="@(string.IsNullOrEmpty(Model.ProfilePictureUrl) ? "/images/avatar-01.png" : Model.ProfilePictureUrl)" 
+                             alt="Profile Picture" class="rounded-circle profile-image">
+                        <div class="profile-image-edit">
+                            <label for="profilePicture" class="btn btn-sm btn-light rounded-circle p-2 cursor-pointer">
+                                <i class="bi bi-pencil"></i>
+                            </label>
+                            <input type="file" id="profilePicture" name="ProfilePicture" accept="image/*" class="d-none" 
+                                   onchange="previewImage(this)">
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-1 text-white">@($"{Model.FirstName} {Model.LastName}")</h5>
+                    <p class="text-white-50 mb-0">Real Estate Agent</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <div class="agent-stats mb-4">
+                        <div class="row g-2 text-center">
+                            <div class="col-4">
+                                <div class="p-3 rounded-4 bg-light">
+                                    <h5 class="mb-0 fw-bold text-primary">@Model.TotalProperties</h5>
+                                    <small class="text-muted">Properties</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3 rounded-4 bg-light">
+                                    <h5 class="mb-0 fw-bold text-success">@Model.SoldProperties</h5>
+                                    <small class="text-muted">Sold</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3 rounded-4 bg-light">
+                                    <h5 class="mb-0 fw-bold text-info">@Model.RentalProperties</h5>
+                                    <small class="text-muted">Rental</small>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <h5 class="fw-bold mb-1">@($"{Model.FirstName} {Model.LastName}")</h5>
-                    <p class="text-muted mb-3">Real Estate Agent</p>
-                </div>
-                <div class="card-body border-top p-4">
-                    <h6 class="fw-bold mb-3">Contact Information</h6>
-                    <div class="mb-2">
+                    
+                    <h6 class="fw-bold mb-3 border-bottom pb-2">Contact Information</h6>
+                    <div class="mb-3">
                         <div class="d-flex align-items-center">
-                            <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle text-center p-2 me-3">
-                                <i class="bi bi-envelope text-primary"></i>
+                            <div class="avatar-sm rounded-circle gradient-primary text-center p-2 me-3 d-flex align-items-center justify-content-center">
+                                <i class="bi bi-envelope text-white"></i>
                             </div>
                             <div>
                                 <small class="text-muted d-block">Email</small>
-                                <span>@Model.Email</span>
+                                <span class="fw-medium">@Model.Email</span>
                             </div>
                         </div>
                     </div>
-                    <div class="mb-2">
+                    <div class="mb-3">
                         <div class="d-flex align-items-center">
-                            <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle text-center p-2 me-3">
-                                <i class="bi bi-telephone text-primary"></i>
+                            <div class="avatar-sm rounded-circle gradient-info text-center p-2 me-3 d-flex align-items-center justify-content-center">
+                                <i class="bi bi-telephone text-white"></i>
                             </div>
                             <div>
                                 <small class="text-muted d-block">Phone</small>
-                                <span>@Model.PhoneNumber</span>
+                                <span class="fw-medium">@Model.PhoneNumber</span>
                             </div>
                         </div>
                     </div>
-                    <div>
+                    <div class="mb-4">
                         <div class="d-flex align-items-center">
-                            <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle text-center p-2 me-3">
-                                <i class="bi bi-geo-alt text-primary"></i>
+                            <div class="avatar-sm rounded-circle gradient-success text-center p-2 me-3 d-flex align-items-center justify-content-center">
+                                <i class="bi bi-geo-alt text-white"></i>
                             </div>
                             <div>
                                 <small class="text-muted d-block">Location</small>
-                                <span>@($"{Model.Barangay}, {Model.City}")</span>
+                                <span class="fw-medium">@($"{Model.Barangay}, {Model.City}")</span>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-body border-top p-4">
-                    <h6 class="fw-bold mb-3">License Information</h6>
+                    
+                    <h6 class="fw-bold mb-3 border-bottom pb-2">License Information</h6>
                     <div>
                         <div class="d-flex align-items-center">
-                            <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle text-center p-2 me-3">
-                                <i class="bi bi-card-text text-primary"></i>
+                            <div class="avatar-sm rounded-circle gradient-warning text-center p-2 me-3 d-flex align-items-center justify-content-center">
+                                <i class="bi bi-card-text text-white"></i>
                             </div>
                             <div>
                                 <small class="text-muted d-block">License Number</small>
-                                <span>@Model.LicenseNumber</span>
+                                <span class="fw-medium">@Model.LicenseNumber</span>
                             </div>
                         </div>
                     </div>
+                    
+                    @if (!string.IsNullOrEmpty(Model.Bio))
+                    {
+                        <h6 class="fw-bold mb-3 border-bottom pb-2 mt-4">About Me</h6>
+                        <p class="text-muted mb-0">@Model.Bio</p>
+                    }
                 </div>
             </div>
         </div>
 
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm fade-in">
-                <div class="card-header bg-white py-3">
+            <!-- Profile Form Card -->
+            <div class="card border-0 shadow-sm rounded-4 fade-in">
+                <div class="card-header gradient-primary text-white p-4">
                     <h5 class="mb-0 fw-bold">Edit Profile Information</h5>
                 </div>
                 <div class="card-body p-4">
                     <form asp-action="Index" method="post" enctype="multipart/form-data">
                         <div class="row g-4">
+                            <!-- Personal Information Section -->
                             <div class="col-12">
-                                <h6 class="text-primary mb-3">Personal Information</h6>
+                                <div class="section-header d-flex align-items-center mb-3">
+                                    <div class="avatar-sm rounded-circle gradient-primary text-center p-2 me-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-person text-white"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-0">Personal Information</h6>
+                                </div>
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="FirstName" class="form-control" placeholder="Enter first name" />
+                                            <input asp-for="FirstName" class="form-control rounded-3" placeholder="Enter first name" />
                                             <label asp-for="FirstName">First Name</label>
                                             <span asp-validation-for="FirstName" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="LastName" class="form-control" placeholder="Enter last name" />
+                                            <input asp-for="LastName" class="form-control rounded-3" placeholder="Enter last name" />
                                             <label asp-for="LastName">Last Name</label>
                                             <span asp-validation-for="LastName" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="Email" class="form-control" placeholder="Enter email" readonly />
+                                            <input asp-for="Email" class="form-control rounded-3" placeholder="Enter email" readonly />
                                             <label asp-for="Email">Email</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="PhoneNumber" class="form-control" placeholder="Enter phone number" />
+                                            <input asp-for="PhoneNumber" class="form-control rounded-3" placeholder="Enter phone number" />
                                             <label asp-for="PhoneNumber">Phone Number</label>
                                             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                                         </div>
                                     </div>
-                                   
                                 </div>
                             </div>
 
+                            <!-- Address Information Section -->
                             <div class="col-12">
-                                <h6 class="text-primary mb-3">Address Information</h6>
+                                <div class="section-header d-flex align-items-center mb-3">
+                                    <div class="avatar-sm rounded-circle gradient-info text-center p-2 me-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-geo-alt text-white"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-0">Address Information</h6>
+                                </div>
                                 <div class="row g-3">
                                     <div class="col-12">
                                         <div class="form-floating">
-                                            <input asp-for="AddressLine1" class="form-control" placeholder="Enter street address" />
+                                            <input asp-for="AddressLine1" class="form-control rounded-3" placeholder="Enter street address" />
                                             <label asp-for="AddressLine1">Street Address</label>
                                             <span asp-validation-for="AddressLine1" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="Barangay" class="form-control" placeholder="Enter barangay" />
+                                            <input asp-for="Barangay" class="form-control rounded-3" placeholder="Enter barangay" />
                                             <label asp-for="Barangay">Barangay</label>
                                             <span asp-validation-for="Barangay" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="City" class="form-control" placeholder="Enter city" />
+                                            <input asp-for="City" class="form-control rounded-3" placeholder="Enter city" />
                                             <label asp-for="City">City</label>
                                             <span asp-validation-for="City" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="PostalCode" class="form-control" placeholder="Enter postal code" />
+                                            <input asp-for="PostalCode" class="form-control rounded-3" placeholder="Enter postal code" />
                                             <label asp-for="PostalCode">Postal Code</label>
                                             <span asp-validation-for="PostalCode" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="Country" class="form-control" placeholder="Enter country" value="Philippines" />
+                                            <input asp-for="Country" class="form-control rounded-3" placeholder="Enter country" value="Philippines" />
                                             <label asp-for="Country">Country</label>
                                             <span asp-validation-for="Country" class="text-danger"></span>
                                         </div>
@@ -183,12 +223,18 @@
                                 </div>
                             </div>
 
+                            <!-- License Information Section -->
                             <div class="col-12">
-                                <h6 class="text-primary mb-3">License Information</h6>
+                                <div class="section-header d-flex align-items-center mb-3">
+                                    <div class="avatar-sm rounded-circle gradient-warning text-center p-2 me-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-card-text text-white"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-0">License Information</h6>
+                                </div>
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="LicenseNumber" class="form-control" placeholder="Enter license number" />
+                                            <input asp-for="LicenseNumber" class="form-control rounded-3" placeholder="Enter license number" />
                                             <label asp-for="LicenseNumber">License Number</label>
                                             <span asp-validation-for="LicenseNumber" class="text-danger"></span>
                                         </div>
@@ -196,17 +242,23 @@
                                 </div>
                             </div>
 
+                            <!-- Bio Information Section -->
                             <div class="col-12">
-                                <h6 class="text-primary mb-3">Bio Information</h6>
+                                <div class="section-header d-flex align-items-center mb-3">
+                                    <div class="avatar-sm rounded-circle gradient-success text-center p-2 me-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-file-person text-white"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-0">Bio Information</h6>
+                                </div>
                                 <div class="form-floating">
-                                    <textarea asp-for="Bio" class="form-control" style="height: 120px" placeholder="Enter your bio"></textarea>
+                                    <textarea asp-for="Bio" class="form-control rounded-3" style="height: 120px" placeholder="Enter your bio"></textarea>
                                     <label asp-for="Bio">Bio</label>
                                     <span asp-validation-for="Bio" class="text-danger"></span>
                                 </div>
                             </div>
 
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary px-4">
+                            <div class="col-12 mt-3">
+                                <button type="submit" class="btn btn-primary rounded-pill px-4 py-2">
                                     <i class="bi bi-check-lg me-2"></i>Save Changes
                                 </button>
                             </div>
@@ -218,12 +270,13 @@
     </div>
 </div>
 
+<!-- Toast notification for profile picture update -->
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
     <div id="uploadToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <i class="bi bi-check-circle-fill text-success me-2"></i>
+        <div class="toast-header gradient-primary text-white">
+            <i class="bi bi-check-circle-fill me-2"></i>
             <strong class="me-auto">Success</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body">
             Profile picture updated. Click Save Changes to apply.
@@ -233,103 +286,149 @@
 
 @section Styles {
     <style>
+        /* Gradient colors */
+        .gradient-primary {
+            background: linear-gradient(135deg, #2937f0 0%, #9f1ae2 100%);
+        }
+        
+        .gradient-success {
+            background: linear-gradient(135deg, #0cbc87 0%, #09845f 100%);
+        }
+        
+        .gradient-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #0f798c 100%);
+        }
+        
+        .gradient-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        }
+        
+        /* Card styling */
+        .card {
+            overflow: hidden;
+            border-radius: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .card-header {
+            border-bottom: 0;
+        }
+        
+        .rounded-4 {
+            border-radius: 16px !important;
+        }
+        
+        /* Profile image */
+        .profile-image-container {
+            position: relative;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .profile-image-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+        
+        /* Avatar styling */
         .avatar-sm {
             width: 40px;
             height: 40px;
         }
-
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease-in;
+        
+        /* Form styling */
+        .form-control {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
         }
-
-        .fade-in.show {
-            opacity: 1;
-            transform: translateY(0);
+        
+        .form-control:focus {
+            border-color: #2937f0;
+            box-shadow: 0 0 0 0.25rem rgba(41, 55, 240, 0.25);
         }
-
+        
         .form-floating > .form-control {
             height: calc(3.5rem + 2px);
             line-height: 1.25;
         }
-
+        
+        .form-floating > .form-control-plaintext ~ label,
+        .form-floating > .form-control:focus ~ label,
+        .form-floating > .form-control:not(:placeholder-shown) ~ label,
+        .form-floating > .form-select ~ label {
+            color: rgba(41, 55, 240, 0.85);
+            transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+        }
+        
         .form-floating > label {
             padding: 1rem 0.75rem;
         }
-
-        .form-control:focus {
-            border-color: var(--bs-primary);
-            box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+        
+        /* Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
-
-        .card {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
         }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-        }
-
+        
+        /* Button styling */
         .btn-primary {
-            background: linear-gradient(45deg, #4f5aff, #9f1ae2);
+            background: linear-gradient(135deg, #2937f0, #9f1ae2);
             border: none;
             transition: all 0.3s ease;
         }
-
+        
         .btn-primary:hover {
-            background: linear-gradient(45deg, #4f5aff, #8516bd);
+            background: linear-gradient(135deg, #2431d8, #8516bd);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(41, 55, 240, 0.3);
         }
-
+        
+        /* Alert styling */
         .alert {
             border-left: 4px solid;
             transition: all 0.3s ease;
         }
-
-        .alert-danger {
-            border-left-color: #dc3545;
-        }
-
+        
         .alert-success {
-            border-left-color: #198754;
+            border-left-color: #0cbc87;
         }
-
+        
+        /* Cursor */
         .cursor-pointer {
             cursor: pointer;
         }
-
-        .position-relative img {
-            border: 3px solid #fff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
+        
+        /* Toast styling */
         .toast {
             background: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
-
-        .toast-header {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .form-floating {
-            position: relative;
-        }
-
-        .form-floating .position-absolute {
-            z-index: 5;
-        }
-
-        .bi-eye, .bi-eye-slash {
-            color: #6c757d;
-            transition: color 0.2s ease;
-        }
-
-        .bi-eye:hover, .bi-eye-slash:hover {
-            color: #0d6efd;
+        
+        /* Section spacing */
+        .section-header {
+            margin-bottom: 1.25rem;
         }
     </style>
 }
@@ -338,30 +437,13 @@
     <partial name="_ValidationScriptsPartial" />
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const fadeElements = document.querySelectorAll('.fade-in');
-            fadeElements.forEach(element => {
-                element.classList.add('show');
-            });
-
-            // Password toggle functionality
-            const togglePassword = document.querySelector('#togglePassword');
-            const toggleConfirmPassword = document.querySelector('#toggleConfirmPassword');
-            const password = document.querySelector('#password');
-            const confirmPassword = document.querySelector('#confirmPassword');
-
-            togglePassword.addEventListener('click', function () {
-                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-                password.setAttribute('type', type);
-                this.classList.toggle('bi-eye');
-                this.classList.toggle('bi-eye-slash');
-            });
-
-            toggleConfirmPassword.addEventListener('click', function () {
-                const type = confirmPassword.getAttribute('type') === 'password' ? 'text' : 'password';
-                confirmPassword.setAttribute('type', type);
-                this.classList.toggle('bi-eye');
-                this.classList.toggle('bi-eye-slash');
-            });
+            // Add animation class after page loads
+            setTimeout(() => {
+                const fadeElements = document.querySelectorAll('.fade-in');
+                fadeElements.forEach(element => {
+                    element.classList.add('show');
+                });
+            }, 100);
         });
 
         function previewImage(input) {
@@ -369,7 +451,7 @@
                 var reader = new FileReader();
                 
                 reader.onload = function(e) {
-                    $(input).closest('.position-relative').find('img').attr('src', e.target.result);
+                    $(input).closest('.profile-image-container').find('img').attr('src', e.target.result);
                     const toast = new bootstrap.Toast(document.getElementById('uploadToast'));
                     toast.show();
                 }

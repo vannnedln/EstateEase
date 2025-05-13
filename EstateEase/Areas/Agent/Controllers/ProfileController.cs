@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using EstateEase.Data;
 using EstateEase.Models.Entities;
@@ -46,6 +47,19 @@ namespace EstateEase.Areas.Agent.Controllers
                 return NotFound();
             }
 
+            // Get property statistics
+            var totalProperties = await _context.Properties
+                .Where(p => p.AgentId == agent.Id)
+                .CountAsync();
+
+            var soldProperties = await _context.Properties
+                .Where(p => p.AgentId == agent.Id && p.Status == "Sold")
+                .CountAsync();
+
+            var rentalProperties = await _context.Properties
+                .Where(p => p.AgentId == agent.Id && p.SellingType == "Rent")
+                .CountAsync();
+
             var model = new AgentProfileViewModel
             {
                 Email = user.Email,
@@ -59,7 +73,10 @@ namespace EstateEase.Areas.Agent.Controllers
                 Country = agent.Country,
                 LicenseNumber = agent.LicenseNumber,
                 Bio = agent.Bio,
-                ProfilePictureUrl = agent.ProfilePictureUrl ?? "/images/avatar-01.png"
+                ProfilePictureUrl = agent.ProfilePictureUrl ?? "/images/avatar-01.png",
+                TotalProperties = totalProperties,
+                SoldProperties = soldProperties,
+                RentalProperties = rentalProperties
             };
 
             return View(model);
@@ -186,5 +203,10 @@ namespace EstateEase.Areas.Agent.Controllers
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+        
+        // Property statistics
+        public int TotalProperties { get; set; }
+        public int SoldProperties { get; set; }
+        public int RentalProperties { get; set; }
     }
 }
