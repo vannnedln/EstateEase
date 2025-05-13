@@ -69,18 +69,29 @@
                             @if (User.IsInRole("Admin"))
                             {
                                 <li><a class="dropdown-item" asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</a></li>
+                                <li><a class="dropdown-item" asp-area="User" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-grid me-2"></i>My Dashboard</a></li>
+                                <li><a class="dropdown-item" asp-area="User" asp-controller="Properties" asp-action="Index"><i class="bi bi-houses me-2"></i>My Properties</a></li>
+                                <li><a class="dropdown-item" asp-area="User" asp-controller="Appointments" asp-action="Index"><i class="bi bi-calendar3 me-2"></i>Appointments</a></li>
+                                <li><a class="dropdown-item" asp-area="User" asp-controller="Profile" asp-action="Index"><i class="bi bi-person me-2"></i>Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
                             }
-                            @if (User.IsInRole("Agent"))
+                            else if (User.IsInRole("Agent"))
                             {
                                 <li><a class="dropdown-item" asp-area="Agent" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-briefcase me-2"></i>Agent Dashboard</a></li>
+                                <li><a class="dropdown-item" asp-area="User" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-grid me-2"></i>My Dashboard</a></li>
+                                <li><a class="dropdown-item" asp-area="User" asp-controller="Properties" asp-action="Index"><i class="bi bi-houses me-2"></i>My Properties</a></li>
+                                <li><a class="dropdown-item" asp-area="User" asp-controller="Appointments" asp-action="Index"><i class="bi bi-calendar3 me-2"></i>Appointments</a></li>
+                                <li><a class="dropdown-item" asp-area="User" asp-controller="Profile" asp-action="Index"><i class="bi bi-person me-2"></i>Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
                             }
-                            <li><a class="dropdown-item" asp-area="User" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-grid me-2"></i>My Dashboard</a></li>
-                            <li><a class="dropdown-item" asp-area="User" asp-controller="Properties" asp-action="Index"><i class="bi bi-houses me-2"></i>My Properties</a></li>
-                            <li><a class="dropdown-item" asp-area="User" asp-controller="Appointments" asp-action="Index"><i class="bi bi-calendar3 me-2"></i>Appointments</a></li>
-                            <li><a class="dropdown-item" asp-area="User" asp-controller="Profile" asp-action="Index"><i class="bi bi-person me-2"></i>Profile</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            else
+                            {
+                                <!-- Regular user - only show My Properties and Sign Out -->
+                                <li><a class="dropdown-item" asp-area="User" asp-controller="Properties" asp-action="Index"><i class="bi bi-houses me-2"></i>My Properties</a></li>
+                                <li><a class="dropdown-item" asp-area="User" asp-controller="Profile" asp-action="Index"><i class="bi bi-person me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" asp-area="User" asp-controller="Settings" asp-action="Index"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            }
                             <li>
                                 <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                                     <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</button>
