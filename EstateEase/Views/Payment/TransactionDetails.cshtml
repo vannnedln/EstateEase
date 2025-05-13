@@ -1,0 +1,402 @@
+@using System.Linq
+@model EstateEase.Models.Entities.Transaction
+@{
+    ViewData["Title"] = "Transaction Details";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/transactiondetails.css" asp-append-version="true">
+}
+
+<!-- Header Banner -->
+<div class="header-section py-4 mb-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="text-white fw-bold mb-1">Transaction Details</h1>
+                <p class="text-white-50 mb-0">Reference: @Model.ReferenceNumber</p>
+            </div>
+            <div class="col-md-6">
+                <nav aria-label="breadcrumb" class="float-md-end">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="/" class="text-white-50">Home</a></li>
+                        <li class="breadcrumb-item"><a asp-controller="Payment" asp-action="Transactions" class="text-white-50">Transactions</a></li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">Transaction Details</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div class="shape-divider">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100" preserveAspectRatio="none">
+            <path fill="#fff" fill-opacity="1" d="M0,32L80,42.7C160,53,320,75,480,74.7C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,100L1360,100C1280,100,1120,100,960,100C800,100,640,100,480,100C320,100,160,100,80,100L0,100Z"></path>
+        </svg>
+    </div>
+</div>
+
+<div class="container pb-5">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 shadow-sm mb-4">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill fs-4 me-2"></i>
+                <div>@TempData["SuccessMessage"]</div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["WarningMessage"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show border-0 rounded-3 shadow-sm mb-4">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
+                <div>@TempData["WarningMessage"]</div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Transaction Receipt Card -->
+            <div class="card border-0 shadow-lg mb-4 fade-in receipt-card">
+                <div class="receipt-header py-4 px-4">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="receipt-logo-circle">
+                                <i class="bi bi-credit-card fs-1"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h3 class="fw-bold mb-0">Payment @Model.Status</h3>
+                            <p class="text-muted mb-0">@Model.CreatedAt.ToString("MMMM dd, yyyy")</p>
+                        </div>
+                        <div class="col-auto">
+                            <div class="receipt-status 
+                                @(Model.Status == "Completed" ? "receipt-status-completed" : 
+                                Model.Status == "Pending" ? "receipt-status-pending" : 
+                                Model.Status == "Failed" ? "receipt-status-failed" : 
+                                "receipt-status-cancelled")">
+                                <i class="bi @(Model.Status == "Completed" ? "bi-check-circle" : 
+                                            Model.Status == "Pending" ? "bi-hourglass-split" : 
+                                            Model.Status == "Failed" ? "bi-exclamation-circle" : 
+                                            "bi-x-circle") me-2"></i>
+                                @Model.Status
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Amount -->
+                    <div class="receipt-amount text-center my-4">
+                        <span class="receipt-currency">₱</span>
+                        <span class="receipt-value">@String.Format("{0:N2}", Model.Amount)</span>
+                    </div>
+                </div>
+
+                <div class="receipt-divider">
+                    <div class="receipt-circle left"></div>
+                    <div class="receipt-line"></div>
+                    <div class="receipt-circle right"></div>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="row mb-4 fade-in" style="animation-delay: 0.1s;">
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <h5 class="text-primary fw-bold mb-3">
+                                <i class="bi bi-info-circle me-2"></i>Transaction Details
+                            </h5>
+                            <div class="table-responsive receipt-details">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td class="text-muted ps-0 pe-3 py-2">Reference</td>
+                                        <td class="ps-3 py-2 fw-medium">@Model.ReferenceNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted ps-0 pe-3 py-2">Date</td>
+                                        <td class="ps-3 py-2 fw-medium">@Model.CreatedAt.ToString("MMMM dd, yyyy HH:mm")</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted ps-0 pe-3 py-2">Type</td>
+                                        <td class="ps-3 py-2">
+                                            @if (Model.TransactionType == "Rent")
+                                            {
+                                                <span class="badge gradient-blue rounded-pill px-3 py-2">Rent</span>
+                                            }
+                                            else if (Model.TransactionType == "Purchase")
+                                            {
+                                                <span class="badge gradient-purple rounded-pill px-3 py-2">Purchase</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                    @if (Model.CompletedAt.HasValue)
+                                    {
+                                        <tr>
+                                            <td class="text-muted ps-0 pe-3 py-2">Completed</td>
+                                            <td class="ps-3 py-2 fw-medium">@Model.CompletedAt.Value.ToString("MMMM dd, yyyy HH:mm")</td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-primary fw-bold mb-3">
+                                <i class="bi bi-cash-coin me-2"></i>Payment Method
+                            </h5>
+                            <div class="payment-method-card p-3 rounded-4 bg-light">
+                                <div class="d-flex align-items-center">
+                                    <div class="payment-method-icon me-3">
+                                        <i class="bi bi-credit-card-2-front fs-1"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">@Model.PaymentMethod</h6>
+                                        <p class="text-muted mb-0 small">Processed via @(string.IsNullOrEmpty(Model.PaymentProvider) ? "Payment Gateway" : Model.PaymentProvider)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            @if (Model.Status == "Pending")
+                            {
+                                <div class="mt-4">
+                                    <a asp-controller="Payment" asp-action="CompletePayment" asp-route-id="@Model.Id" class="btn btn-gradient rounded-pill w-100">
+                                        <i class="bi bi-check-circle me-2"></i>Complete Payment
+                                    </a>
+                                </div>
+                            }
+                            @if (Model.Status == "Completed")
+                            {
+                                <div class="mt-4">
+                                    <a asp-controller="Payment" asp-action="DownloadReceipt" asp-route-id="@Model.Id" class="btn btn-outline-success rounded-pill w-100">
+                                        <i class="bi bi-download me-2"></i>Download Receipt
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <hr class="receipt-hr my-4" />
+
+                    <div class="fade-in" style="animation-delay: 0.2s;">
+                        <h5 class="text-primary fw-bold mb-3">
+                            <i class="bi bi-house-door me-2"></i>Property Information
+                        </h5>
+                        <div class="card border-0 shadow-sm rounded-4 mb-4 property-card">
+                            <div class="card-body p-4">
+                                <div class="row g-4">
+                                    <div class="col-lg-4">
+                                        @{
+                                            var hasImages = Model.Property.PropertyImages != null && Model.Property.PropertyImages.Count > 0;
+                                            var firstImage = hasImages ? Model.Property.PropertyImages.ToList()[0] : null;
+                                        }
+                                        <div class="property-image-container rounded-4 mb-3 mb-lg-0">
+                                            @if (hasImages && firstImage != null)
+                                            {
+                                                <img src="@firstImage.ImagePath" alt="@Model.Property.Title" class="img-fluid rounded-4">
+                                            }
+                                            else
+                                            {
+                                                <div class="bg-gradient rounded-4 d-flex align-items-center justify-content-center" style="height: 200px; background: linear-gradient(45deg, #e9ecef, #dee2e6);">
+                                                    <i class="bi bi-house-fill text-white fs-1"></i>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-8">
+                                        <h4 class="mb-2 fw-bold">@Model.Property.Title</h4>
+                                        <p class="text-muted mb-3">
+                                            <i class="bi bi-geo-alt me-2"></i>@Model.Property.Address
+                                        </p>
+                                        <div class="d-flex flex-wrap gap-3 mb-3">
+                                            <div class="d-flex align-items-center gap-2 badge bg-light text-dark py-2 px-3 rounded-pill">
+                                                <i class="bi bi-door-closed"></i>
+                                                <span>@Model.Property.Bedrooms Bedrooms</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 badge bg-light text-dark py-2 px-3 rounded-pill">
+                                                <i class="bi bi-water"></i>
+                                                <span>@Model.Property.Bathrooms Bathrooms</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 badge bg-light text-dark py-2 px-3 rounded-pill">
+                                                <i class="bi bi-rulers"></i>
+                                                <span>@Model.Property.Size m²</span>
+                                            </div>
+                                        </div>
+                                        <div class="d-grid d-md-flex gap-2 mt-4">
+                                            <a asp-controller="Property" asp-action="Details" asp-route-id="@Model.PropertyId" class="btn btn-outline-primary rounded-pill px-4">
+                                                <i class="bi bi-house me-2"></i>View Property
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        {
+                            <div class="card border-0 shadow-sm rounded-4 bg-light p-4 mb-0">
+                                <h6 class="fw-bold mb-2">
+                                    <i class="bi bi-journal-text me-2"></i>Additional Notes
+                                </h6>
+                                <p class="text-muted mb-0">@Model.Notes</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+                
+                <div class="receipt-footer p-4 text-center">
+                    <p class="text-muted mb-0 small">Thank you for using EstateEase. This is a digital record of your transaction.</p>
+                </div>
+            </div>
+            
+            <div class="text-center fade-in" style="animation-delay: 0.3s;">
+                <a asp-controller="Payment" asp-action="Transactions" class="btn btn-outline-primary rounded-pill px-4">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Transactions
+                </a>
+            </div>
+        </div>
+
+        <div class="col-lg-4 sticky-container">
+            <div class="timeline-card card border-0 shadow-lg mb-4 fade-in" style="animation-delay: 0.2s;">
+                <div class="card-header position-relative overflow-hidden py-4 bg-gradient-primary">
+                    <h5 class="card-title mb-0 fw-bold ps-2 text-white">
+                        Transaction Timeline
+                    </h5>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-clock-history display-1 text-white"></i>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <ul class="list-unstyled timeline-steps">
+                        <li class="timeline-step completed">
+                            <div class="timeline-content">
+                                <span class="text-muted d-block small mb-1">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</span>
+                                <h6 class="mb-0 fw-bold">Transaction Initiated</h6>
+                                <p class="text-muted small mb-0">Transaction created in the system</p>
+                            </div>
+                        </li>
+
+                        @if (Model.Status == "Completed" || Model.Status == "Pending")
+                        {
+                            <li class="timeline-step completed">
+                                <div class="timeline-content">
+                                    <span class="text-muted d-block small mb-1">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</span>
+                                    <h6 class="mb-0 fw-bold">Payment Processed</h6>
+                                    <p class="text-muted small mb-0">Payment sent to payment processor</p>
+                                </div>
+                            </li>
+                        }
+
+                        @if (Model.Status == "Completed")
+                        {
+                            <li class="timeline-step completed">
+                                <div class="timeline-content">
+                                    <span class="text-muted d-block small mb-1">@Model.CompletedAt?.ToString("MMM dd, yyyy HH:mm")</span>
+                                    <h6 class="mb-0 fw-bold">Payment Confirmed</h6>
+                                    <p class="text-muted small mb-0">Payment successfully processed</p>
+                                </div>
+                            </li>
+
+                            <li class="timeline-step completed">
+                                <div class="timeline-content">
+                                    <span class="text-muted d-block small mb-1">@Model.CompletedAt?.ToString("MMM dd, yyyy HH:mm")</span>
+                                    <h6 class="mb-0 fw-bold">Transaction Completed</h6>
+                                    <p class="text-muted small mb-0">
+                                        @if (Model.TransactionType == "Rent")
+                                        {
+                                            <span>Rental agreement activated</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Property purchase completed</span>
+                                        }
+                                    </p>
+                                </div>
+                            </li>
+                        }
+                        else if (Model.Status == "Cancelled")
+                        {
+                            <li class="timeline-step cancelled">
+                                <div class="timeline-content">
+                                    <span class="text-muted d-block small mb-1">@Model.UpdatedAt?.ToString("MMM dd, yyyy HH:mm")</span>
+                                    <h6 class="mb-0 fw-bold">Transaction Cancelled</h6>
+                                    <p class="text-muted small mb-0">Payment was cancelled</p>
+                                </div>
+                            </li>
+                        }
+                        else if (Model.Status == "Failed")
+                        {
+                            <li class="timeline-step failed">
+                                <div class="timeline-content">
+                                    <span class="text-muted d-block small mb-1">@Model.UpdatedAt?.ToString("MMM dd, yyyy HH:mm")</span>
+                                    <h6 class="mb-0 fw-bold">Payment Failed</h6>
+                                    <p class="text-muted small mb-0">Payment processing failed</p>
+                                </div>
+                            </li>
+                        }
+                        else if (Model.Status == "Pending")
+                        {
+                            <li class="timeline-step pending">
+                                <div class="timeline-content">
+                                    <span class="text-muted d-block small mb-1">Pending</span>
+                                    <h6 class="mb-0 fw-bold">Awaiting Payment Confirmation</h6>
+                                    <p class="text-muted small mb-0">Waiting for payment to be confirmed</p>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-lg fade-in" style="animation-delay: 0.3s;">
+                <div class="card-header position-relative overflow-hidden py-4 bg-gradient-primary">
+                    <h5 class="card-title mb-0 fw-bold ps-2 text-white">
+                        Need Assistance?
+                    </h5>
+                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
+                        <i class="bi bi-headset display-1 text-white"></i>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-muted mb-4">If you have any questions about this transaction or need assistance, our support team is here to help.</p>
+                    <a asp-controller="Home" asp-action="Contact" class="btn btn-gradient rounded-pill w-100">
+                        <i class="bi bi-chat-dots me-2"></i>Contact Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add 'show' class to elements with 'fade-in' to trigger animations
+            setTimeout(function() {
+                var fadeElements = document.querySelectorAll('.fade-in');
+                fadeElements.forEach(function(element) {
+                    element.classList.add('show');
+                });
+            }, 10);
+            
+            // Handle sticky positioning for timeline card
+            function setupStickyTimeline() {
+                const timelineCard = document.querySelector('.timeline-card');
+                if (!timelineCard) return;
+                
+                const navbarHeight = document.querySelector('nav') ? document.querySelector('nav').offsetHeight : 0;
+                const stickyTop = navbarHeight + 20;
+                
+                timelineCard.style.top = stickyTop + 'px';
+                timelineCard.style.maxHeight = `calc(100vh - ${stickyTop + 20}px)`;
+                
+                // Force repaint to ensure sticky positioning works
+                timelineCard.style.display = 'none';
+                timelineCard.offsetHeight; // Force reflow
+                timelineCard.style.display = '';
+            }
+            
+            // Run on load and resize
+            setupStickyTimeline();
+            window.addEventListener('resize', setupStickyTimeline);
+        });
+    </script>
+} 

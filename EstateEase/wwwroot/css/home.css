@@ -913,4 +913,241 @@ body {
     .hero-modern-title {
         font-size: 2rem;
     }
+
+    :root {
+        --primary-gradient: linear-gradient(45deg, #4f5aff, #9f1ae2);
+        --blue-gradient: linear-gradient(45deg, #0d6efd, #0dcaf0);
+        --green-gradient: linear-gradient(45deg, #198754, #20c997);
+        --yellow-gradient: linear-gradient(45deg, #ffc107, #fd7e14);
+        --red-gradient: linear-gradient(45deg, #dc3545, #ff6b81);
+        --gray-gradient: linear-gradient(45deg, #6c757d, #adb5bd);
+    }
+    
+    /* Header Styles */
+    .header-section {
+        background: var(--primary-gradient);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .header-section::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 0;
+    }
+    
+    .header-section::after {
+        content: '';
+        position: absolute;
+        bottom: -30px;
+        left: 30%;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 0;
+    }
+    
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .bg-gradient-primary {
+        background: var(--primary-gradient);
+    }
+
+    /* Buttons */
+    .btn-gradient {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+    }
+    
+    .btn-gradient:hover {
+        background: linear-gradient(45deg, #4050ee, #8516bd);
+        color: white;
+    }
+    
+    .btn-outline-primary {
+        color: #4f5aff;
+        border-color: #4f5aff;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #4f5aff;
+        border-color: #4f5aff;
+    }
+    
+    .btn-outline-success {
+        color: #198754;
+        border-color: #198754;
+    }
+    
+    .btn-outline-success:hover {
+        background-color: #198754;
+        border-color: #198754;
+    }
+    
+    /* Badges */
+    .gradient-blue {
+        background: var(--blue-gradient);
+        color: white;
+    }
+    
+    .gradient-purple {
+        background: var(--primary-gradient);
+        color: white;
+    }
+    
+    .gradient-green {
+        background: var(--green-gradient);
+        color: white;
+    }
+    
+    .gradient-yellow {
+        background: var(--yellow-gradient);
+        color: #212529;
+    }
+    
+    .gradient-red {
+        background: var(--red-gradient);
+        color: white;
+    }
+    
+    .gradient-gray {
+        background: var(--gray-gradient);
+        color: white;
+    }
+    
+    /* Animations with CSS transitions instead of keyframes */
+    .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    }
+    
+    /* Trigger animation on page load with JS */
+    .fade-in.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    /* Add delay classes */
+    .delay-1 {
+        transition-delay: 0.1s;
+    }
+    
+    .delay-2 {
+        transition-delay: 0.2s;
+    }
+    
+    .delay-3 {
+        transition-delay: 0.3s;
+    }
+
+    /* Timeline */
+    .timeline-steps {
+        position: relative;
+        margin-bottom: 0;
+    }
+    
+    .timeline-steps:before {
+        content: '';
+        position: absolute;
+        left: 7px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(to bottom, #e5e5e5 0%, #4f5aff 100%);
+        transform: translateX(-50%);
+    }
+    
+    .timeline-step {
+        position: relative;
+        padding-left: 30px;
+        margin-bottom: 2rem;
+    }
+    
+    .timeline-step:last-child {
+        margin-bottom: 0;
+    }
+    
+    .timeline-step:before {
+        content: '';
+        position: absolute;
+        left: 7px;
+        top: 0;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background-color: #e5e5e5;
+        transform: translateX(-50%);
+        z-index: 1;
+    }
+    
+    .timeline-step.completed:before {
+        background: var(--green-gradient);
+        box-shadow: 0 0 10px rgba(25, 135, 84, 0.5);
+    }
+    
+    .timeline-step.pending:before {
+        background: var(--yellow-gradient);
+        box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+    }
+    
+    .timeline-step.failed:before {
+        background: var(--red-gradient);
+        box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+    }
+    
+    .timeline-step.cancelled:before {
+        background: var(--gray-gradient);
+        box-shadow: 0 0 10px rgba(108, 117, 125, 0.5);
+    }
+    
+    /* Text and Colors */
+    .text-primary {
+        color: #4f5aff !important;
+    }
+    
+    h5.text-primary {
+        position: relative;
+        display: inline-block;
+        padding-bottom: 0.5rem;
+    }
+    
+    h5.text-primary::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 50px;
+        height: 3px;
+        background: var(--primary-gradient);
+        border-radius: 3px;
+    }
+    
+    .bg-gradient {
+        background: var(--primary-gradient);
+    }
+    
+    /* Cards and Other Elements */
+    .card {
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+    
+    .rounded-4 {
+        border-radius: 0.75rem !important;
+    }
+    
+    .rounded-pill {
+        border-radius: 50rem !important;
+    }
 }

@@ -16,6 +16,7 @@ namespace EstateEase.Data
         public DbSet<Agent> Agents { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<UserProperty> UserProperties { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
     
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -100,6 +101,41 @@ namespace EstateEase.Data
                 .WithMany()
                 .HasForeignKey(up => up.PropertyId)
                 .OnDelete(DeleteBehavior.Cascade);
+                
+            builder.Entity<UserProperty>()
+                .Property(up => up.RelationshipType)
+                .IsRequired(false);
+                
+            // Configure Transaction relationships
+            builder.Entity<Transaction>()
+                .HasOne(t => t.Property)
+                .WithMany()
+                .HasForeignKey(t => t.PropertyId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            builder.Entity<Transaction>()
+                .Property(t => t.Amount)
+                .HasColumnType("decimal(18,2)");
+                
+            builder.Entity<Transaction>()
+                .Property(t => t.ReservationAmount)
+                .HasColumnType("decimal(18,2)");
+                
+            builder.Entity<Transaction>()
+                .Property(t => t.Notes)
+                .IsRequired(false);
+                
+            builder.Entity<Transaction>()
+                .Property(t => t.PaymentId)
+                .IsRequired(false);
+                
+            builder.Entity<Transaction>()
+                .Property(t => t.CheckoutSessionId)
+                .IsRequired(false);
+                
+            builder.Entity<Transaction>()
+                .Property(t => t.ReferenceNumber)
+                .IsRequired(false);
         }
     }
 }

@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="bootstrap" Version="5.3.5" />
+    <PackageReference Include="iTextSharp.LGPLv2.Core" Version="3.7.2" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.11" />

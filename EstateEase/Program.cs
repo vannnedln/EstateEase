@@ -49,6 +49,9 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddHttpClient<IReCaptchaService, ReCaptchaService>();
 builder.Services.AddScoped<IPropertyService, PropertyService>();
 
+// Add PaymentService
+builder.Services.AddHttpClient<IPaymentService, PaymentService>();
+
 builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB to be safe

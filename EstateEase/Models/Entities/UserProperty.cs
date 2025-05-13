@@ -19,6 +19,9 @@ namespace EstateEase.Models.Entities
         public string OwnershipType { get; set; } // "Bought" or "Rented"
         
         [Required]
+        public string RelationshipType { get; set; } // "Owner" or "Renter"
+        
+        [Required]
         public DateTime AcquisitionDate { get; set; }
         
         public DateTime? ExpiryDate { get; set; } // For rentals

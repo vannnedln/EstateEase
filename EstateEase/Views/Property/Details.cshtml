@@ -212,6 +212,28 @@
         </ol>
     </nav>
 
+    @if (Model.Property.Status == "Sold" || Model.Property.Status == "Rented")
+    {
+        <div class="alert alert-warning fade-in mb-4" style="animation-delay: 0.2s;">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">This property is currently @Model.Property.Status.ToLower()</h5>
+                    <p class="mb-0">
+                        @if (Model.Property.Status == "Sold")
+                        {
+                            <span>This property has been sold and is no longer available for purchase.</span>
+                        }
+                        else if (Model.Property.Status == "Rented")
+                        {
+                            <span>This property has been rented and is currently occupied.</span>
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+
     <div class="row g-4 top-section">
         <!-- Property Images Gallery -->
         <div class="col-lg-8 mb-4 fade-in" style="animation-delay: 0.2s;">
@@ -292,10 +314,20 @@
                             <button class="btn btn-gradient action-button" data-bs-toggle="modal" data-bs-target="#inquiryModal">
                                 <i class="bi bi-chat-left-text me-2"></i>Send Inquiry
                             </button>
-                            <button class="btn btn-gradient action-button" data-bs-toggle="modal" data-bs-target="#actionModal">
-                                <i class="bi @(Model.Property.SellingType == "Rent" ? "bi-house-check" : "bi-bag-check") me-2"></i>
-                                @(Model.Property.SellingType == "Rent" ? "Rent Now" : "Buy Now")
-                            </button>
+                            @if (Model.Property.Status == "Sold" || Model.Property.Status == "Rented")
+                            {
+                                <button class="btn btn-secondary action-button" disabled>
+                                    <i class="bi @(Model.Property.Status == "Rented" ? "bi-house-check" : "bi-bag-check") me-2"></i>
+                                    @Model.Property.Status
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-gradient action-button" data-bs-toggle="modal" data-bs-target="#actionModal">
+                                    <i class="bi @(Model.Property.SellingType == "Rent" ? "bi-house-check" : "bi-bag-check") me-2"></i>
+                                    @(Model.Property.SellingType == "Rent" ? "Rent Now" : "Buy Now")
+                                </button>
+                            }
                         </div>
                     }
                     else
@@ -639,103 +671,182 @@
 
 @if (Model.IsUserLoggedIn)
 {
-    <!-- Rent/Buy Modal -->
-    <div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0 shadow">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title gradient-text" id="actionModalLabel">
-                        @(Model.Property.SellingType == "Rent" ? "Rent This Property" : "Purchase This Property")
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="actionForm">
-                        <input type="hidden" id="actionPropertyId" value="@Model.Property.Id">
-                        
-                        <div class="mb-4">
-                            <div class="alert alert-info rounded-3">
-                                <div class="d-flex">
-                                    <div class="me-3">
-                                        <i class="bi @(Model.Property.SellingType == "Rent" ? "bi-house-check" : "bi-bag-check") fs-3"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="fw-bold mb-1">@(Model.Property.SellingType == "Rent" ? "Rental Information" : "Purchase Information")</h6>
-                                        <p class="mb-0">
-                                            @if (Model.Property.SellingType == "Rent")
-                                            {
-                                                <span>You are about to initiate a rental agreement for <strong>@Model.Property.Title</strong> at <strong>₱@Model.Property.Price.ToString("N0")/mo</strong>.</span>
-                                            }
-                                            else
-                                            {
-                                                <span>You are about to initiate a purchase for <strong>@Model.Property.Title</strong> at <strong>₱@Model.Property.Price.ToString("N0")</strong>.</span>
-                                            }
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        @if (Model.Property.Agent == null)
+    @if (Model.Property.Status != "Sold" && Model.Property.Status != "Rented")
+    {
+        <!-- Rent/Buy Modal -->
+        <div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content rounded-4 border-0 shadow">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title gradient-text" id="actionModalLabel">
+                            @(Model.Property.SellingType == "Rent" ? "Rent This Property" : "Purchase This Property")
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (Model.Property.SellingType == "Rent")
                         {
-                            <div class="mb-4">
-                                <div class="alert alert-success rounded-3">
-                                    <div class="d-flex">
-                                        <div class="me-3">
-                                            <i class="bi bi-shield-check fs-3"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="fw-bold mb-1">Direct from EstateEase</h6>
-                                            <p class="mb-0">
-                                                This property is managed directly by EstateEase. All payments will be securely processed through our platform.
-                                            </p>
+                            <form id="actionForm" asp-controller="Payment" asp-action="CreateRentCheckout" method="post">
+                                <input type="hidden" id="propertyId" name="propertyId" value="@Model.Property.Id">
+                                
+                                <div class="mb-4">
+                                    <div class="alert alert-info rounded-3">
+                                        <div class="d-flex">
+                                            <div class="me-3">
+                                                <i class="bi bi-house-check fs-3"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Rental Information</h6>
+                                                <p class="mb-0">
+                                                    <span>You are about to initiate a rental agreement for <strong>@Model.Property.Title</strong> at <strong>₱@Model.Property.Price.ToString("N0")/mo</strong>.</span>
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        }
-                        
-                        <div class="mb-4">
-                            <label class="form-label fw-medium">Payment Method</label>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="paymentMethod" id="paymentBank" checked>
-                                <label class="form-check-label" for="paymentBank">
-                                    Bank Transfer
-                                </label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCard">
-                                <label class="form-check-label" for="paymentCard">
-                                    Credit/Debit Card
-                                </label>
-                            </div>
-                            @if (Model.Property.SellingType != "Rent")
-                            {
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMortgage">
-                                    <label class="form-check-label" for="paymentMortgage">
-                                        Mortgage/Home Loan
-                                    </label>
+                            
+                                @if (Model.Property.Agent == null)
+                                {
+                                    <div class="mb-4">
+                                        <div class="alert alert-success rounded-3">
+                                            <div class="d-flex">
+                                                <div class="me-3">
+                                                    <i class="bi bi-shield-check fs-3"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="fw-bold mb-1">Direct from EstateEase</h6>
+                                                    <p class="mb-0">
+                                                        This property is managed directly by EstateEase. All payments will be securely processed through our platform.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                
+                                <div class="mb-4">
+                                    <label class="form-label fw-medium">Payment Method</label>
+                                    <select class="form-select rounded-3" name="paymentMethod">
+                                        <option value="Card" selected>Credit/Debit Card</option>
+                                    </select>
                                 </div>
-                            }
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label for="actionNotes" class="form-label fw-medium">Additional Information</label>
-                            <textarea class="form-control rounded-3" id="actionNotes" rows="3" 
-                                      placeholder="@(Model.Property.SellingType == "Rent" ? "Preferred move-in date, special requirements, etc." : "Preferred closing date, financing details, etc.")"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-gradient rounded-3 px-4 py-2" id="submitAction">
-                        @(Model.Property.SellingType == "Rent" ? "Proceed with Rental" : "Proceed with Purchase")
-                    </button>
+                                
+                                <div class="mb-4">
+                                    <label for="notes" class="form-label fw-medium">Additional Information</label>
+                                    <textarea class="form-control rounded-3" id="notes" name="notes" rows="3" 
+                                              placeholder="Preferred move-in date, special requirements, etc."></textarea>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div class="alert alert-light rounded-3">
+                                        <div class="d-flex">
+                                            <div class="me-3">
+                                                <i class="bi bi-info-circle fs-3"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Payment Information</h6>
+                                                <p class="mb-2">
+                                                    Your payment of <strong>₱@Model.Property.Price.ToString("N0")</strong> represents your first month's rent.
+                                                </p>
+                                                <p class="mb-0 small">
+                                                    By proceeding, you'll be redirected to our secure payment provider PayMongo to complete your transaction.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="modal-footer border-0">
+                                    <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-gradient rounded-3 px-4 py-2">
+                                        Proceed with Payment
+                                    </button>
+                                </div>
+                            </form>
+                        }
+                        else
+                        {
+                            <form id="actionForm" asp-controller="Payment" asp-action="CreatePurchaseCheckout" method="post">
+                                <input type="hidden" id="propertyId" name="propertyId" value="@Model.Property.Id">
+                                <input type="hidden" name="isReservation" value="false">
+                                
+                                <div class="mb-4">
+                                    <div class="alert alert-info rounded-3">
+                                        <div class="d-flex">
+                                            <div class="me-3">
+                                                <i class="bi bi-bag-check fs-3"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Purchase Information</h6>
+                                                <p class="mb-0">
+                                                    <span>You are about to purchase <strong>@Model.Property.Title</strong> at <strong>₱@Model.Property.Price.ToString("N0")</strong>.</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                                @if (Model.Property.Agent == null)
+                                {
+                                    <div class="mb-4">
+                                        <div class="alert alert-success rounded-3">
+                                            <div class="d-flex">
+                                                <div class="me-3">
+                                                    <i class="bi bi-shield-check fs-3"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="fw-bold mb-1">Direct from EstateEase</h6>
+                                                    <p class="mb-0">
+                                                        This property is managed directly by EstateEase. All payments will be securely processed through our platform.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                
+                                <div class="mb-4">
+                                    <label class="form-label fw-medium">Payment Method</label>
+                                    <select class="form-select rounded-3" name="paymentMethod">
+                                        <option value="Card" selected>Credit/Debit Card</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="notes" class="form-label fw-medium">Additional Information</label>
+                                    <textarea class="form-control rounded-3" id="notes" name="notes" rows="3" 
+                                              placeholder="Preferred closing date, financing details, etc."></textarea>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div class="alert alert-light rounded-3">
+                                        <div class="d-flex">
+                                            <div class="me-3">
+                                                <i class="bi bi-info-circle fs-3"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Payment Information</h6>
+                                                <p class="mb-0 small">
+                                                    By proceeding, you'll be redirected to our secure payment provider PayMongo to complete your transaction.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="modal-footer border-0">
+                                    <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-gradient rounded-3 px-4 py-2">
+                                        Proceed with Payment
+                                    </button>
+                                </div>
+                            </form>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
     
     <!-- Send Inquiry Modal -->
     <div class="modal fade" id="inquiryModal" tabindex="-1" aria-labelledby="inquiryModalLabel" aria-hidden="true">

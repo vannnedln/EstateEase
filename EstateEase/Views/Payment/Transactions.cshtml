@@ -1,0 +1,147 @@
+@using System.Linq
+@model List<EstateEase.Models.Entities.Transaction>
+@{
+    ViewData["Title"] = "My Transactions";
+}
+
+<div class="container py-5">
+    <h2 class="gradient-text mb-4">My Transactions</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="card shadow-sm rounded-4 border-0 p-5 text-center">
+            <div class="mb-3">
+                <i class="bi bi-receipt text-muted" style="font-size: 3rem;"></i>
+            </div>
+            <h4 class="mb-2">No Transactions Yet</h4>
+            <p class="text-muted mb-4">You haven't made any transactions yet. Browse our properties to start your journey.</p>
+            <div>
+                <a asp-controller="Home" asp-action="Properties" class="btn btn-gradient rounded-3 px-4 py-2">
+                    Browse Properties
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="card shadow-sm rounded-4 border-0 mb-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Date</th>
+                                        <th>Reference</th>
+                                        <th>Property</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th class="pe-4">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var transaction in Model)
+                                    {
+                                        <tr>
+                                            <td class="ps-4">@transaction.CreatedAt.ToString("yyyy-MM-dd")</td>
+                                            <td>@transaction.ReferenceNumber</td>
+                                            <td>
+                                                <a asp-controller="Property" asp-action="Details" asp-route-id="@transaction.PropertyId">
+                                                    @transaction.Property.Title
+                                                </a>
+                                            </td>
+                                            <td>
+                                                @if (transaction.TransactionType == "Rent")
+                                                {
+                                                    <span class="badge bg-info text-dark">Rent</span>
+                                                }
+                                                else if (transaction.TransactionType == "Purchase")
+                                                {
+                                                    <span class="badge bg-primary">Purchase</span>
+                                                }
+                                            </td>
+                                            <td>₱@transaction.Amount.ToString("N2")</td>
+                                            <td>
+                                                @if (transaction.Status == "Completed")
+                                                {
+                                                    <span class="badge bg-success">Completed</span>
+                                                }
+                                                else if (transaction.Status == "Pending")
+                                                {
+                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                }
+                                                else if (transaction.Status == "Failed")
+                                                {
+                                                    <span class="badge bg-danger">Failed</span>
+                                                }
+                                                else if (transaction.Status == "Cancelled")
+                                                {
+                                                    <span class="badge bg-secondary">Cancelled</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-light text-dark">@transaction.Status</span>
+                                                }
+                                            </td>
+                                            <td class="pe-4">
+                                                <div class="d-flex gap-2">
+                                                    <a asp-controller="Payment" asp-action="TransactionDetails" asp-route-id="@transaction.Id" class="btn btn-sm btn-outline-primary rounded-circle" title="View Details">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                    @if (transaction.Status == "Completed")
+                                                    {
+                                                        <a asp-controller="Payment" asp-action="DownloadReceipt" asp-route-id="@transaction.Id" class="btn btn-sm btn-outline-success rounded-circle" title="Download Receipt">
+                                                            <i class="bi bi-download"></i>
+                                                        </a>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3">
+                <div class="card shadow-sm rounded-4 border-0 mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-3">Transaction Summary</h5>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Total Transactions</span>
+                                <span class="fw-medium">@Model.Count</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Completed</span>
+                                <span class="fw-medium">@Model.Count(t => t.Status == "Completed")</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Pending</span>
+                                <span class="fw-medium">@Model.Count(t => t.Status == "Pending")</span>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h6 class="mb-2">Total Spent</h6>
+                            <h3 class="gradient-text">₱@Model.Where(t => t.Status == "Completed").Sum(t => t.Amount).ToString("N2")</h3>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm rounded-4 border-0 mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-3">Need Help?</h5>
+                        <p class="text-muted small mb-4">If you have any questions about your transactions or need assistance, please contact our support team.</p>
+                        <a asp-controller="Home" asp-action="Contact" class="btn btn-gradient rounded-3 w-100">
+                            Contact Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div> 
