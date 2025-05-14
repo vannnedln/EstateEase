@@ -282,10 +282,12 @@
                     </li>
                  
                     <li>
-                        <a asp-area="User" asp-controller="Messages" asp-action="Index" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Messages" ? "active" : "")">
-                            <i class="bi bi-chat-left-text"></i> <span>Messages</span>
+                        <a asp-area="User" asp-controller="Inquiry" asp-action="Index" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Inquiry" ? "active" : "")">
+                            <i class="bi bi-chat-left-text"></i> <span>My Inquiries</span>
+                            @await Component.InvokeAsync("UnreadReplies")
                         </a>
                     </li>
+                   
                     <li>
                         <a asp-area="User" asp-controller="Payments" asp-action="Index" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Payments" ? "active" : "")">
                             <i class="bi bi-credit-card"></i> <span>Payments</span>

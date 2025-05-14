@@ -152,6 +152,7 @@ namespace EstateEase.Areas.Admin.Controllers
                     PropertyAddress = i.Property != null ? i.Property.Address : null,
                     Subject = i.Subject,
                     Message = i.Message,
+                    ReplyMessage = i.ReplyMessage,
                     Status = i.Status,
                     CreatedAt = i.CreatedAt,
                     UpdatedAt = i.UpdatedAt
@@ -237,12 +238,15 @@ namespace EstateEase.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            // Update inquiry status to In Progress if it was New
-            if (inquiry.Status == "New")
-            {
-                inquiry.Status = "In Progress";
-            }
+            // Update inquiry status to In Progress when replying so user can reply back
+            inquiry.Status = "In Progress";
             inquiry.UpdatedAt = DateTime.Now;
+            
+            // Save the reply message in the ReplyMessage field
+            inquiry.ReplyMessage = model.ReplyMessage;
+            
+            // Set ReadByUser to false so the user can see the reply
+            inquiry.ReadByUser = false;
             
             await _context.SaveChangesAsync();
 

@@ -18,6 +18,7 @@ namespace EstateEase.Data
         public DbSet<UserProperty> UserProperties { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Inquiry> Inquiries { get; set; }
+        public DbSet<InquiryMessage> InquiryMessages { get; set; }
     
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -141,6 +142,13 @@ namespace EstateEase.Data
             builder.Entity<Transaction>()
                 .Property(t => t.ReferenceNumber)
                 .IsRequired(false);
+                
+            // Configure InquiryMessage relationship
+            builder.Entity<InquiryMessage>()
+                .HasOne(im => im.Inquiry)
+                .WithMany(i => i.Messages)
+                .HasForeignKey(im => im.InquiryId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

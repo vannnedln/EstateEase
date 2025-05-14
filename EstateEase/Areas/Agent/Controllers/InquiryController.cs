@@ -37,9 +37,21 @@ namespace EstateEase.Areas.Agent.Controllers
                 
             var agentId = agent?.Id;
             
-            return await _context.Inquiries
+            // Count unread inquiries and messages
+            var unreadInquiries = await _context.Inquiries
                 .Where(i => (i.AgentId == agentId || i.AgentId == currentUserId) && i.Status == "New")
                 .CountAsync();
+                
+            var unreadMessages = await _context.InquiryMessages
+                .Where(m => m.SenderType == "User" && !m.IsRead)
+                .Join(_context.Inquiries,
+                    m => m.InquiryId,
+                    i => i.Id,
+                    (m, i) => new { Message = m, Inquiry = i })
+                .Where(x => x.Inquiry.AgentId == agentId || x.Inquiry.AgentId == currentUserId)
+                .CountAsync();
+                
+            return unreadInquiries + unreadMessages;
         }
 
         public async Task<IActionResult> Index(string propertyId = null)
@@ -93,7 +105,7 @@ namespace EstateEase.Areas.Agent.Controllers
             ViewBag.Properties = properties;
             
             // Set the unread count in ViewBag for the layout to use
-            ViewBag.UnreadInquiriesCount = inquiries.Count(i => i.Status == "New");
+            ViewBag.UnreadInquiriesCount = await GetUnreadInquiriesCount();
             
             // If property filter was applied, add to ViewBag for UI
             if (!string.IsNullOrEmpty(propertyId))
@@ -126,6 +138,7 @@ namespace EstateEase.Areas.Agent.Controllers
             var inquiry = await _context.Inquiries
                 .Include(i => i.User)
                 .Include(i => i.Property)
+                .Include(i => i.Messages)
                 .Where(i => (i.AgentId == agentId || i.AgentId == currentUserId) && i.Id == id)
                 .Select(i => new InquiryViewModel
                 {
@@ -137,9 +150,22 @@ namespace EstateEase.Areas.Agent.Controllers
                     PropertyAddress = i.Property != null ? i.Property.Address : null,
                     Subject = i.Subject,
                     Message = i.Message,
+                    ReplyMessage = i.ReplyMessage,
                     Status = i.Status,
                     CreatedAt = i.CreatedAt,
-                    UpdatedAt = i.UpdatedAt
+                    UpdatedAt = i.UpdatedAt,
+                    Messages = i.Messages.Select(m => new InquiryMessageViewModel
+                    {
+                        Id = m.Id,
+                        InquiryId = m.InquiryId,
+                        SenderId = m.SenderId,
+                        SenderType = m.SenderType,
+                        SenderName = m.SenderType == "Agent" ? "You" : m.SenderType,
+                        Message = m.Message,
+                        IsRead = m.IsRead,
+                        CreatedAt = m.CreatedAt,
+                        IsFromCurrentUser = m.SenderType == "Agent"
+                    }).ToList()
                 })
                 .FirstOrDefaultAsync();
 
@@ -163,6 +189,21 @@ namespace EstateEase.Areas.Agent.Controllers
                     inquiry.Status = "In Progress";
                     inquiry.UpdatedAt = DateTime.Now;
                 }
+            }
+            
+            // Mark all messages from the user as read
+            var unreadMessages = await _context.InquiryMessages
+                .Where(m => m.InquiryId == id && !m.IsRead && m.SenderType == "User")
+                .ToListAsync();
+                
+            if (unreadMessages.Any())
+            {
+                foreach (var message in unreadMessages)
+                {
+                    message.IsRead = true;
+                }
+                
+                await _context.SaveChangesAsync();
             }
 
             return View(inquiry);
@@ -228,12 +269,28 @@ namespace EstateEase.Areas.Agent.Controllers
                 return NotFound();
             }
 
-            // Update inquiry status to In Progress if it was New
-            if (inquiry.Status == "New")
+            // Create a new message for the chat
+            var message = new InquiryMessage
             {
-                inquiry.Status = "In Progress";
-            }
+                InquiryId = id,
+                SenderId = currentUserId,
+                SenderType = "Agent",
+                Message = model.ReplyMessage,
+                CreatedAt = DateTime.Now,
+                IsRead = false // Not read by user yet
+            };
+            
+            _context.InquiryMessages.Add(message);
+
+            // Update inquiry status to In Progress when replying so user can reply back
+            inquiry.Status = "In Progress";
             inquiry.UpdatedAt = DateTime.Now;
+            
+            // For backward compatibility, also save to ReplyMessage field
+            inquiry.ReplyMessage = model.ReplyMessage;
+            
+            // Set ReadByUser to false so the user can see the reply
+            inquiry.ReadByUser = false;
             
             await _context.SaveChangesAsync();
 
@@ -241,7 +298,65 @@ namespace EstateEase.Areas.Agent.Controllers
             // This would typically use an email service
 
             TempData["Success"] = "Reply sent successfully";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        // Quick reply from details page
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> QuickReply(int id, string replyMessage)
+        {
+            if (string.IsNullOrEmpty(replyMessage))
+            {
+                TempData["Error"] = "Reply message cannot be empty.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            var currentUserId = _userManager.GetUserId(User);
+            
+            // Get the agent record to get the agent ID
+            var agent = await _context.Agents
+                .FirstOrDefaultAsync(a => a.UserId == currentUserId);
+                
+            var agentId = agent?.Id;
+            
+            // Get the inquiry
+            var inquiry = await _context.Inquiries
+                .Where(i => (i.AgentId == agentId || i.AgentId == currentUserId) && i.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (inquiry == null)
+            {
+                return NotFound();
+            }
+
+            // Create a new message for the chat
+            var message = new InquiryMessage
+            {
+                InquiryId = id,
+                SenderId = currentUserId,
+                SenderType = "Agent",
+                Message = replyMessage,
+                CreatedAt = DateTime.Now,
+                IsRead = false // Not read by user yet
+            };
+            
+            _context.InquiryMessages.Add(message);
+
+            // Update inquiry status to In Progress when replying so user can reply back
+            inquiry.Status = "In Progress";
+            inquiry.UpdatedAt = DateTime.Now;
+            
+            // For backward compatibility, also save to ReplyMessage field
+            inquiry.ReplyMessage = replyMessage;
+            
+            // Set ReadByUser to false so the user can see the reply
+            inquiry.ReadByUser = false;
+            
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Reply sent successfully";
+            return RedirectToAction(nameof(Details), new { id });
         }
 
         [HttpPost]
@@ -270,10 +385,23 @@ namespace EstateEase.Areas.Agent.Controllers
             inquiry.Status = "Resolved";
             inquiry.UpdatedAt = DateTime.Now;
             
+            // Add a system message indicating the inquiry was resolved
+            var message = new InquiryMessage
+            {
+                InquiryId = id,
+                SenderId = currentUserId,
+                SenderType = "System",
+                Message = "This inquiry has been marked as resolved by the agent.",
+                CreatedAt = DateTime.Now,
+                IsRead = false // Not read by user yet
+            };
+            
+            _context.InquiryMessages.Add(message);
+            
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Inquiry marked as resolved";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { id });
         }
 
         [HttpPost]
@@ -288,20 +416,20 @@ namespace EstateEase.Areas.Agent.Controllers
                 
             var agentId = agent?.Id;
             
-            // Build query for new inquiries
+            // Build query for inquiries
             var query = _context.Inquiries
                 .Where(i => (i.AgentId == agentId || i.AgentId == currentUserId) && i.Status == "New");
             
-            // If propertyId is provided, filter by property
+            // Apply property filter if provided
             if (!string.IsNullOrEmpty(propertyId))
             {
                 query = query.Where(i => i.PropertyId == propertyId);
             }
             
-            // Get all new inquiries
+            // Get inquiries to mark as read
             var inquiries = await query.ToListAsync();
             
-            // Mark all as "In Progress"
+            // Mark all as read
             foreach (var inquiry in inquiries)
             {
                 inquiry.Status = "In Progress";
@@ -309,13 +437,31 @@ namespace EstateEase.Areas.Agent.Controllers
                 inquiry.UpdatedAt = DateTime.Now;
             }
             
+            // Also mark all unread messages as read
+            var unreadMessagesQuery = _context.InquiryMessages
+                .Where(m => !m.IsRead && m.SenderType == "User")
+                .Join(_context.Inquiries,
+                    m => m.InquiryId,
+                    i => i.Id,
+                    (m, i) => new { Message = m, Inquiry = i })
+                .Where(x => x.Inquiry.AgentId == agentId || x.Inquiry.AgentId == currentUserId);
+                
+            if (!string.IsNullOrEmpty(propertyId))
+            {
+                unreadMessagesQuery = unreadMessagesQuery.Where(x => x.Inquiry.PropertyId == propertyId);
+            }
+            
+            var unreadMessages = await unreadMessagesQuery.Select(x => x.Message).ToListAsync();
+            
+            foreach (var message in unreadMessages)
+            {
+                message.IsRead = true;
+            }
+            
             await _context.SaveChangesAsync();
-            
-            // Set success message
+
             TempData["Success"] = "All inquiries marked as read";
-            
-            // Return to the same view
-            return RedirectToAction(nameof(Index), new { propertyId = propertyId });
+            return RedirectToAction(nameof(Index), new { propertyId });
         }
 
         [HttpGet]

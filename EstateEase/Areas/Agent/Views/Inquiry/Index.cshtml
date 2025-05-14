@@ -233,9 +233,7 @@
                                                     </a>
                                                     @if (inquiry.Status != "Resolved")
                                                     {
-                                                        <a asp-action="Reply" asp-route-id="@inquiry.Id" class="btn btn-sm btn-primary rounded-circle" title="Reply">
-                                                            <i class="bi bi-reply"></i>
-                                                        </a>
+                                                        
                                                         <form asp-action="MarkAsResolved" asp-route-id="@inquiry.Id" method="post" class="d-inline">
                                                             <button type="submit" class="btn btn-sm btn-success rounded-circle" title="Mark as Resolved">
                                                                 <i class="bi bi-check-lg"></i>

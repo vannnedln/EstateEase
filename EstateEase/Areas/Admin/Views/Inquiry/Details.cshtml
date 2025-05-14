@@ -86,6 +86,19 @@
                         </div>
                     </div>
 
+                    @if (!string.IsNullOrEmpty(Model.ReplyMessage))
+                    {
+                        <hr />
+                        <div class="row">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3">Your Reply</h6>
+                                <div class="p-4 bg-success-light rounded-4">
+                                    <p>@Model.ReplyMessage</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
                     <div class="mt-4 d-flex gap-2 justify-content-end">
                         @if (Model.Status != "Resolved")
                         {
@@ -172,6 +185,12 @@
         .badge {
             padding: 0.5em 1em;
             font-weight: normal;
+        }
+        
+        /* Reply highlight */
+        .bg-success-light {
+            background-color: rgba(12, 188, 135, 0.1);
+            border-left: 4px solid #0cbc87;
         }
     </style>
 }

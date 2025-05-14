@@ -543,7 +543,7 @@ namespace EstateEase.Areas.Admin.Controllers
         // GET: Admin/User/View/5
         [HttpGet]
         [Route("Admin/User/View/{id}")]
-        public async Task<IActionResult> View(string id)
+        public new async Task<IActionResult> View(string id)
         {
             _logger.LogInformation($"View action called with id: {id}");
             

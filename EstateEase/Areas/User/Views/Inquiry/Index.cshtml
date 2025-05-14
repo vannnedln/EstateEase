@@ -1,0 +1,429 @@
+@using EstateEase.Models.ViewModels
+@model IEnumerable<InquiryViewModel>
+@{
+    ViewData["Title"] = "My Inquiries";
+    Layout = "_UserLayout";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1 fw-bold">My Property Inquiries</h4>
+                    <p class="text-muted">View and manage your property inquiries and responses</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-4 border-0" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
+                <strong>@TempData["Success"]</strong>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm rounded-4 border-0" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-circle-fill fs-5 me-2"></i>
+                <strong>@TempData["Error"]</strong>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Status Filter Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 dashboard-card shadow-sm h-100 fade-in show active" data-filter="all">
+                <div class="card-body position-relative p-0">
+                    <div class="card-overlay gradient-primary"></div>
+                    <div class="card-content p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-white mb-1 text-uppercase">All Inquiries</p>
+                                <h2 class="fw-bold text-white mb-0">@(Model?.Count() ?? 0)</h2>
+                            </div>
+                            <div class="card-icon-lg">
+                                <i class="bi bi-chat-square-text"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 dashboard-card shadow-sm h-100 fade-in show" data-filter="new">
+                <div class="card-body position-relative p-0">
+                    <div class="card-overlay gradient-danger"></div>
+                    <div class="card-content p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-white mb-1 text-uppercase">New</p>
+                                <h2 class="fw-bold text-white mb-0">@(Model?.Count(i => i.Status == "New") ?? 0)</h2>
+                            </div>
+                            <div class="card-icon-lg">
+                                <i class="bi bi-envelope"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 dashboard-card shadow-sm h-100 fade-in show" data-filter="inprogress">
+                <div class="card-body position-relative p-0">
+                    <div class="card-overlay gradient-warning"></div>
+                    <div class="card-content p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-white mb-1 text-uppercase">In Progress</p>
+                                <h2 class="fw-bold text-white mb-0">@(Model?.Count(i => i.Status == "In Progress") ?? 0)</h2>
+                            </div>
+                            <div class="card-icon-lg">
+                                <i class="bi bi-hourglass-split"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 dashboard-card shadow-sm h-100 fade-in show" data-filter="resolved">
+                <div class="card-body position-relative p-0">
+                    <div class="card-overlay gradient-success"></div>
+                    <div class="card-content p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-white mb-1 text-uppercase">Resolved</p>
+                                <h2 class="fw-bold text-white mb-0">@(Model?.Count(i => i.Status == "Resolved") ?? 0)</h2>
+                            </div>
+                            <div class="card-icon-lg">
+                                <i class="bi bi-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 fade-in show">
+                <div class="card-header gradient-primary text-white p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">My Inquiries</h5>
+                        <div class="search-container">
+                            <div class="input-group search-group">
+                                <span class="input-group-text bg-transparent border-0 text-white"><i class="bi bi-search"></i></span>
+                                <input type="text" id="inquirySearch" class="form-control bg-transparent border-0 text-white" placeholder="Search inquiries...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table id="inquiryTable" class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 60px;">ID</th>
+                                    <th>Property</th>
+                                    <th>Subject</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th style="width: 120px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    @foreach (var inquiry in Model)
+                                    {
+                                        string statusClass = "";
+                                        string statusBadge = "";
+                                        
+                                        if (inquiry.Status == "New")
+                                        {
+                                            statusClass = "badge bg-danger rounded-pill";
+                                            statusBadge = "New";
+                                        }
+                                        else if (inquiry.Status == "In Progress")
+                                        {
+                                            statusClass = "badge bg-warning rounded-pill";
+                                            statusBadge = "In Progress";
+                                        }
+                                        else
+                                        {
+                                            statusClass = "badge bg-success rounded-pill";
+                                            statusBadge = "Resolved";
+                                        }
+                                        
+                                        <tr class="inquiry-row" data-status="@inquiry.Status.ToLower().Replace(" ", "")">
+                                            <td>@inquiry.Id</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(inquiry.PropertyTitle))
+                                                {
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="property-image rounded me-2" style="background-image: url('/images/property-placeholder.jpg')"></div>
+                                                        <div>
+                                                            <h6 class="mb-1 fw-semibold text-truncate" style="max-width: 150px;">@inquiry.PropertyTitle</h6>
+                                                            <p class="text-muted small mb-0 text-truncate" style="max-width: 150px;">@inquiry.PropertyAddress</p>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">General Inquiry</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <p class="mb-0 text-truncate @(inquiry.ReadByUser ? "" : "fw-bold")" style="max-width: 200px;" data-bs-toggle="tooltip" title="@inquiry.Subject">
+                                                    @inquiry.Subject
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex flex-column">
+                                                    <span>@inquiry.CreatedAt.ToString("MMM dd, yyyy")</span>
+                                                    <small class="text-muted">@inquiry.CreatedAt.ToString("hh:mm tt")</small>
+                                                </div>
+                                            </td>
+                                            <td><span class="@statusClass">@statusBadge</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    
+                                                    <!-- Test with direct href -->
+                                                    <a href="/User/Inquiry/Details/@inquiry.Id" class="btn btn-sm btn-primary rounded-circle" title="View Details (Direct)">
+                                                        <i class="bi bi-link-45deg"></i>
+                                                    </a>
+                            
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center py-5">
+                                            <div class="empty-state">
+                                                <div class="empty-state-icon">
+                                                    <i class="bi bi-chat-square-dots"></i>
+                                                </div>
+                                                <h5>No Inquiries</h5>
+                                                <p class="text-muted">You haven't made any property inquiries yet.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Gradient colors */
+        .gradient-primary {
+            background: linear-gradient(135deg, #2937f0 0%, #9f1ae2 100%);
+        }
+        
+        .gradient-danger {
+            background: linear-gradient(135deg, #ff4d4d 0%, #f84960 100%);
+        }
+        
+        .gradient-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        }
+        
+        .gradient-success {
+            background: linear-gradient(135deg, #0cbc87 0%, #09845f 100%);
+        }
+        
+        /* Card styling */
+        .card {
+            overflow: hidden;
+            border-radius: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .card-header {
+            border-bottom: 0;
+        }
+        
+        /* Dashboard cards */
+        .dashboard-card {
+            position: relative;
+            cursor: pointer;
+            height: 100%;
+        }
+        
+        .dashboard-card.active {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .card-content {
+            position: relative;
+            z-index: 2;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .card-icon-lg {
+            font-size: 3.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover .card-icon-lg {
+            transform: scale(1.2);
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Search styling */
+        .search-container {
+            max-width: 250px;
+        }
+        
+        .search-group {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+        }
+        
+        .search-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .search-group input:focus {
+            box-shadow: none;
+        }
+        
+        /* Property image */
+        .property-image {
+            width: 45px;
+            height: 45px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .action-buttons .btn {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+        
+        /* Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Badge styling */
+        .badge {
+            padding: 0.5em 1em;
+            font-weight: normal;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            try {
+                // Initialize tooltips
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl)
+                });
+                
+                // Use the custom search box
+                $('#inquirySearch').on('keyup', function() {
+                    var value = $(this).val().toLowerCase();
+                    $('.inquiry-row').filter(function() {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    });
+                });
+                
+                // Filter handling using cards
+                $('.dashboard-card').on('click', function() {
+                    $('.dashboard-card').removeClass('active');
+                    $(this).addClass('active');
+                    
+                    var filter = $(this).data('filter');
+                    if (filter === 'all') {
+                        // Show all rows
+                        $('.inquiry-row').show();
+                    } else {
+                        // Hide all rows first
+                        $('.inquiry-row').hide();
+                        // Then show only rows with matching data-status
+                        $('.inquiry-row[data-status="' + filter + '"]').show();
+                    }
+                });
+                
+                // Debug for details buttons
+                $('.action-buttons a').on('click', function(e) {
+                    e.stopPropagation(); // Stop event bubbling
+                    console.log('Link clicked: ' + $(this).attr('href'));
+                });
+            } catch (error) {
+                console.error("Error initializing components:", error);
+            }
+        });
+    </script>
+} 
