@@ -9,62 +9,68 @@ using EstateEase.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EstateEase.Models.Entities;
+using Microsoft.Extensions.Logging;
 
-namespace EstateEase.Areas.Agent.Controllers
+namespace EstateEase.Areas.Admin.Controllers
 {
-    [Area("Agent")]
-    [Authorize(Roles = "Agent")]
+    [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class InquiryController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly ILogger<InquiryController> _logger;
 
         public InquiryController(
             ApplicationDbContext context,
-            UserManager<IdentityUser> userManager)
+            UserManager<IdentityUser> userManager,
+            ILogger<InquiryController> logger)
         {
             _context = context;
             _userManager = userManager;
+            _logger = logger;
         }
 
         public async Task<int> GetUnreadInquiriesCount()
         {
             var currentUserId = _userManager.GetUserId(User);
+            _logger.LogInformation($"Getting unread inquiries count for admin with UserId: {currentUserId}");
             
-            // Get the agent record to get the agent ID
-            var agent = await _context.Agents
-                .FirstOrDefaultAsync(a => a.UserId == currentUserId);
-                
-            var agentId = agent?.Id;
-            
-            return await _context.Inquiries
-                .Where(i => (i.AgentId == agentId || i.AgentId == currentUserId) && i.Status == "New")
+            var count = await _context.Inquiries
+                .Include(i => i.Property)
+                .Where(i => (i.AgentId == currentUserId || i.AgentId == null || 
+                          i.Property.AgentId == currentUserId || i.Property.AgentId == null) && 
+                          i.Status == "New")
                 .CountAsync();
+                
+            _logger.LogInformation($"Found {count} unread inquiries for admin with UserId: {currentUserId}");
+            return count;
         }
 
         public async Task<IActionResult> Index(string propertyId = null)
         {
             var currentUserId = _userManager.GetUserId(User);
+            _logger.LogInformation($"Looking up inquiries for Admin with UserId: {currentUserId}");
             
-            // Get the agent record to get the agent ID
-            var agent = await _context.Agents
-                .FirstOrDefaultAsync(a => a.UserId == currentUserId);
-                
-            var agentId = agent?.Id;
-            
-            // Build query for inquiries
+            // Build query for inquiries, including those with null AgentId
             var query = _context.Inquiries
                 .Include(i => i.User)
                 .Include(i => i.Property)
-                .Where(i => i.AgentId == agentId || i.AgentId == currentUserId);
+                .Where(i => i.AgentId == currentUserId || i.AgentId == null || 
+                            i.Property.AgentId == currentUserId || i.Property.AgentId == null);
             
             // Apply property filter if provided
             if (!string.IsNullOrEmpty(propertyId))
             {
                 query = query.Where(i => i.PropertyId == propertyId);
+                _logger.LogInformation($"Filtering inquiries by PropertyId: {propertyId}");
             }
             
-            // Get inquiries for this agent's properties
+            // For debugging, check how many inquiries exist in total
+            var totalInquiries = await _context.Inquiries.CountAsync();
+            _logger.LogInformation($"Total inquiries in database: {totalInquiries}");
+            
+            // Get inquiries for admin-listed properties
             var inquiries = await query
                 .OrderByDescending(i => i.CreatedAt)
                 .Select(i => new InquiryViewModel
@@ -82,10 +88,23 @@ namespace EstateEase.Areas.Agent.Controllers
                     UpdatedAt = i.UpdatedAt
                 })
                 .ToListAsync();
+                
+            _logger.LogInformation($"Found {inquiries.Count} inquiries for admin with ID: {currentUserId}");
+            
+            // For debugging, log all inquiries with their properties to verify the relationships
+            var debugInquiries = await _context.Inquiries
+                .Include(i => i.Property)
+                .ToListAsync();
+                
+            foreach (var inquiry in debugInquiries)
+            {
+                _logger.LogInformation($"Inquiry ID: {inquiry.Id}, AgentId: {inquiry.AgentId}, " +
+                    $"PropertyId: {inquiry.PropertyId}, Property.AgentId: {inquiry.Property?.AgentId}");
+            }
 
             // Get properties for filter dropdown
             var properties = await _context.Properties
-                .Where(p => p.AgentId == currentUserId || p.AgentId == agentId)
+                .Where(p => p.AgentId == currentUserId)
                 .OrderBy(p => p.Title)
                 .Select(p => new { Id = p.Id, Title = p.Title })
                 .ToListAsync();
@@ -116,17 +135,13 @@ namespace EstateEase.Areas.Agent.Controllers
         {
             var currentUserId = _userManager.GetUserId(User);
             
-            // Get the agent record to get the agent ID
-            var agent = await _context.Agents
-                .FirstOrDefaultAsync(a => a.UserId == currentUserId);
-                
-            var agentId = agent?.Id;
-            
-            // Get the inquiry with details
+            // Get the inquiry with details, including those with null AgentId
             var inquiry = await _context.Inquiries
                 .Include(i => i.User)
                 .Include(i => i.Property)
-                .Where(i => (i.AgentId == agentId || i.AgentId == currentUserId) && i.Id == id)
+                .Where(i => (i.AgentId == currentUserId || i.AgentId == null || 
+                          i.Property.AgentId == currentUserId || i.Property.AgentId == null) && 
+                          i.Id == id)
                 .Select(i => new InquiryViewModel
                 {
                     Id = i.Id,
@@ -172,16 +187,13 @@ namespace EstateEase.Areas.Agent.Controllers
         {
             var currentUserId = _userManager.GetUserId(User);
             
-            // Get the agent record to get the agent ID
-            var agent = await _context.Agents
-                .FirstOrDefaultAsync(a => a.UserId == currentUserId);
-                
-            var agentId = agent?.Id;
-            
-            // Get the inquiry
+            // Get the inquiry, including those with null AgentId
             var inquiry = await _context.Inquiries
                 .Include(i => i.User)
-                .Where(i => (i.AgentId == agentId || i.AgentId == currentUserId) && i.Id == id)
+                .Include(i => i.Property)
+                .Where(i => (i.AgentId == currentUserId || i.AgentId == null || 
+                           i.Property.AgentId == currentUserId || i.Property.AgentId == null) && 
+                           i.Id == id)
                 .FirstOrDefaultAsync();
 
             if (inquiry == null)
@@ -212,15 +224,12 @@ namespace EstateEase.Areas.Agent.Controllers
 
             var currentUserId = _userManager.GetUserId(User);
             
-            // Get the agent record to get the agent ID
-            var agent = await _context.Agents
-                .FirstOrDefaultAsync(a => a.UserId == currentUserId);
-                
-            var agentId = agent?.Id;
-            
-            // Get the inquiry
+            // Get the inquiry, including those with null AgentId
             var inquiry = await _context.Inquiries
-                .Where(i => (i.AgentId == agentId || i.AgentId == currentUserId) && i.Id == id)
+                .Include(i => i.Property)
+                .Where(i => (i.AgentId == currentUserId || i.AgentId == null || 
+                           i.Property.AgentId == currentUserId || i.Property.AgentId == null) && 
+                           i.Id == id)
                 .FirstOrDefaultAsync();
 
             if (inquiry == null)
@@ -250,15 +259,12 @@ namespace EstateEase.Areas.Agent.Controllers
         {
             var currentUserId = _userManager.GetUserId(User);
             
-            // Get the agent record to get the agent ID
-            var agent = await _context.Agents
-                .FirstOrDefaultAsync(a => a.UserId == currentUserId);
-                
-            var agentId = agent?.Id;
-            
-            // Get the inquiry
+            // Get the inquiry, including those with null AgentId
             var inquiry = await _context.Inquiries
-                .Where(i => (i.AgentId == agentId || i.AgentId == currentUserId) && i.Id == id)
+                .Include(i => i.Property)
+                .Where(i => (i.AgentId == currentUserId || i.AgentId == null || 
+                           i.Property.AgentId == currentUserId || i.Property.AgentId == null) && 
+                           i.Id == id)
                 .FirstOrDefaultAsync();
 
             if (inquiry == null)
@@ -282,15 +288,12 @@ namespace EstateEase.Areas.Agent.Controllers
         {
             var currentUserId = _userManager.GetUserId(User);
             
-            // Get the agent record to get the agent ID
-            var agent = await _context.Agents
-                .FirstOrDefaultAsync(a => a.UserId == currentUserId);
-                
-            var agentId = agent?.Id;
-            
-            // Build query for new inquiries
+            // Build query for new inquiries, including those with null AgentId
             var query = _context.Inquiries
-                .Where(i => (i.AgentId == agentId || i.AgentId == currentUserId) && i.Status == "New");
+                .Include(i => i.Property)
+                .Where(i => (i.AgentId == currentUserId || i.AgentId == null || 
+                           i.Property.AgentId == currentUserId || i.Property.AgentId == null) && 
+                           i.Status == "New");
             
             // If propertyId is provided, filter by property
             if (!string.IsNullOrEmpty(propertyId))
@@ -319,31 +322,36 @@ namespace EstateEase.Areas.Agent.Controllers
         }
 
         [HttpGet]
-        [Route("/api/agent/inquiries/count")]
+        [Route("/api/admin/inquiries/count")]
         public async Task<IActionResult> GetInquiryCounts()
         {
             var currentUserId = _userManager.GetUserId(User);
             
-            // Get the agent record to get the agent ID
-            var agent = await _context.Agents
-                .FirstOrDefaultAsync(a => a.UserId == currentUserId);
-                
-            var agentId = agent?.Id;
-            
             var totalCount = await _context.Inquiries
-                .Where(i => i.AgentId == agentId || i.AgentId == currentUserId)
+                .Include(i => i.Property)
+                .Where(i => i.AgentId == currentUserId || i.AgentId == null || 
+                         i.Property.AgentId == currentUserId || i.Property.AgentId == null)
                 .CountAsync();
                 
             var newCount = await _context.Inquiries
-                .Where(i => (i.AgentId == agentId || i.AgentId == currentUserId) && i.Status == "New")
+                .Include(i => i.Property)
+                .Where(i => (i.AgentId == currentUserId || i.AgentId == null || 
+                           i.Property.AgentId == currentUserId || i.Property.AgentId == null) && 
+                           i.Status == "New")
                 .CountAsync();
                 
             var inProgressCount = await _context.Inquiries
-                .Where(i => (i.AgentId == agentId || i.AgentId == currentUserId) && i.Status == "In Progress")
+                .Include(i => i.Property)
+                .Where(i => (i.AgentId == currentUserId || i.AgentId == null || 
+                           i.Property.AgentId == currentUserId || i.Property.AgentId == null) && 
+                           i.Status == "In Progress")
                 .CountAsync();
                 
             var resolvedCount = await _context.Inquiries
-                .Where(i => (i.AgentId == agentId || i.AgentId == currentUserId) && i.Status == "Resolved")
+                .Include(i => i.Property)
+                .Where(i => (i.AgentId == currentUserId || i.AgentId == null || 
+                           i.Property.AgentId == currentUserId || i.Property.AgentId == null) && 
+                           i.Status == "Resolved")
                 .CountAsync();
                 
             return Json(new {
@@ -352,6 +360,79 @@ namespace EstateEase.Areas.Agent.Controllers
                 in_progress = inProgressCount,
                 resolved = resolvedCount
             });
+        }
+
+        [HttpGet]
+        [Route("admin-properties")]
+        public async Task<IActionResult> AdminPropertyInquiries()
+        {
+            var currentUserId = _userManager.GetUserId(User);
+            _logger.LogInformation($"Looking up admin property inquiries for Admin with UserId: {currentUserId}");
+            
+            // First get all inquiries with the [Admin Property] prefix
+            var adminPrefixQuery = _context.Inquiries
+                .Include(i => i.User)
+                .Include(i => i.Property)
+                .Where(i => i.Subject.StartsWith("[Admin Property]"));
+                
+            var adminPrefixInquiries = await adminPrefixQuery.ToListAsync();
+            _logger.LogInformation($"Found {adminPrefixInquiries.Count} inquiries with [Admin Property] prefix");
+            
+            // Get admin properties - consider properties with AgentId == null as admin-listed
+            var adminProperties = await _context.Properties
+                .Where(p => p.AgentId == null || p.AgentId == currentUserId)
+                .Select(p => p.Id)
+                .ToListAsync();
+                
+            _logger.LogInformation($"Found {adminProperties.Count} properties owned by this admin");
+            
+            var adminPropertyInquiries = await _context.Inquiries
+                .Include(i => i.User)
+                .Include(i => i.Property)
+                .Where(i => adminProperties.Contains(i.PropertyId))
+                .ToListAsync();
+                
+            _logger.LogInformation($"Found {adminPropertyInquiries.Count} inquiries for properties owned by this admin");
+            
+            // Combine the two lists and remove duplicates
+            var combinedInquiries = adminPrefixInquiries
+                .Union(adminPropertyInquiries)
+                .DistinctBy(i => i.Id)
+                .OrderByDescending(i => i.CreatedAt)
+                .ToList();
+                
+            _logger.LogInformation($"Combined list has {combinedInquiries.Count} inquiries");
+            
+            // Map to view models
+            var inquiryViewModels = combinedInquiries
+                .Select(i => new InquiryViewModel
+                {
+                    Id = i.Id,
+                    ClientName = i.User?.UserName ?? "Unknown",
+                    ClientEmail = i.User?.Email ?? "Unknown", 
+                    PropertyId = i.PropertyId,
+                    PropertyTitle = i.Property?.Title ?? "Unknown Property",
+                    PropertyAddress = i.Property?.Address ?? "Unknown Address",
+                    Subject = i.Subject,
+                    Message = i.Message,
+                    Status = i.Status,
+                    CreatedAt = i.CreatedAt,
+                    UpdatedAt = i.UpdatedAt
+                })
+                .ToList();
+                
+            // Get properties for filter dropdown
+            var properties = await _context.Properties
+                .Where(p => p.AgentId == currentUserId)
+                .OrderBy(p => p.Title)
+                .Select(p => new { Id = p.Id, Title = p.Title })
+                .ToListAsync();
+                
+            ViewBag.Properties = properties;
+            ViewBag.UnreadInquiriesCount = inquiryViewModels.Count(i => i.Status == "New");
+            ViewBag.Title = "Admin Property Inquiries";
+            
+            return View("Index", inquiryViewModels);
         }
     }
 } 

@@ -79,38 +79,45 @@ namespace EstateEase.Areas.Agent.Controllers
                 // Create sample activities since we don't have real data
                 var recentActivities = new List<DashboardActivityViewModel>();
                 
-                // Add some sample activity data
+                // Add recent property activities with actual creation dates
                 if (recentProperties.Any())
                 {
                     for (int i = 0; i < Math.Min(recentProperties.Count, 3); i++)
                     {
                         var property = recentProperties[i];
+                        // Get the actual property from the database to get its CreatedAt date
+                        var propertyEntity = await _context.Properties
+                            .FirstOrDefaultAsync(p => p.Id == property.Id);
+                            
                         recentActivities.Add(new DashboardActivityViewModel
                         {
                             Type = "Property",
                             Message = $"Property listed: {property.Title}",
-                            Date = DateTime.Now.AddDays(-i),
-                            IconClass = "bi-house-door text-primary"
+                            Date = propertyEntity?.CreatedAt ?? DateTime.Now,
+                            IconClass = "bi-house-door text-primary",
+                            UserId = userId
                         });
                     }
                 }
                 
-                // Add some more sample activities
-                recentActivities.Add(new DashboardActivityViewModel
+                // Add recent inquiries if they exist
+                var recentInquiries = await _context.Inquiries
+                    .Where(i => i.AgentId == agent.Id)
+                    .OrderByDescending(i => i.CreatedAt)
+                    .Take(3)
+                    .ToListAsync();
+                    
+                foreach (var inquiry in recentInquiries)
                 {
-                    Type = "Inquiry",
-                    Message = "New inquiry received",
-                    Date = DateTime.Now.AddDays(-1),
-                    IconClass = "bi-chat-dots text-info"
-                });
-                
-                recentActivities.Add(new DashboardActivityViewModel
-                {
-                    Type = "Payment",
-                    Message = "Payment received",
-                    Date = DateTime.Now.AddDays(-2),
-                    IconClass = "bi-cash-stack text-success"
-                });
+                    recentActivities.Add(new DashboardActivityViewModel
+                    {
+                        Type = "Inquiry",
+                        Message = $"New inquiry: {inquiry.Subject}",
+                        Date = inquiry.CreatedAt,
+                        IconClass = "bi-chat-dots text-info",
+                        UserId = userId
+                    });
+                }
                 
                 // Sort by date
                 recentActivities = recentActivities
@@ -147,5 +154,6 @@ namespace EstateEase.Areas.Agent.Controllers
         public string Message { get; set; }
         public DateTime Date { get; set; }
         public string IconClass { get; set; }
+        public string UserId { get; set; }
     }
 }

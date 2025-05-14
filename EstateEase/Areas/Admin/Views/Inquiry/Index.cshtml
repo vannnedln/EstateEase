@@ -1,7 +1,8 @@
+@using EstateEase.Models.ViewModels
 @model IEnumerable<InquiryViewModel>
 @{
-    ViewData["Title"] = "Messages";
-    Layout = "_AgentLayout";
+    ViewData["Title"] = "Inquiries";
+    Layout = "_AdminLayout";
 }
 
 <div class="container-fluid">
@@ -9,10 +10,9 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h4 class="mb-1 fw-bold">Messages</h4>
-                    <p class="text-muted">Manage client questions and property inquiries</p>
+                    <h4 class="mb-1 fw-bold">Client Inquiries</h4>
+                    <p class="text-muted">Manage inquiries for properties you've listed as an admin</p>
                 </div>
-                
             </div>
         </div>
     </div>
@@ -59,7 +59,7 @@
                     <div class="card-content p-4">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <p class="text-white mb-1 text-uppercase">All Messages</p>
+                                <p class="text-white mb-1 text-uppercase">All Inquiries</p>
                                 <h2 class="fw-bold text-white mb-0">@(Model?.Count() ?? 0)</h2>
                             </div>
                             <div class="card-icon-lg">
@@ -255,8 +255,8 @@
                                                 <div class="empty-state-icon">
                                                     <i class="bi bi-chat-square-dots"></i>
                                                 </div>
-                                                <h5>No Messages</h5>
-                                                <p class="text-muted">You don't have any client inquiries yet.</p>
+                                                <h5>No Inquiries</h5>
+                                                <p class="text-muted">You don't have any inquiries for your properties yet.</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -442,43 +442,30 @@
                     return new bootstrap.Tooltip(tooltipTriggerEl)
                 });
                 
-                // Initialize DataTable with error handling
-                if ($.fn.DataTable) {
-                    var table = $('#inquiryTable').DataTable({
-                        "dom": '<"top"f>rt<"bottom"ip>',
-                        "responsive": true,
-                        "lengthMenu": [10, 25, 50, 100],
-                        "language": {
-                            "search": "_INPUT_",
-                            "searchPlaceholder": "Search inquiries...",
-                            "lengthMenu": "_MENU_ inquiries per page"
-                        }
+                // Use the custom search box
+                $('#inquirySearch').on('keyup', function() {
+                    var value = $(this).val().toLowerCase();
+                    $('.inquiry-row').filter(function() {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
                     });
+                });
+                
+                // Filter handling using cards
+                $('.dashboard-card').on('click', function() {
+                    $('.dashboard-card').removeClass('active');
+                    $(this).addClass('active');
                     
-                    // Use the custom search box
-                    $('#inquirySearch').on('keyup', function() {
-                        table.search(this.value).draw();
-                    });
-                    
-                    // Filter handling using cards
-                    $('.dashboard-card').on('click', function() {
-                        $('.dashboard-card').removeClass('active');
-                        $(this).addClass('active');
-                        
-                        var filter = $(this).data('filter');
-                        if (filter === 'all') {
-                            // Show all rows
-                            $('.inquiry-row').show();
-                        } else {
-                            // Hide all rows first
-                            $('.inquiry-row').hide();
-                            // Then show only rows with matching data-status
-                            $('.inquiry-row[data-status="' + filter + '"]').show();
-                        }
-                    });
-                } else {
-                    console.error("DataTable is not available");
-                }
+                    var filter = $(this).data('filter');
+                    if (filter === 'all') {
+                        // Show all rows
+                        $('.inquiry-row').show();
+                    } else {
+                        // Hide all rows first
+                        $('.inquiry-row').hide();
+                        // Then show only rows with matching data-status
+                        $('.inquiry-row[data-status="' + filter + '"]').show();
+                    }
+                });
             } catch (error) {
                 console.error("Error initializing components:", error);
             }

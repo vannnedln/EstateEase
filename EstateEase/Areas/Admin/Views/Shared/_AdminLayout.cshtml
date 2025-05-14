@@ -169,6 +169,14 @@
                                     Property List</a></li>
                         </ul>
                     </li>
+                    
+                    <li class="menu-title">Inquiries</li>
+                    <li>
+                        <a asp-area="Admin" asp-controller="Inquiry" asp-action="AdminPropertyInquiries">
+                            <i class="bi bi-chat-left-text"></i> <span>Inquiries</span>
+                            @await Component.InvokeAsync("UnreadInquiries")
+                        </a>
+                    </li>
 
                     <li class="menu-title">Transactions</li>
                     <li class="submenu">
@@ -181,7 +189,6 @@
                             </li>
                         </ul>
                     </li>
-
 
                 </ul>
             </div>

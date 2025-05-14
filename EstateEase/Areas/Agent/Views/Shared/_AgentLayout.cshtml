@@ -166,6 +166,7 @@
                 <li>
                     <a asp-area="Agent" asp-controller="Inquiry" asp-action="Index">
                         <i class="bi bi-chat-square-text"></i> <span>Messages</span>
+                        @await Component.InvokeAsync("UnreadInquiries")
                     </a>
                 </li>
                 <li>

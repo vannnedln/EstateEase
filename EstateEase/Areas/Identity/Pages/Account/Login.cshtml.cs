@@ -166,6 +166,12 @@ namespace EstateEase.Areas.Identity.Pages.Account
                             _logger.LogInformation("User is in Agent role, redirecting to Agent area");
                             return RedirectToAction("Index", "Home", new { area = "Agent" });
                         }
+                        // Check if user is in User role
+                        else if (await _signInManager.UserManager.IsInRoleAsync(user, "User"))
+                        {
+                            _logger.LogInformation("User is in User role, redirecting to Home page");
+                            return RedirectToAction("Index", "Home", new { area = "" });
+                        }
 
                         return LocalRedirect(returnUrl);
                     }

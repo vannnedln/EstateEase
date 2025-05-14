@@ -75,6 +75,19 @@ builder.WebHost.ConfigureKestrel(options =>
     options.Limits.MaxRequestBodySize = 52_428_800; // 50MB
 });
 
+// Add service to enable CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
+});
+
+// Register the database migration service
+builder.Services.AddScoped<AdminInquiryUpdateService>();
+builder.Services.AddHostedService<MigrationHostedService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -150,6 +163,35 @@ using (var scope = app.Services.CreateScope())
             await userManager.AddToRoleAsync(adminUser, "Admin");
         }
     }
+}
+
+// One-time update for existing inquiries for admin-listed properties
+using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+    var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
+    var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    
+    // Find inquiries for properties listed by admins
+    var inquiriesForAdminProperties = await dbContext.Inquiries
+        .Include(i => i.Property)
+        .Where(i => i.Property.AgentId != null && !i.Subject.StartsWith("[Admin Property]"))
+        .ToListAsync();
+    
+    foreach (var inquiry in inquiriesForAdminProperties)
+    {
+        if (inquiry.Property?.AgentId != null)
+        {
+            var propertyOwner = await userManager.FindByIdAsync(inquiry.Property.AgentId);
+            if (propertyOwner != null && await userManager.IsInRoleAsync(propertyOwner, "Admin"))
+            {
+                // Mark this as an admin property inquiry
+                inquiry.Subject = "[Admin Property] " + inquiry.Subject;
+            }
+        }
+    }
+    
+    await dbContext.SaveChangesAsync();
 }
 
 app.Run();

@@ -1,4 +1,5 @@
 @model EstateEase.Models.ViewModels.UserEditViewModel
+@inject Microsoft.AspNetCore.Identity.UserManager<Microsoft.AspNetCore.Identity.IdentityUser> UserManager
 @{
     ViewData["Title"] = "Edit User";
     Layout = "_AdminLayout";
@@ -30,10 +31,10 @@
                         </div>
                     }
 
-                    <form asp-action="Edit" asp-controller="User" asp-area="Admin" method="post" enctype="multipart/form-data">
+                    <form action="/Admin/User/Edit/@Model.Id" method="post" enctype="multipart/form-data">
                         @Html.AntiForgeryToken()
-                        <input type="hidden" asp-for="Id" />
-                        <input type="hidden" asp-for="CurrentProfilePictureUrl" />
+                        <input type="hidden" name="Id" value="@Model.Id" />
+                        <input type="hidden" name="CurrentProfilePictureUrl" value="@Model.CurrentProfilePictureUrl" />
                         
                         <!-- Profile Picture -->
                         <div class="section mb-5">
@@ -149,7 +150,11 @@
 
                         <!-- Form Actions -->
                         <div class="d-flex justify-content-end gap-2">
-                            <a asp-action="UserList" class="btn btn-light btn-lg px-5">
+                            @{
+                                var isAgent = await UserManager.IsInRoleAsync(await UserManager.FindByIdAsync(Model.Id), "Agent");
+                                var backAction = isAgent ? "AgentList" : "UserList";
+                            }
+                            <a asp-action="@backAction" asp-controller="User" asp-area="Admin" class="btn btn-light btn-lg px-5">
                                 <i class="bi bi-x-lg me-2"></i>Cancel
                             </a>
                             <button type="submit" class="btn btn-primary btn-lg px-5">
@@ -294,6 +299,40 @@
     <partial name="_ValidationScriptsPartial" />
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Debug form submission
+            const form = document.querySelector('form');
+            
+            // Add test button programmatically
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const testBtn = document.createElement('button');
+            testBtn.type = 'button';
+            testBtn.className = 'btn btn-warning btn-lg px-5 me-2';
+            testBtn.innerHTML = '<i class="bi bi-bug me-2"></i>Test Submit';
+            submitBtn.parentNode.insertBefore(testBtn, submitBtn);
+            
+            // Add event listener to test button
+            testBtn.addEventListener('click', function() {
+                console.log('Test button clicked');
+                console.log('Form action:', form.action);
+                console.log('Form method:', form.method);
+                console.log('Form enctype:', form.enctype);
+                
+                // Log all form values
+                const formData = new FormData(form);
+                console.log('Form data:');
+                for (let [key, value] of formData.entries()) {
+                    console.log(key + ': ' + value);
+                }
+                
+                // Show alert
+                alert('Form data logged to console. Check browser console.');
+            });
+            
+            form.addEventListener('submit', function(e) {
+                console.log('Form submission attempted');
+                // Don't prevent default - let the form submit normally
+            });
+            
             // Disable validation for all form fields
             $('form input, form select, form textarea').each(function() {
                 $(this).attr('data-val', 'false').removeAttr('data-val-required');
