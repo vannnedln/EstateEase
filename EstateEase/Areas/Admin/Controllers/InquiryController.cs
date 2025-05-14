@@ -139,6 +139,7 @@ namespace EstateEase.Areas.Admin.Controllers
             var inquiry = await _context.Inquiries
                 .Include(i => i.User)
                 .Include(i => i.Property)
+                .Include(i => i.Messages)
                 .Where(i => (i.AgentId == currentUserId || i.AgentId == null || 
                           i.Property.AgentId == currentUserId || i.Property.AgentId == null) && 
                           i.Id == id)
@@ -155,7 +156,19 @@ namespace EstateEase.Areas.Admin.Controllers
                     ReplyMessage = i.ReplyMessage,
                     Status = i.Status,
                     CreatedAt = i.CreatedAt,
-                    UpdatedAt = i.UpdatedAt
+                    UpdatedAt = i.UpdatedAt,
+                    Messages = i.Messages.Select(m => new InquiryMessageViewModel
+                    {
+                        Id = m.Id,
+                        InquiryId = m.InquiryId,
+                        SenderId = m.SenderId,
+                        SenderType = m.SenderType,
+                        SenderName = m.SenderType == "Admin" ? "You" : m.SenderType,
+                        Message = m.Message,
+                        IsRead = m.IsRead,
+                        CreatedAt = m.CreatedAt,
+                        IsFromCurrentUser = m.SenderType == "Admin"
+                    }).ToList()
                 })
                 .FirstOrDefaultAsync();
 
@@ -437,6 +450,60 @@ namespace EstateEase.Areas.Admin.Controllers
             ViewBag.Title = "Admin Property Inquiries";
             
             return View("Index", inquiryViewModels);
+        }
+
+        // Quick reply from details page
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> QuickReply(int id, string replyMessage)
+        {
+            if (string.IsNullOrEmpty(replyMessage))
+            {
+                TempData["Error"] = "Reply message cannot be empty.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            var currentUserId = _userManager.GetUserId(User);
+            
+            // Get the inquiry, including those with null AgentId
+            var inquiry = await _context.Inquiries
+                .Where(i => (i.AgentId == currentUserId || i.AgentId == null || 
+                           i.Property.AgentId == currentUserId || i.Property.AgentId == null) && 
+                           i.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (inquiry == null)
+            {
+                return NotFound();
+            }
+
+            // Create a new message for the chat
+            var message = new InquiryMessage
+            {
+                InquiryId = id,
+                SenderId = currentUserId,
+                SenderType = "Admin",
+                Message = replyMessage,
+                CreatedAt = DateTime.Now,
+                IsRead = false // Not read by user yet
+            };
+            
+            _context.InquiryMessages.Add(message);
+
+            // Update inquiry status to In Progress when replying so user can reply back
+            inquiry.Status = "In Progress";
+            inquiry.UpdatedAt = DateTime.Now;
+            
+            // For backward compatibility, also save to ReplyMessage field
+            inquiry.ReplyMessage = replyMessage;
+            
+            // Set ReadByUser to false so the user can see the reply
+            inquiry.ReadByUser = false;
+            
+            await _context.SaveChangesAsync();
+
+          
+            return RedirectToAction(nameof(Details), new { id });
         }
     }
 } 
