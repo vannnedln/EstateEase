@@ -43,8 +43,10 @@ namespace EstateEase.Areas.Agent.Controllers
                     .Where(p => p.AgentId == agent.Id && p.Status == "Available")
                     .CountAsync();
                 
-                // Get new inquiries count - using placeholder since table doesn't exist
-                var newInquiriesCount = 0; // Placeholder value
+                // Get new inquiries count - counting inquiries that are new or unread
+                var newInquiriesCount = await _context.Inquiries
+                    .Where(i => i.AgentId == agent.Id && (i.Status == "New" || i.ReadAt == null))
+                    .CountAsync();
                 
                 // Calculate total income - 3% of the price of sold properties
                 var soldProperties = await _context.Properties

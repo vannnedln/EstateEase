@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EstateEase.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250514002429_inquiryIntegration")]
-    partial class inquiryIntegration
+    [Migration("20250514073206_aldreieiei")]
+    partial class aldreieiei
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -114,11 +114,17 @@ namespace EstateEase.Migrations
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("PropertyId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("ReadAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("ReadByUser")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ReplyMessage")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -146,6 +152,44 @@ namespace EstateEase.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Inquiries");
+                });
+
+            modelBuilder.Entity("EstateEase.Models.Entities.InquiryMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("InquiryId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InquiryId");
+
+                    b.ToTable("InquiryMessages");
                 });
 
             modelBuilder.Entity("EstateEase.Models.Entities.Property", b =>
@@ -671,9 +715,7 @@ namespace EstateEase.Migrations
 
                     b.HasOne("EstateEase.Models.Entities.Property", "Property")
                         .WithMany()
-                        .HasForeignKey("PropertyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PropertyId");
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
@@ -686,6 +728,17 @@ namespace EstateEase.Migrations
                     b.Navigation("Property");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EstateEase.Models.Entities.InquiryMessage", b =>
+                {
+                    b.HasOne("EstateEase.Models.Entities.Inquiry", "Inquiry")
+                        .WithMany("Messages")
+                        .HasForeignKey("InquiryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Inquiry");
                 });
 
             modelBuilder.Entity("EstateEase.Models.Entities.Property", b =>
@@ -804,6 +857,11 @@ namespace EstateEase.Migrations
             modelBuilder.Entity("EstateEase.Models.Entities.Agent", b =>
                 {
                     b.Navigation("Properties");
+                });
+
+            modelBuilder.Entity("EstateEase.Models.Entities.Inquiry", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("EstateEase.Models.Entities.Property", b =>

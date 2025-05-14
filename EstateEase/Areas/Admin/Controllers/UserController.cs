@@ -627,5 +627,141 @@ namespace EstateEase.Areas.Admin.Controllers
                 return RedirectToAction(nameof(UserList));
             }
         }
+
+        // GET: Admin/User/DeleteAgent/5
+        [HttpGet]
+        public async Task<IActionResult> DeleteAgent(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                TempData["Error"] = "Agent ID was not provided.";
+                return RedirectToAction(nameof(AgentList));
+            }
+
+            try
+            {
+                // Find the agent by id
+                var agent = await _context.Agents
+                    .Include(a => a.User)
+                    .FirstOrDefaultAsync(a => a.Id == id);
+
+                if (agent == null)
+                {
+                    TempData["Error"] = "Agent not found.";
+                    return RedirectToAction(nameof(AgentList));
+                }
+
+                // Create a confirmation model
+                var model = new DeleteAgentViewModel
+                {
+                    Id = agent.Id,
+                    UserId = agent.UserId,
+                    FullName = $"{agent.FirstName} {agent.LastName}",
+                    Email = agent.User?.Email,
+                    ProfilePictureUrl = agent.ProfilePictureUrl ?? "/images/avatar-01.png"
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in DeleteAgent GET action: {ex.Message}");
+                TempData["Error"] = "An error occurred while loading the agent data.";
+                return RedirectToAction(nameof(AgentList));
+            }
+        }
+
+        // POST: Admin/User/DeleteAgent
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAgentConfirmed(DeleteAgentViewModel model)
+        {
+            if (string.IsNullOrEmpty(model.Id) || string.IsNullOrEmpty(model.UserId))
+            {
+                TempData["Error"] = "Agent or user ID was not provided.";
+                return RedirectToAction(nameof(AgentList));
+            }
+
+            try
+            {
+                _logger.LogInformation($"Attempting to delete agent {model.Id} with user ID {model.UserId}");
+                
+                // Begin transaction to ensure all operations succeed or fail together
+                using (var transaction = await _context.Database.BeginTransactionAsync())
+                {
+                    try
+                    {
+                        // Check if agent has properties
+                        var hasProperties = await _context.Properties
+                            .AnyAsync(p => p.AgentId == model.Id);
+                            
+                        if (hasProperties)
+                        {
+                            // Either reassign properties or simply prevent deletion
+                            TempData["Error"] = "Cannot delete agent with associated properties. Please reassign or delete the properties first.";
+                            return RedirectToAction(nameof(AgentList));
+                        }
+                        
+                        // 1. Delete the agent from Agents table
+                        var agent = await _context.Agents
+                            .FirstOrDefaultAsync(a => a.Id == model.Id);
+                            
+                        if (agent != null)
+                        {
+                            _context.Agents.Remove(agent);
+                            await _context.SaveChangesAsync();
+                            _logger.LogInformation($"Agent {model.Id} deleted successfully");
+                            
+                            // Delete agent profile picture if it exists and is not the default
+                            if (!string.IsNullOrEmpty(agent.ProfilePictureUrl) && 
+                                !agent.ProfilePictureUrl.Contains("avatar-01.png"))
+                            {
+                                var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, 
+                                    agent.ProfilePictureUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                                
+                                if (System.IO.File.Exists(imagePath))
+                                {
+                                    System.IO.File.Delete(imagePath);
+                                    _logger.LogInformation($"Deleted agent profile picture: {imagePath}");
+                                }
+                            }
+                        }
+                        
+                        // 2. Delete user from AspNetUsers and related tables
+                        var user = await _userManager.FindByIdAsync(model.UserId);
+                        if (user != null)
+                        {
+                            var result = await _userManager.DeleteAsync(user);
+                            if (result.Succeeded)
+                            {
+                                _logger.LogInformation($"User {model.UserId} deleted successfully");
+                            }
+                            else
+                            {
+                                throw new Exception($"Failed to delete user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                            }
+                        }
+                        
+                        // Commit transaction
+                        await transaction.CommitAsync();
+                        
+                        TempData["Success"] = $"Agent {model.FullName} has been successfully deleted.";
+                        return RedirectToAction(nameof(AgentList));
+                    }
+                    catch (Exception ex)
+                    {
+                        // Roll back transaction on any error
+                        await transaction.RollbackAsync();
+                        throw ex; // Re-throw to be caught by outer try-catch
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in DeleteAgentConfirmed action: {ex.Message}");
+                TempData["Error"] = $"An error occurred while deleting the agent: {ex.Message}";
+                return RedirectToAction(nameof(AgentList));
+            }
+        }
     }
 }

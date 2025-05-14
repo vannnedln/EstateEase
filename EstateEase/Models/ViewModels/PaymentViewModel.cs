@@ -41,6 +41,9 @@ namespace EstateEase.Models.ViewModels
         [Display(Name = "Client Email")]
         public string ClientEmail { get; set; }
         
+        [Display(Name = "Agent Name")]
+        public string AgentName { get; set; }
+        
         [Required]
         [Display(Name = "Transaction Date")]
         [DataType(DataType.Date)]

@@ -1,8 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using EstateEase.Models.ViewModels;
+using EstateEase.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using EstateEase.Models.Entities;
 
 namespace EstateEase.Areas.Agent.Controllers
 {
@@ -10,93 +16,166 @@ namespace EstateEase.Areas.Agent.Controllers
     [Authorize(Roles = "Agent")]
     public class PaymentController : Controller
     {
-        public IActionResult Index()
-        {
-            // Create sample payment data until database integration is complete
-            var payments = new List<PaymentViewModel>
-            {
-                new PaymentViewModel
-                {
-                    Id = 1,
-                    PropertyId = 1,
-                    PropertyTitle = "Modern Apartment in Makati",
-                    PropertyAddress = "123 Ayala Ave, Makati City",
-                    PropertyImageUrl = "/images/property-placeholder.jpg",
-                    TransactionType = "Sale",
-                    Amount = 5500000M,
-                    Commission = 137500M,
-                    CommissionPercentage = 2.5M,
-                    ClientName = "John Doe",
-                    ClientEmail = "john.doe@example.com",
-                    TransactionDate = DateTime.Now.AddDays(-15),
-                    PaymentMethod = "Bank Transfer",
-                    ReferenceNumber = "TRX-12345",
-                    Notes = "Property sold above asking price"
-                },
-                new PaymentViewModel
-                {
-                    Id = 2,
-                    PropertyId = 2,
-                    PropertyTitle = "Luxury Condo in BGC",
-                    PropertyAddress = "456 Bonifacio High Street, Taguig",
-                    PropertyImageUrl = "/images/property-placeholder.jpg",
-                    TransactionType = "Rental",
-                    Amount = 45000M,
-                    Commission = 1125M,
-                    CommissionPercentage = 2.5M,
-                    ClientName = "Jane Smith",
-                    ClientEmail = "jane.smith@example.com",
-                    TransactionDate = DateTime.Now.AddDays(-7),
-                    PaymentMethod = "Credit Card",
-                    ReferenceNumber = "TRX-67890",
-                    Notes = "1-year lease contract"
-                },
-                new PaymentViewModel
-                {
-                    Id = 3,
-                    PropertyId = 3,
-                    PropertyTitle = "Family Home in Quezon City",
-                    PropertyAddress = "789 Commonwealth Ave, Quezon City",
-                    PropertyImageUrl = "/images/property-placeholder.jpg",
-                    TransactionType = "Sale",
-                    Amount = 7800000M,
-                    Commission = 195000M,
-                    CommissionPercentage = 2.5M,
-                    ClientName = "Mark Johnson",
-                    ClientEmail = "mark.johnson@example.com",
-                    TransactionDate = DateTime.Now.AddDays(-30),
-                    PaymentMethod = "Bank Transfer",
-                    ReferenceNumber = "TRX-24680",
-                    Notes = "Negotiated sale"
-                }
-            };
+        private readonly ApplicationDbContext _context;
 
-            return View(payments);
+        public PaymentController(ApplicationDbContext context)
+        {
+            _context = context;
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Index()
         {
-            // For demo purposes, create a sample payment based on the id
-            var payment = new PaymentViewModel
+            try
             {
-                Id = id,
-                PropertyId = id,
-                PropertyTitle = "Property #" + id,
-                PropertyAddress = id + " Sample Street, Metro Manila",
-                PropertyImageUrl = "/images/property-placeholder.jpg",
-                TransactionType = id % 2 == 0 ? "Rental" : "Sale",
-                Amount = id % 2 == 0 ? 45000M : 5000000M,
-                Commission = id % 2 == 0 ? 1125M : 125000M,
-                CommissionPercentage = 2.5M,
-                ClientName = "Client #" + id,
-                ClientEmail = "client" + id + "@example.com",
-                TransactionDate = DateTime.Now.AddDays(-id),
-                PaymentMethod = "Bank Transfer",
-                ReferenceNumber = "TRX-" + id.ToString("D5"),
-                Notes = "Sample transaction notes for transaction #" + id
-            };
+                // Get current user ID
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                
+                // Get agent ID for the current user
+                var agent = await _context.Agents.FirstOrDefaultAsync(a => a.UserId == userId);
+                
+                if (agent == null)
+                {
+                    TempData["Error"] = "Agent profile not found.";
+                    return View(new List<PaymentViewModel>());
+                }
 
-            return View(payment);
+                // Get all properties belonging to this agent
+                var agentPropertyIds = await _context.Properties
+                    .Where(p => p.AgentId == agent.Id)
+                    .Select(p => p.Id)
+                    .ToListAsync();
+
+                // Get all transactions for these properties
+                var transactions = await _context.Transactions
+                    .Include(t => t.Property)
+                    .Where(t => agentPropertyIds.Contains(t.PropertyId) && t.Status == "Completed")
+                    .OrderByDescending(t => t.CompletedAt ?? t.CreatedAt)
+                    .ToListAsync();
+
+                // Map transactions to view models
+                var payments = new List<PaymentViewModel>();
+                
+                foreach (var transaction in transactions)
+                {
+                    // Get user info
+                    var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == transaction.UserId);
+                    var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(up => up.UserId == transaction.UserId);
+                    
+                    // Get property image
+                    var propertyImage = await _context.PropertyImages
+                        .Where(pi => pi.PropertyId == transaction.PropertyId)
+                        .FirstOrDefaultAsync();
+                    
+                    // Calculate commission (3% of transaction amount)
+                    decimal commissionPercentage = 3.0m;
+                    decimal commission = transaction.Amount * (commissionPercentage / 100);
+                    
+                    payments.Add(new PaymentViewModel
+                    {
+                        Id = int.Parse(transaction.Id.Substring(0, Math.Min(8, transaction.Id.Length)), System.Globalization.NumberStyles.HexNumber),
+                        PropertyId = int.Parse(transaction.PropertyId.Substring(0, Math.Min(8, transaction.PropertyId.Length)), System.Globalization.NumberStyles.HexNumber),
+                        PropertyTitle = transaction.Property?.Title ?? "Unknown Property",
+                        PropertyAddress = transaction.Property?.Address ?? "Unknown Address",
+                        PropertyImageUrl = propertyImage?.ImagePath ?? "/images/property-placeholder.jpg",
+                        TransactionType = transaction.TransactionType,
+                        Amount = transaction.Amount,
+                        Commission = commission,
+                        CommissionPercentage = commissionPercentage,
+                        ClientName = userProfile != null ? $"{userProfile.FirstName} {userProfile.LastName}" : user?.UserName ?? "Unknown Client",
+                        ClientEmail = user?.Email ?? "No email",
+                        TransactionDate = transaction.CompletedAt ?? transaction.CreatedAt,
+                        PaymentMethod = transaction.PaymentMethod ?? "Online Payment",
+                        ReferenceNumber = transaction.ReferenceNumber ?? transaction.Id.Substring(0, 8),
+                        Notes = transaction.Notes ?? "Transaction completed successfully",
+                        CreatedAt = transaction.CreatedAt
+                    });
+                }
+
+                return View(payments);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "An error occurred while loading payment data: " + ex.Message;
+                return View(new List<PaymentViewModel>());
+            }
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            try
+            {
+                // Get current user ID
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                
+                // Get agent ID for the current user
+                var agent = await _context.Agents.FirstOrDefaultAsync(a => a.UserId == userId);
+                
+                if (agent == null)
+                {
+                    TempData["Error"] = "Agent profile not found.";
+                    return RedirectToAction("Index");
+                }
+
+                // Get all properties belonging to this agent
+                var agentPropertyIds = await _context.Properties
+                    .Where(p => p.AgentId == agent.Id)
+                    .Select(p => p.Id)
+                    .ToListAsync();
+
+                // Try to find the transaction by converting ID format
+                string transactionId = id.ToString("X"); // Convert to hex
+                
+                var transaction = await _context.Transactions
+                    .Include(t => t.Property)
+                    .Where(t => t.Id.StartsWith(transactionId) && agentPropertyIds.Contains(t.PropertyId))
+                    .FirstOrDefaultAsync();
+
+                if (transaction == null)
+                {
+                    TempData["Error"] = "Transaction not found or you don't have permission to view it.";
+                    return RedirectToAction("Index");
+                }
+
+                // Get user info
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == transaction.UserId);
+                var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(up => up.UserId == transaction.UserId);
+                
+                // Get property image
+                var propertyImage = await _context.PropertyImages
+                    .Where(pi => pi.PropertyId == transaction.PropertyId)
+                    .FirstOrDefaultAsync();
+                
+                // Calculate commission (3% of transaction amount)
+                decimal commissionPercentage = 3.0m;
+                decimal commission = transaction.Amount * (commissionPercentage / 100);
+                
+                var payment = new PaymentViewModel
+                {
+                    Id = id,
+                    PropertyId = int.Parse(transaction.PropertyId.Substring(0, Math.Min(8, transaction.PropertyId.Length)), System.Globalization.NumberStyles.HexNumber),
+                    PropertyTitle = transaction.Property?.Title ?? "Unknown Property",
+                    PropertyAddress = transaction.Property?.Address ?? "Unknown Address",
+                    PropertyImageUrl = propertyImage?.ImagePath ?? "/images/property-placeholder.jpg",
+                    TransactionType = transaction.TransactionType,
+                    Amount = transaction.Amount,
+                    Commission = commission,
+                    CommissionPercentage = commissionPercentage,
+                    ClientName = userProfile != null ? $"{userProfile.FirstName} {userProfile.LastName}" : user?.UserName ?? "Unknown Client",
+                    ClientEmail = user?.Email ?? "No email",
+                    TransactionDate = transaction.CompletedAt ?? transaction.CreatedAt,
+                    PaymentMethod = transaction.PaymentMethod ?? "Online Payment",
+                    ReferenceNumber = transaction.ReferenceNumber ?? transaction.Id.Substring(0, 8),
+                    Notes = transaction.Notes ?? "Transaction completed successfully",
+                    CreatedAt = transaction.CreatedAt
+                };
+
+                return View(payment);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "An error occurred while loading payment details: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         }
 
         public IActionResult Download(int id)

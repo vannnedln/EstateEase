@@ -1,0 +1,241 @@
+@model EstateEase.Models.ViewModels.PaymentViewModel
+@{
+    ViewData["Title"] = "Transaction Details";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-0">Transaction Details</h3>
+            <p class="text-muted mb-0">View detailed information about this transaction</p>
+        </div>
+        <div>
+            <a href="@Url.Action("Index", "Transactions")" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-arrow-left me-2"></i>Back to List
+            </a>
+            <button class="btn btn-primary" onclick="window.print()">
+                <i class="bi bi-printer me-2"></i>Print
+            </button>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Info"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <i class="bi bi-info-circle me-2"></i> @TempData["Info"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title mb-0 fw-bold">
+                        <i class="bi bi-receipt me-2 text-primary"></i>
+                        Transaction Receipt
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h6 class="text-muted fw-normal mb-2">Property Information</h6>
+                                <div class="d-flex mb-3">
+                                    <div class="flex-shrink-0 me-3">
+                                        <img src="@Model.PropertyImageUrl" class="img-fluid rounded" alt="Property" 
+                                             style="width: 80px; height: 80px; object-fit: cover;">
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-1">@Model.PropertyTitle</h5>
+                                        <p class="text-muted mb-0">@Model.PropertyAddress</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h6 class="text-muted fw-normal mb-2">Transaction Details</h6>
+                                <table class="table table-borderless mb-0">
+                                    <tr>
+                                        <td class="ps-0 text-muted">Reference #:</td>
+                                        <td class="pe-0 fw-medium text-end">@Model.ReferenceNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-0 text-muted">Date:</td>
+                                        <td class="pe-0 text-end">@Model.TransactionDate.ToString("MMM dd, yyyy hh:mm tt")</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-0 text-muted">Status:</td>
+                                        <td class="pe-0 text-end">
+                                            <span class="badge bg-success">Completed</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h6 class="text-muted fw-normal mb-2">Client Information</h6>
+                                <p class="mb-1 fw-medium">@Model.ClientName</p>
+                                <p class="text-muted mb-0">@Model.ClientEmail</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h6 class="text-muted fw-normal mb-2">Agent Information</h6>
+                                <p class="mb-1 fw-medium">@Model.AgentName</p>
+                                <p class="text-muted mb-0">EstateEase Agent</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-top pt-4">
+                        <h6 class="text-muted fw-normal mb-3">Payment Details</h6>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <p class="text-muted mb-1">Transaction Type</p>
+                                <p class="fw-medium mb-0">@Model.TransactionType</p>
+                            </div>
+                            <div class="col-6">
+                                <p class="text-muted mb-1">Payment Method</p>
+                                <p class="fw-medium mb-0">@Model.PaymentMethod</p>
+                            </div>
+                        </div>
+                        <div class="bg-light p-3 rounded">
+                            <table class="table table-borderless mb-0">
+                                <tbody>
+                                    <tr>
+                                        <td class="text-muted">Transaction Amount</td>
+                                        <td class="text-end fw-medium">₱@Model.Amount.ToString("N2")</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted">
+                                            Commission (@Model.CommissionPercentage.ToString("0.##")%)
+                                        </td>
+                                        <td class="text-end fw-medium">₱@Model.Commission.ToString("N2")</td>
+                                    </tr>
+                                    <tr class="border-top">
+                                        <td class="text-dark fw-bold pt-3">Total Received</td>
+                                        <td class="text-end fw-bold pt-3 fs-5">
+                                            ₱@Model.Amount.ToString("N2")
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Notes))
+            {
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="card-title mb-0 fw-bold">
+                            <i class="bi bi-journal-text me-2 text-primary"></i>
+                            Transaction Notes
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0">@Model.Notes</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title mb-0 fw-bold">
+                        <i class="bi bi-gear me-2 text-primary"></i>
+                        Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-primary" onclick="window.print(); return false;">
+                            <i class="bi bi-printer me-2"></i>Print Receipt
+                        </a>
+                        <a href="@Url.Action("Download", "Transactions", new { id = Model.Id })" class="btn btn-outline-primary">
+                            <i class="bi bi-download me-2"></i>Download Invoice
+                        </a>
+                        <a href="mailto:@Model.ClientEmail" class="btn btn-outline-secondary">
+                            <i class="bi bi-envelope me-2"></i>Contact Client
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title mb-0 fw-bold">
+                        <i class="bi bi-info-circle me-2 text-primary"></i>
+                        Additional Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless mb-0">
+                        <tr>
+                            <td class="ps-0 text-muted">Transaction ID:</td>
+                            <td class="pe-0 text-end fw-medium">@Model.Id</td>
+                        </tr>
+                        <tr>
+                            <td class="ps-0 text-muted">Created At:</td>
+                            <td class="pe-0 text-end">@Model.CreatedAt.ToString("MMM dd, yyyy hh:mm tt")</td>
+                        </tr>
+                        <tr>
+                            <td class="ps-0 text-muted">Property ID:</td>
+                            <td class="pe-0 text-end">@Model.PropertyId</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        @@media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            .card-body, .card-body * {
+                visibility: visible;
+            }
+            
+            .card-body {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+} 
