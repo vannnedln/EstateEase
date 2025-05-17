@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using EstateEase.Data;
 using EstateEase.Models.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace EstateEase.Services
@@ -14,6 +15,7 @@ namespace EstateEase.Services
         Task<Transaction> UpdateTransactionStatus(string transactionId, string status);
         Task<bool> ProcessWebhookEvent(string payload, string signature);
         Task<List<Transaction>> GetUserTransactions(string userId);
+        Task CreateUserPropertyAssociation(string userId, string propertyId, string relationshipType);
     }
 
     public class PaymentService : IPaymentService
@@ -22,17 +24,20 @@ namespace EstateEase.Services
         private readonly HttpClient _httpClient;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<PaymentService> _logger;
+        private readonly UserManager<IdentityUser> _userManager;
 
         public PaymentService(
             IConfiguration configuration,
             HttpClient httpClient,
             ApplicationDbContext context,
-            ILogger<PaymentService> logger)
+            ILogger<PaymentService> logger,
+            UserManager<IdentityUser> userManager)
         {
             _configuration = configuration;
             _httpClient = httpClient;
             _context = context;
             _logger = logger;
+            _userManager = userManager;
 
             // Configure HttpClient for PayMongo
             string secretKey = _configuration["PayMongo:SecretKey"];
@@ -160,10 +165,16 @@ namespace EstateEase.Services
                     if (transaction.TransactionType == "Rent")
                     {
                         property.Status = "Rented";
+                        
+                        // Create a UserProperty record for the renter
+                        await CreateUserPropertyAssociation(transaction.UserId, property.Id, "Renter");
                     }
                     else if (transaction.TransactionType == "Purchase")
                     {
                         property.Status = "Sold";
+                        
+                        // Create a UserProperty record for the owner
+                        await CreateUserPropertyAssociation(transaction.UserId, property.Id, "Owner");
                     }
                     
                     await _context.SaveChangesAsync();
@@ -232,42 +243,239 @@ namespace EstateEase.Services
             }
         }
 
-        private async Task CreateUserPropertyAssociation(string userId, string propertyId, string relationshipType)
+        public async Task CreateUserPropertyAssociation(string userId, string propertyId, string relationshipType)
         {
-            // Check if association already exists
-            var existingAssociation = await _context.UserProperties
-                .FirstOrDefaultAsync(up => up.UserId == userId && up.PropertyId == propertyId);
-                
-            if (existingAssociation == null)
+            _logger.LogInformation($"Creating user property association: User={userId}, Property={propertyId}, Type={relationshipType}");
+            
+            try
             {
-                var userProperty = new UserProperty
+                // Input validation
+                if (string.IsNullOrEmpty(userId))
                 {
-                    Id = Guid.NewGuid().ToString(),
-                    UserId = userId,
-                    PropertyId = propertyId,
-                    RelationshipType = relationshipType,
-                    CreatedAt = DateTime.Now
-                };
+                    _logger.LogError("Cannot create user property association: User ID is null or empty");
+                    return;
+                }
                 
-                _context.UserProperties.Add(userProperty);
-                await _context.SaveChangesAsync();
+                if (string.IsNullOrEmpty(propertyId))
+                {
+                    _logger.LogError("Cannot create user property association: Property ID is null or empty");
+                    return;
+                }
+                
+                // Debug information
+                _logger.LogInformation($"Creating association for User ID: '{userId}', Property ID: {propertyId}, Type: {relationshipType}");
+                
+                // Check if property exists
+                var property = await _context.Properties.FindAsync(propertyId);
+                if (property == null)
+                {
+                    _logger.LogError($"Cannot create user property association: Property ID {propertyId} not found in database");
+                    return;
+                }
+                
+                // Check if user exists
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    _logger.LogError($"Cannot create user property association: User ID '{userId}' not found in database");
+                    return;
+                }
+                
+                // Check if association already exists
+                var existingAssociation = await _context.UserProperties
+                    .FirstOrDefaultAsync(up => up.UserId.ToLower() == userId.ToLower() && up.PropertyId == propertyId);
+                
+                _logger.LogInformation($"Checking for existing association with UserID: {userId.ToLower()}, PropertyID: {propertyId}");
+                    
+                if (existingAssociation == null)
+                {
+                    // Find the most recent transaction for this property and user
+                    // to get rental duration information
+                    var transaction = await _context.Transactions
+                        .Where(t => t.PropertyId == propertyId && 
+                               (t.UserId.ToLower() == userId.ToLower() || t.UserId == userId) && 
+                               t.Status == "Completed")
+                        .OrderByDescending(t => t.CompletedAt ?? t.CreatedAt)
+                        .FirstOrDefaultAsync();
+                        
+                    // Calculate ExpiryDate based on transaction data
+                    DateTime acquisitionDate = DateTime.Now;
+                    DateTime? expiryDate = null;
+                    
+                    if (transaction != null && relationshipType == "Renter")
+                    {
+                        // First try StartDate and EndDate
+                        if (transaction.StartDate.HasValue && transaction.EndDate.HasValue)
+                        {
+                            acquisitionDate = transaction.StartDate.Value;
+                            expiryDate = transaction.EndDate.Value;
+                            _logger.LogInformation($"Setting expiry date from transaction dates: {expiryDate}");
+                        }
+                        else
+                        {
+                            // Try to determine duration from transaction amount and property price
+                            if (property.Price > 0 && transaction.Amount > 0)
+                            {
+                                int estimatedMonths = (int)Math.Ceiling(transaction.Amount / property.Price);
+                                expiryDate = acquisitionDate.AddMonths(estimatedMonths);
+                                _logger.LogInformation($"Calculated expiry date from transaction amount: {expiryDate} (estimated {estimatedMonths} months)");
+                            }
+                            else
+                            {
+                                // Default to 12 months rental
+                                expiryDate = acquisitionDate.AddMonths(12);
+                                _logger.LogInformation($"Using default 12-month expiry date: {expiryDate}");
+                            }
+                        }
+                    }
+                    
+                    // Create new association
+                    var userProperty = new UserProperty
+                    {
+                        UserId = userId,
+                        PropertyId = propertyId,
+                        OwnershipType = relationshipType == "Owner" ? "Bought" : "Rented",
+                        RelationshipType = relationshipType,
+                        AcquisitionDate = acquisitionDate,
+                        ExpiryDate = relationshipType == "Renter" ? expiryDate : null,  // Only set expiry for rentals
+                        CreatedAt = DateTime.Now
+                    };
+                    
+                    _logger.LogInformation($"Creating new UserProperty association with type: {userProperty.RelationshipType}, expiry: {userProperty.ExpiryDate}");
+                    
+                    await _context.UserProperties.AddAsync(userProperty);
+                    await _context.SaveChangesAsync();
+                    
+                    _logger.LogInformation($"Successfully created user property association with ID: {userProperty.Id}");
+                }
+                else
+                {
+                    _logger.LogInformation($"Association already exists with ID: {existingAssociation.Id}");
+                    
+                    // Update existing association if needed
+                    bool needsUpdate = false;
+                    
+                    // If it's a purchase/sale, always update to Owner
+                    if ((relationshipType == "Sale" || relationshipType == "Purchase") 
+                        && existingAssociation.RelationshipType != "Owner")
+                    {
+                        existingAssociation.RelationshipType = "Owner";
+                        existingAssociation.OwnershipType = "Bought";
+                        existingAssociation.ExpiryDate = null; // Remove expiry date for purchased properties
+                        needsUpdate = true;
+                    }
+                    
+                    if (needsUpdate)
+                    {
+                        existingAssociation.UpdatedAt = DateTime.Now;
+                        _context.UserProperties.Update(existingAssociation);
+                        await _context.SaveChangesAsync();
+                        _logger.LogInformation("Updated existing association");
+                    }
+                }
             }
-            else if (existingAssociation.RelationshipType != relationshipType)
+            catch (Exception ex)
             {
-                // Update relationship type if it's different
-                existingAssociation.RelationshipType = relationshipType;
-                existingAssociation.UpdatedAt = DateTime.Now;
-                await _context.SaveChangesAsync();
+                _logger.LogError(ex, $"Error creating user property association: {ex.Message}");
+                throw; // Re-throw to propagate the error
             }
         }
 
         public async Task<List<Transaction>> GetUserTransactions(string userId)
         {
-            return await _context.Transactions
-                .Include(t => t.Property)
-                .Where(t => t.UserId == userId)
-                .OrderByDescending(t => t.CreatedAt)
-                .ToListAsync();
+            try
+            {
+                _logger.LogInformation($"Getting transactions for user: {userId}");
+                
+                // Explicitly query without projection first to check total count
+                var allTransactionsCount = await _context.Transactions
+                    .CountAsync(t => EF.Functions.Like(t.UserId, userId));
+                
+                _logger.LogInformation($"Found {allTransactionsCount} total transactions for user ID: {userId}");
+                
+                // Use explicit projection to avoid issues with missing RentalDuration column
+                var transactions = await _context.Transactions
+                    .Include(t => t.Property)
+                    .Where(t => t.UserId.ToLower() == userId.ToLower() || t.UserId == userId)
+                    .OrderByDescending(t => t.CreatedAt)
+                    .Select(t => new Transaction
+                    {
+                        Id = t.Id,
+                        UserId = t.UserId,
+                        PropertyId = t.PropertyId,
+                        Property = t.Property,
+                        Amount = t.Amount,
+                        TransactionType = t.TransactionType,
+                        Status = t.Status,
+                        PaymentMethod = t.PaymentMethod,
+                        PaymentProvider = t.PaymentProvider,
+                        PaymentId = t.PaymentId,
+                        CheckoutSessionId = t.CheckoutSessionId,
+                        ReferenceNumber = t.ReferenceNumber,
+                        Notes = t.Notes,
+                        CreatedAt = t.CreatedAt,
+                        UpdatedAt = t.UpdatedAt,
+                        CompletedAt = t.CompletedAt,
+                        StartDate = t.StartDate,
+                        EndDate = t.EndDate,
+                        IsReservation = t.IsReservation,
+                        ReservationAmount = t.ReservationAmount
+                        // RentalDuration is intentionally omitted to avoid errors if column doesn't exist
+                    })
+                    .ToListAsync();
+                
+                _logger.LogInformation($"Retrieved {transactions.Count} transactions after projection for user: {userId}");
+                
+                // Calculate the rental duration for each transaction from related data
+                foreach (var transaction in transactions)
+                {
+                    try
+                    {
+                        // First try: Try to calculate from UserProperties (most accurate)
+                        var userProperty = await _context.UserProperties
+                            .FirstOrDefaultAsync(up => 
+                                (up.UserId.ToLower() == userId.ToLower() || up.UserId == userId) && 
+                                up.PropertyId == transaction.PropertyId);
+                        
+                        if (userProperty != null && userProperty.AcquisitionDate != default && userProperty.ExpiryDate.HasValue)
+                        {
+                            // Calculate months between acquisition and expiry
+                            int months = ((userProperty.ExpiryDate.Value.Year - userProperty.AcquisitionDate.Year) * 12) + 
+                                         (userProperty.ExpiryDate.Value.Month - userProperty.AcquisitionDate.Month);
+                            transaction.RentalDuration = Math.Max(1, months); // Ensure at least 1 month
+                            _logger.LogInformation($"Transaction {transaction.Id}: Set rental duration to {transaction.RentalDuration} months based on UserProperty");
+                            continue;
+                        }
+                        
+                        // Second try: Try to calculate from transaction dates
+                        if (transaction.StartDate.HasValue && transaction.EndDate.HasValue)
+                        {
+                            int months = ((transaction.EndDate.Value.Year - transaction.StartDate.Value.Year) * 12) + 
+                                         (transaction.EndDate.Value.Month - transaction.StartDate.Value.Month);
+                            transaction.RentalDuration = Math.Max(1, months); // Ensure at least 1 month
+                            _logger.LogInformation($"Transaction {transaction.Id}: Set rental duration to {transaction.RentalDuration} months based on transaction dates");
+                            continue;
+                        }
+                        
+                        // Last resort: Use default value of 12 months
+                        transaction.RentalDuration = 12;
+                        _logger.LogInformation($"Transaction {transaction.Id}: Set default rental duration to 12 months");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, $"Error calculating rental duration for transaction {transaction.Id}");
+                        transaction.RentalDuration = 12; // Fallback to default
+                    }
+                }
+                
+                return transactions;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching user transactions: {ex.Message}");
+                // Return empty list instead of throwing, to prevent cascading errors
+                return new List<Transaction>();
+            }
         }
     }
 } 

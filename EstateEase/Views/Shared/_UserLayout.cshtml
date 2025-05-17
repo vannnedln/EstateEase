@@ -17,6 +17,9 @@
     <!-- Main CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     
+    <!-- Modal Fix CSS -->
+    <link rel="stylesheet" href="~/css/modal-fix.css" asp-append-version="true" />
+    
     @await RenderSectionAsync("Styles", required: false)
     
     <!-- Custom dashboard CSS -->
@@ -250,10 +253,7 @@
                                     asp-area="User" asp-controller="Profile" asp-action="Index">
                                     <i class="bi bi-person fs-5"></i>Profile
                                 </a>
-                                <a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center gap-2"
-                                    href="#">
-                                    <i class="bi bi-gear fs-5"></i>Settings
-                                </a>
+                               
                                 <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                                     <button type="submit"
                                         class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center gap-2 text-danger">
@@ -291,6 +291,7 @@
                     <li>
                         <a asp-area="User" asp-controller="Payments" asp-action="Index" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Payments" ? "active" : "")">
                             <i class="bi bi-credit-card"></i> <span>Payments</span>
+                            @await Component.InvokeAsync("RentalPaymentsAlert")
                         </a>
                     </li>
                     <li>
@@ -317,10 +318,37 @@
     
     <script>
         $(document).ready(function () {
+            // Mobile menu toggle
             $('#mobile_btn').on('click', function () {
                 $(this).toggleClass('active');
                 $('#sidebar').toggleClass('collapsed');
                 $('#page-wrapper').toggleClass('slide-content');
+            });
+            
+            // Modal fixes - ensure modals display correctly
+            $('.modal').on('show.bs.modal', function () {
+                // Reset any previous fixes
+                $(this).find('.modal-dialog').css({
+                    'display': 'block',
+                    'margin': '1.75rem auto'
+                });
+                $(this).find('.modal-content').css('overflow', 'visible');
+                
+                // Fix body padding
+                $('body').css('padding-right', '0');
+            });
+            
+            // Fix for modal close button
+            $('.modal .btn-close').on('click', function() {
+                $(this).closest('.modal').modal('hide');
+            });
+            
+            // Reset body state when modal is hidden
+            $('.modal').on('hidden.bs.modal', function () {
+                $('body').css({
+                    'overflow': '',
+                    'padding-right': '0'
+                });
             });
         });
     </script>

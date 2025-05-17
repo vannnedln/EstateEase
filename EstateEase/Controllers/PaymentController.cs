@@ -8,6 +8,7 @@ using System.Text;
 using System.IO;
 using System.Security.Claims;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 namespace EstateEase.Controllers
 {
@@ -17,19 +18,22 @@ namespace EstateEase.Controllers
         private readonly IPaymentService _paymentService;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<PaymentController> _logger;
+        private readonly UserManager<IdentityUser> _userManager;
 
         public PaymentController(
             IPaymentService paymentService,
             ApplicationDbContext context,
-            ILogger<PaymentController> logger)
+            ILogger<PaymentController> logger,
+            UserManager<IdentityUser> userManager)
         {
             _paymentService = paymentService;
             _context = context;
             _logger = logger;
+            _userManager = userManager;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateRentCheckout(string propertyId, string notes)
+        public async Task<IActionResult> CreateRentCheckout(string propertyId, string notes, int rentalDuration = 12, string customEndDate = null)
         {
             try
             {
@@ -44,25 +48,61 @@ namespace EstateEase.Controllers
                     return NotFound("Property not found");
                 }
                 
+                // Calculate rental end date
+                DateTime startDate = DateTime.Now;
+                DateTime endDate;
+                
+                // If custom end date is provided, use it
+                if (!string.IsNullOrEmpty(customEndDate) && DateTime.TryParse(customEndDate, out DateTime parsedEndDate))
+                {
+                    endDate = parsedEndDate;
+                    
+                    // Calculate actual months for pricing (including partial months)
+                    int years = endDate.Year - startDate.Year;
+                    int months = endDate.Month - startDate.Month;
+                    rentalDuration = years * 12 + months;
+                    
+                    // Add 1 month if end day is greater than start day (to account for partial months)
+                    if (endDate.Day > startDate.Day)
+                    {
+                        rentalDuration += 1;
+                    }
+                    
+                    // Ensure minimum 1 month rental
+                    rentalDuration = Math.Max(1, rentalDuration);
+                }
+                else
+                {
+                    // Use standard duration in months
+                    endDate = startDate.AddMonths(rentalDuration);
+                }
+                
+                // Calculate total amount based on rental duration
+                decimal totalAmount = property.Price * rentalDuration;
+                
                 // Create a transaction record
                 var transaction = new Transaction
                 {
                     Id = Guid.NewGuid().ToString(),
                     UserId = userId,
                     PropertyId = propertyId,
-                    Amount = property.Price, // First month's rent
+                    Amount = totalAmount,
                     TransactionType = "Rent",
                     Status = "Initiated",
                     PaymentMethod = "Card", // Default to card, can be updated based on selection
                     ReferenceNumber = $"RENT-{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     Notes = notes,
                     CreatedAt = DateTime.Now,
-                    StartDate = DateTime.Now,
-                    EndDate = DateTime.Now.AddMonths(1)
+                    StartDate = startDate,
+                    EndDate = endDate
+                    // RentalDuration is intentionally omitted to avoid database errors
                 };
                 
                 _context.Transactions.Add(transaction);
                 await _context.SaveChangesAsync();
+                
+                // Store rental duration in user properties when creating the association
+                // This will happen in PaymentSuccess when payment is completed
                 
                 // Create a checkout session with PayMongo
                 var successUrl = Url.Action("PaymentSuccess", "Payment", new { transactionId = transaction.Id }, Request.Scheme);
@@ -160,10 +200,16 @@ namespace EstateEase.Controllers
                         if (transaction.TransactionType == "Rent")
                         {
                             property.Status = "Rented";
+                            
+                            // Create a UserProperty record for the renter
+                            await _paymentService.CreateUserPropertyAssociation(transaction.UserId, property.Id, "Renter");
                         }
                         else if (transaction.TransactionType == "Purchase")
                         {
                             property.Status = "Sold";
+                            
+                            // Create a UserProperty record for the owner
+                            await _paymentService.CreateUserPropertyAssociation(transaction.UserId, property.Id, "Owner");
                         }
                         await _context.SaveChangesAsync();
                     }
@@ -220,10 +266,50 @@ namespace EstateEase.Controllers
         [HttpGet]
         public async Task<IActionResult> Transactions()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var transactions = await _paymentService.GetUserTransactions(userId);
-            
-            return View(transactions);
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                _logger.LogInformation($"Fetching transactions for user with ID: {userId}");
+                
+                // Get the user's database ID for logging purposes
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    _logger.LogWarning($"User with ID {userId} not found in database");
+                    TempData["WarningMessage"] = "User profile not found. Please contact support if this persists.";
+                    return View(new List<Transaction>());
+                }
+                
+                // Get transactions
+                var transactions = await _paymentService.GetUserTransactions(userId);
+                
+                // Add debug information
+                _logger.LogInformation($"Retrieved {transactions.Count} transactions for user {userId} (Username: {user.UserName})");
+                
+                if (!transactions.Any())
+                {
+                    // First, check if there are any transactions with any status
+                    var allTransactions = await _context.Transactions.CountAsync(t => 
+                        t.UserId.ToLower() == userId.ToLower() || t.UserId == userId);
+                    
+                    _logger.LogWarning($"No transactions found for user {userId}. Total count in DB (any status): {allTransactions}");
+                    
+                    // Add a warning if we found records in the DB but they weren't returned
+                    if (allTransactions > 0)
+                    {
+                        TempData["WarningMessage"] = "Your payment history was found but couldn't be displayed. Our team has been notified.";
+                        _logger.LogError($"Inconsistency detected: DB has {allTransactions} transactions for user {userId} but none were retrieved");
+                    }
+                }
+                
+                return View(transactions);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving user transactions");
+                TempData["ErrorMessage"] = "An error occurred while loading your transactions. Please try again later.";
+                return View(new List<Transaction>());
+            }
         }
 
         [HttpGet]

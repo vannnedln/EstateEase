@@ -136,7 +136,7 @@
                                     <th scope="col">Type</th>
                                     <th scope="col">Price</th>
                                     <th scope="col">Status</th>
-                                    <th scope="col" style="width: 120px;">Action</th>
+                                  
                                 </tr>
                             </thead>
                             <tbody>
@@ -185,12 +185,7 @@
                                                     <span class="badge bg-info bg-opacity-10 text-info">@property.Status</span>
                                                 }
                                             </td>
-                                            <td>
-                                                <div class="d-flex gap-2">
-                                                    <a asp-area="Agent" asp-controller="Property" asp-action="Edit" asp-route-id="@property.Id" class="btn btn-sm btn-light"><i class="bi bi-pencil"></i></a>
-                                                    <a asp-area="Agent" asp-controller="Property" asp-action="View" asp-route-id="@property.Id" class="btn btn-sm btn-light"><i class="bi bi-eye"></i></a>
-                                                </div>
-                                            </td>
+                                            
                                         </tr>
                                     }
                                 }

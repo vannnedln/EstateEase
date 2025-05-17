@@ -4,6 +4,11 @@
     Layout = "_AgentLayout";
 }
 
+@* Hidden form with antiforgery token for AJAX requests *@
+<form id="antiforgery-form">
+    @Html.AntiForgeryToken()
+</form>
+
 <div class="container-fluid py-4 rounded-4">
     <div class="row mb-4">
         <div class="col-12 d-flex justify-content-end">
@@ -61,6 +66,8 @@
                         </div>
                     }
 
+                    @Html.AntiForgeryToken()
+
                     @if (Model != null && Model.Any())
                     {
                         <table id="myTable" class="table">
@@ -79,7 +86,7 @@
                             <tbody>
                                 @foreach (var item in Model)
                                 {
-                                    <tr>
+                                    <tr data-property-id="@item.Id">
                                         <td>@item.Title</td>
                                         <td>@item.PropertyType</td>
                                         <td>@item.Address</td>
@@ -99,32 +106,24 @@
                                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-dark btn-sm">
                                                     <i class="bi bi-eye"></i> View
                                                 </a>
-                                                <button type="button" class="btn btn-danger btn-sm" 
-                                                        data-bs-toggle="modal" data-bs-target="#deleteModal-@item.Id">
+                                                @if (item.Status.ToLower() != "sold" && item.Status.ToLower() != "rented")
+                                                {
+                                                    @if (item.Status.ToLower() == "inactive")
+                                                    {
+                                                        <a href="#" onclick="updateStatus('@item.Id', 'Available')" class="btn btn-success btn-sm">
+                                                            <i class="bi bi-check-circle"></i> Activate
+                                                        </a>
+                                                    }
+                                                    else if (item.Status.ToLower() == "available")
+                                                    {
+                                                        <a href="#" onclick="updateStatus('@item.Id', 'Inactive')" class="btn btn-secondary btn-sm">
+                                                            <i class="bi bi-pause-circle"></i> Deactivate
+                                                        </a>
+                                                    }
+                                                }
+                                                <a asp-action="DeleteConfirmation" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
                                                     <i class="bi bi-trash"></i> Delete
-                                                </button>
-                                            </div>
-                                            
-                                            <!-- Delete Modal -->
-                                            <div class="modal fade" id="deleteModal-@item.Id" tabindex="-1" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Confirm Deletion</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p>Are you sure you want to delete the property "<strong>@item.Title</strong>"?</p>
-                                                            <p class="text-danger mb-0"><small>This action cannot be undone.</small></p>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                                                            <form asp-action="Delete" asp-route-id="@item.Id" method="post">
-                                                                <button type="submit" class="btn btn-danger">Delete Property</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                </a>
                                             </div>
                                         </td>
                                     </tr>
@@ -271,6 +270,50 @@
         .modal-footer {
             border-top: 1px solid rgba(0,0,0,.1);
         }
+        
+        /* Status Options */
+        .status-option {
+            transition: all 0.3s ease;
+            border-width: 2px;
+        }
+        
+        .status-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .status-option.active {
+            border-width: 2px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* Status badges */
+        .badge.bg-available {
+            background-color: #28a745;
+        }
+        
+        .badge.bg-pending {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .badge.bg-inactive {
+            background-color: #6c757d;
+        }
+        
+        .badge.bg-sold {
+            background-color: #dc3545;
+        }
+        
+        .badge.bg-rented {
+            background-color: #17a2b8;
+        }
+        
+        /* AntiForgery token for AJAX requests */
+        #antiforgery-token {
+            display: none;
+        }
     </style>
 }
 
@@ -315,5 +358,45 @@
                 });
             }, 100);
         });
+
+        // Function to update property status
+        function updateStatus(propertyId, newStatus) {
+            // Get the current status from the table
+            const statusElement = document.querySelector(`tr[data-property-id="${propertyId}"] td:nth-child(7) .badge`);
+            const currentStatus = statusElement ? statusElement.textContent.trim().toLowerCase() : '';
+            
+            // Check if property has Sold or Rented status
+            if (currentStatus === 'sold' || currentStatus === 'rented') {
+                alert('Properties with Sold or Rented status cannot be activated or deactivated.');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to ' + (newStatus === 'Inactive' ? 'deactivate' : 'activate') + ' this property?')) {
+                fetch('/Agent/Property/UpdateStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ 
+                        propertyId: propertyId, 
+                        status: newStatus 
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Reload the page to see the updated status
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating status:', error);
+                    alert('An error occurred while updating the property status.');
+                });
+            }
+        }
     </script>
 } 

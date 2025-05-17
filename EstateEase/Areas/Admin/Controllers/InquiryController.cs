@@ -505,5 +505,39 @@ namespace EstateEase.Areas.Admin.Controllers
           
             return RedirectToAction(nameof(Details), new { id });
         }
+
+        // Delete an inquiry
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteInquiry(int id)
+        {
+            var currentUserId = _userManager.GetUserId(User);
+            
+            // Get the inquiry, including those with null AgentId
+            var inquiry = await _context.Inquiries
+                .Include(i => i.Messages)
+                .Where(i => (i.AgentId == currentUserId || i.AgentId == null || 
+                           i.Property.AgentId == currentUserId || i.Property.AgentId == null) && 
+                           i.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (inquiry == null)
+            {
+                return NotFound();
+            }
+
+            // First remove all messages associated with this inquiry
+            if (inquiry.Messages != null && inquiry.Messages.Any())
+            {
+                _context.InquiryMessages.RemoveRange(inquiry.Messages);
+            }
+
+            // Remove the inquiry
+            _context.Inquiries.Remove(inquiry);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Inquiry deleted successfully";
+            return RedirectToAction(nameof(Index));
+        }
     }
 } 

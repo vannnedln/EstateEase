@@ -1,0 +1,75 @@
+@using EstateEase.Models.Entities
+@{
+    ViewData["Title"] = "Check All Transactions";
+    var transactions = ViewBag.Transactions as List<Transaction>;
+}
+
+<div class="container mt-5">
+    <h1>All Transactions in Database</h1>
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Transaction Count</h5>
+        </div>
+        <div class="card-body">
+            <p class="mb-0">Total Transactions: <strong>@ViewBag.TotalCount</strong></p>
+        </div>
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Transactions List</h5>
+        </div>
+        <div class="card-body">
+            @if (transactions != null && transactions.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User ID</th>
+                                <th>Property</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Created At</th>
+                                <th>Completed At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var transaction in transactions)
+                            {
+                                <tr>
+                                    <td>@transaction.Id</td>
+                                    <td>@transaction.UserId</td>
+                                    <td>@(transaction.Property?.Title ?? "N/A")</td>
+                                    <td>@transaction.TransactionType</td>
+                                    <td>₱@transaction.Amount.ToString("N2")</td>
+                                    <td>
+                                        <span class="badge @(transaction.Status == "Completed" ? "bg-success" : "bg-warning")">
+                                            @transaction.Status
+                                        </span>
+                                    </td>
+                                    <td>@transaction.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>@(transaction.CompletedAt.HasValue ? transaction.CompletedAt.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    No transactions found in the database.
+                </div>
+            }
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="@Url.Action("Index", "Test")" class="btn btn-secondary">Back to Test Home</a>
+        <a href="@Url.Action("Index", "Dashboard", new { area = "User" })" class="btn btn-primary">Go to Dashboard</a>
+    </div>
+</div> 

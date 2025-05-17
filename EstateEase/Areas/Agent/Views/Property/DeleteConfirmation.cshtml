@@ -1,7 +1,7 @@
 @model EstateEase.Models.Entities.Property
 @{
     ViewData["Title"] = "Delete Property";
-    Layout = "_AdminLayout";
+    Layout = "_AgentLayout";
 }
 
 <div class="container-fluid py-4">
@@ -72,7 +72,7 @@
                                     <i class="bi bi-lightbulb me-2"></i>
                                     <strong>Note:</strong> Properties with completed transactions or status marked as "Sold" or "Rented" 
                                     cannot be deleted due to data integrity. For these properties, please 
-                                    <a href="@Url.Action("ViewPropertyList")" class="fw-bold text-warning text-decoration-underline">
+                                    <a href="@Url.Action("PropertyList")" class="fw-bold text-warning text-decoration-underline">
                                     return to property list</a> and use the Deactivate option instead.
                                 </p>
                             </div>
@@ -145,9 +145,9 @@
                         </div>
                     </div>
 
-                    <form method="post" asp-action="Delete" asp-controller="Property" asp-area="Admin" asp-route-id="@Model.Id" class="d-flex justify-content-end gap-3">
+                    <form method="post" asp-action="Delete" asp-controller="Property" asp-area="Agent" asp-route-id="@Model.Id" class="d-flex justify-content-end gap-3">
                         @Html.AntiForgeryToken()
-                        <a asp-action="ViewPropertyList" class="btn btn-light btn-lg px-4">
+                        <a asp-action="PropertyList" class="btn btn-light btn-lg px-4">
                             <i class="bi bi-x-lg me-2"></i>Cancel
                         </a>
                         <button type="submit" class="btn btn-danger btn-lg px-4">

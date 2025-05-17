@@ -59,7 +59,7 @@ namespace EstateEase.Areas.Admin.Controllers
                     payments.Add(new PaymentViewModel
                     {
                         Id = int.Parse(transaction.Id.Substring(0, Math.Min(8, transaction.Id.Length)), System.Globalization.NumberStyles.HexNumber),
-                        PropertyId = int.Parse(transaction.PropertyId.Substring(0, Math.Min(8, transaction.PropertyId.Length)), System.Globalization.NumberStyles.HexNumber),
+                        PropertyId = transaction.PropertyId,
                         PropertyTitle = transaction.Property?.Title ?? "Unknown Property",
                         PropertyAddress = transaction.Property?.Address ?? "Unknown Address",
                         PropertyImageUrl = propertyImage?.ImagePath ?? "/images/property-placeholder.jpg",
@@ -126,7 +126,7 @@ namespace EstateEase.Areas.Admin.Controllers
                 var payment = new PaymentViewModel
                 {
                     Id = id,
-                    PropertyId = int.Parse(transaction.PropertyId.Substring(0, Math.Min(8, transaction.PropertyId.Length)), System.Globalization.NumberStyles.HexNumber),
+                    PropertyId = transaction.PropertyId,
                     PropertyTitle = transaction.Property?.Title ?? "Unknown Property",
                     PropertyAddress = transaction.Property?.Address ?? "Unknown Address",
                     PropertyImageUrl = propertyImage?.ImagePath ?? "/images/property-placeholder.jpg",

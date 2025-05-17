@@ -1,0 +1,297 @@
+@model IEnumerable<EstateEase.Models.ViewModels.PaymentViewModel>
+@{
+    ViewData["Title"] = "Payment History";
+    Layout = "_UserLayout";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1 fw-bold">Payment History</h4>
+                    <p class="text-muted">View your property transaction payments and payment history</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm rounded-4 border-0" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-circle-fill fs-5 me-2"></i>
+                <strong>@TempData["Error"]</strong>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show shadow-sm rounded-4 border-0" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle-fill fs-5 me-2"></i>
+                <strong>@TempData["Warning"]</strong>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Transaction Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 fade-in">
+                <div class="card-header gradient-primary text-white p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">My Transactions</h5>
+                        <div class="search-container">
+                            <div class="input-group search-group">
+                                <span class="input-group-text bg-transparent border-0 text-white"><i class="bi bi-search"></i></span>
+                                <input type="text" id="paymentSearch" class="form-control bg-transparent border-0 text-white" placeholder="Search transactions...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table id="paymentTable" class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Property</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th style="width: 100px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    @foreach (var payment in Model)
+                                    {
+                                        string typeClass = payment.TransactionType == "Sale" ? "badge bg-success-subtle text-success" :
+                                            payment.TransactionType == "Rent" || payment.TransactionType == "Rental" ? "badge bg-info-subtle text-info" :
+                                            payment.TransactionType == "Purchase" ? "badge bg-success-subtle text-success" :
+                                            "badge bg-secondary-subtle text-secondary";
+                                        
+                                        string statusClass = payment.Status == "Completed" ? "badge bg-success-subtle text-success" :
+                                            payment.Status == "Pending" ? "badge bg-warning-subtle text-warning" :
+                                            payment.Status == "Failed" ? "badge bg-danger-subtle text-danger" :
+                                            "badge bg-secondary-subtle text-secondary";
+                                        
+                                        <tr>
+                                            <td><span class="text-primary fw-semibold">#@payment.Id</span></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-property me-3">
+                                                        <img src="@(string.IsNullOrEmpty(payment.PropertyImageUrl) ? "/images/property-placeholder.jpg" : payment.PropertyImageUrl)" 
+                                                            alt="Property" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-1 fw-semibold text-truncate" style="max-width: 200px;">@payment.PropertyTitle</h6>
+                                                        <p class="text-muted small mb-0 text-truncate" style="max-width: 200px;">@payment.PropertyAddress</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><span class="@typeClass">@payment.TransactionType</span></td>
+                                            <td class="fw-semibold">₱@payment.Amount.ToString("#,##0.00")</td>
+                                            <td><span class="@statusClass">@payment.Status</span></td>
+                                            <td>@payment.TransactionDate.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <a asp-area="User" asp-controller="Payments" asp-action="Details" asp-route-id="@payment.Id" class="btn btn-sm btn-light rounded-circle" title="View Details">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                    @if (payment.Status == "Completed")
+                                                    {
+                                                        <a asp-area="User" asp-controller="Payments" asp-action="Download" asp-route-id="@payment.Id" class="btn btn-sm btn-primary rounded-circle" title="Download Receipt">
+                                                            <i class="bi bi-download"></i>
+                                                        </a>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center py-5">
+                                            <div class="d-flex flex-column align-items-center">
+                                                <div class="mb-3">
+                                                    <i class="bi bi-receipt fs-1 text-muted"></i>
+                                                </div>
+                                                <h5 class="fw-bold">No Payment Records Found</h5>
+                                                <p class="text-muted col-md-6 mx-auto mb-4">
+                                                    You don't have any payment records yet. When you purchase or rent a property, 
+                                                    your payment history will appear here.
+                                                </p>
+                                                <a asp-controller="Property" asp-area="" asp-action="Index" class="btn btn-primary">
+                                                    <i class="bi bi-house me-2"></i> Browse Properties
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Gradient colors */
+        .gradient-primary {
+            background: linear-gradient(135deg, #2937f0 0%, #9f1ae2 100%);
+        }
+        
+        .gradient-success {
+            background: linear-gradient(135deg, #0cbc87 0%, #09845f 100%);
+        }
+        
+        .gradient-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #0f798c 100%);
+        }
+        
+        .gradient-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        }
+        
+        /* Card styling */
+        .card {
+            overflow: hidden;
+            border-radius: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .card-header {
+            border-bottom: 0;
+        }
+        
+        .rounded-4 {
+            border-radius: 16px !important;
+        }
+        
+        /* Search styling */
+        .search-container {
+            max-width: 250px;
+        }
+        
+        .search-group {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+        }
+        
+        .search-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .search-group input:focus {
+            box-shadow: none;
+        }
+        
+        /* Avatar styling */
+        .avatar-property {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+        
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .action-buttons .btn {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+        
+        /* Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Badge styling */
+        .badge {
+            padding: 0.5em 1em;
+            font-weight: 500;
+            border-radius: 50px;
+        }
+        
+        /* Customize scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 8px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 8px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Animation first
+            $('.fade-in').addClass('show');
+            
+            // Use local search instead of DataTables to avoid jQuery conflicts
+            $('#paymentSearch').on('keyup', function() {
+                var value = $(this).val().toLowerCase();
+                $("#paymentTable tbody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+} 

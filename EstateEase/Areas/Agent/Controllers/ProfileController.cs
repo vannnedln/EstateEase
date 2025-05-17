@@ -88,26 +88,50 @@ namespace EstateEase.Areas.Agent.Controllers
         {
             if (!ModelState.IsValid)
             {
+                // Repopulate statistics for the view
+                var user = await _userManager.GetUserAsync(User);
+                var agent = await _context.Agents.FirstOrDefaultAsync(a => a.UserId == user.Id);
+                
+                if (agent != null)
+                {
+                    var totalProperties = await _context.Properties
+                        .Where(p => p.AgentId == agent.Id)
+                        .CountAsync();
+
+                    var soldProperties = await _context.Properties
+                        .Where(p => p.AgentId == agent.Id && p.Status == "Sold")
+                        .CountAsync();
+
+                    var rentalProperties = await _context.Properties
+                        .Where(p => p.AgentId == agent.Id && p.SellingType == "Rent")
+                        .CountAsync();
+                        
+                    model.TotalProperties = totalProperties;
+                    model.SoldProperties = soldProperties;
+                    model.RentalProperties = rentalProperties;
+                    model.ProfilePictureUrl = agent.ProfilePictureUrl ?? "/images/avatar-01.png";
+                }
+                
                 return View(model);
             }
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
             {
                 return NotFound();
             }
 
-            var agent = await _context.Agents
-                .FirstOrDefaultAsync(a => a.UserId == user.Id);
+            var currentAgent = await _context.Agents
+                .FirstOrDefaultAsync(a => a.UserId == currentUser.Id);
 
-            if (agent == null)
+            if (currentAgent == null)
             {
                 return NotFound();
             }
 
             // Update user's phone number
-            user.PhoneNumber = model.PhoneNumber;
-            var userResult = await _userManager.UpdateAsync(user);
+            currentUser.PhoneNumber = model.PhoneNumber;
+            var userResult = await _userManager.UpdateAsync(currentUser);
             if (!userResult.Succeeded)
             {
                 foreach (var error in userResult.Errors)
@@ -126,8 +150,8 @@ namespace EstateEase.Areas.Agent.Controllers
                     return View(model);
                 }
 
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var passwordResult = await _userManager.ResetPasswordAsync(user, token, model.Password);
+                var token = await _userManager.GeneratePasswordResetTokenAsync(currentUser);
+                var passwordResult = await _userManager.ResetPasswordAsync(currentUser, token, model.Password);
                 if (!passwordResult.Succeeded)
                 {
                     foreach (var error in passwordResult.Errors)
@@ -139,8 +163,28 @@ namespace EstateEase.Areas.Agent.Controllers
             }
 
             // Handle profile picture upload
-            if (model.ProfilePicture != null)
+            if (model.ProfilePicture != null && model.ProfilePicture.Length > 0)
             {
+                // Delete old profile picture if it exists and is not the default
+                if (!string.IsNullOrEmpty(currentAgent.ProfilePictureUrl) && 
+                    !currentAgent.ProfilePictureUrl.Contains("avatar-01.png"))
+                {
+                    var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, 
+                        currentAgent.ProfilePictureUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                    
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        try
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                        catch (Exception)
+                        {
+                            // Log the error but continue
+                        }
+                    }
+                }
+
                 string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "agents");
                 if (!Directory.Exists(uploadsFolder))
                 {
@@ -148,7 +192,7 @@ namespace EstateEase.Areas.Agent.Controllers
                 }
 
                 // Generate unique filename
-                string uniqueFileName = $"{Guid.NewGuid()}_{model.ProfilePicture.FileName}";
+                string uniqueFileName = $"{currentUser.Id}_{Guid.NewGuid()}{Path.GetExtension(model.ProfilePicture.FileName)}";
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                 // Save the file
@@ -158,21 +202,21 @@ namespace EstateEase.Areas.Agent.Controllers
                 }
 
                 // Update the profile picture URL
-                agent.ProfilePictureUrl = $"/uploads/agents/{uniqueFileName}";
+                currentAgent.ProfilePictureUrl = $"/uploads/agents/{uniqueFileName}";
             }
 
             // Update agent profile
-            agent.FirstName = model.FirstName;
-            agent.LastName = model.LastName;
-            agent.AddressLine1 = model.AddressLine1;
-            agent.Barangay = model.Barangay;
-            agent.City = model.City;
-            agent.PostalCode = model.PostalCode;
-            agent.Country = model.Country;
-            agent.LicenseNumber = model.LicenseNumber;
-            agent.Bio = model.Bio;
+            currentAgent.FirstName = model.FirstName;
+            currentAgent.LastName = model.LastName;
+            currentAgent.AddressLine1 = model.AddressLine1;
+            currentAgent.Barangay = model.Barangay;
+            currentAgent.City = model.City;
+            currentAgent.PostalCode = model.PostalCode;
+            currentAgent.Country = model.Country;
+            currentAgent.LicenseNumber = model.LicenseNumber;
+            currentAgent.Bio = model.Bio;
 
-            _context.Agents.Update(agent);
+            _context.Agents.Update(currentAgent);
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Profile updated successfully";

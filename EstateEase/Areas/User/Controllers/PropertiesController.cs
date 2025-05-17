@@ -27,11 +27,14 @@ namespace EstateEase.Areas.User.Controllers
         public async Task<IActionResult> Index(string ownershipFilter = "All")
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            // Fix any UserProperty records with missing OwnershipType values
+            await FixUserPropertyRecords(userId);
 
             var query = _context.UserProperties
                 .Include(p => p.Property)
                 .ThenInclude(p => p.PropertyImages)
-                .Where(p => p.UserId == userId);
+                .Where(p => EF.Functions.Collate(p.UserId, "SQL_Latin1_General_CP1_CI_AS") == userId);
 
             // Apply filter if needed
             if (ownershipFilter != "All")
@@ -83,7 +86,7 @@ namespace EstateEase.Areas.User.Controllers
             var userProperty = await _context.UserProperties
                 .Include(p => p.Property)
                 .ThenInclude(p => p.PropertyImages)
-                .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+                .FirstOrDefaultAsync(p => p.Id == id && EF.Functions.Collate(p.UserId, "SQL_Latin1_General_CP1_CI_AS") == userId);
 
             if (userProperty == null)
             {
@@ -116,17 +119,58 @@ namespace EstateEase.Areas.User.Controllers
                 HasSecurity = userProperty.Property.HasSecurity,
                 HasElevator = userProperty.Property.HasElevator,
                 HasCCTV = userProperty.Property.HasCCTV,
-                Images = userProperty.Property.PropertyImages
-                    .Select(i => new UserPropertyImageViewModel
-                    {
-                        Id = i.Id,
-                        ImagePath = i.ImagePath,
-                        ImageType = i.ImageType
-                    })
-                    .ToList()
+                Images = userProperty.Property.PropertyImages.Select(i => new UserPropertyImageViewModel
+                {
+                    Id = i.Id,
+                    ImagePath = i.ImagePath,
+                    ImageType = i.ImageType
+                }).ToList()
             };
 
             return View(viewModel);
+        }
+        
+        // Helper method to fix UserProperty records with missing OwnershipType values
+        private async Task FixUserPropertyRecords(string userId)
+        {
+            var userProperties = await _context.UserProperties
+                .Where(p => EF.Functions.Collate(p.UserId, "SQL_Latin1_General_CP1_CI_AS") == userId && (p.OwnershipType == null || p.OwnershipType == ""))
+                .ToListAsync();
+
+            foreach (var property in userProperties)
+            {
+                // Set OwnershipType based on RelationshipType
+                if (property.RelationshipType == "Owner")
+                {
+                    property.OwnershipType = "Bought";
+                }
+                else if (property.RelationshipType == "Renter")
+                {
+                    property.OwnershipType = "Rented";
+                }
+                else
+                {
+                    // Default to "Bought" if RelationshipType is also missing
+                    property.OwnershipType = "Bought";
+                }
+
+                // Set AcquisitionDate if missing
+                if (property.AcquisitionDate == default)
+                {
+                    property.AcquisitionDate = property.CreatedAt;
+                }
+
+                // Set ExpiryDate for rentals if missing
+                if (property.OwnershipType == "Rented" && property.ExpiryDate == null)
+                {
+                    property.ExpiryDate = property.CreatedAt.AddMonths(12);
+                }
+            }
+
+            if (userProperties.Any())
+            {
+                await _context.SaveChangesAsync();
+            }
         }
     }
 } 

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EstateEase.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250514073206_aldreieiei")]
-    partial class aldreieiei
+    [Migration("20250515182645_final")]
+    partial class final
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

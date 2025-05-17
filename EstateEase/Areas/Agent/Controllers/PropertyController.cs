@@ -1033,6 +1033,58 @@ namespace EstateEase.Areas.Agent.Controllers
                     TempData["Error"] = "You do not have permission to delete this property.";
                     return RedirectToAction(nameof(PropertyList));
                 }
+                
+                // Check if property has dependencies
+                if (property.Status == "Sold" || property.Status == "Rented")
+                {
+                    TempData["Error"] = $"Cannot delete property with status '{property.Status}'. Use the deactivate option instead.";
+                    return RedirectToAction(nameof(PropertyList));
+                }
+
+                // Check if property has completed transactions
+                bool hasCompletedTransactions = await _context.Transactions
+                    .AnyAsync(t => t.PropertyId == id && t.Status == "Completed");
+
+                if (hasCompletedTransactions)
+                {
+                    TempData["Error"] = "Cannot delete property with completed transactions. Use the deactivate option instead.";
+                    return RedirectToAction(nameof(PropertyList));
+                }
+                
+                // First, delete any non-completed transactions for this property
+                var nonCompletedTransactions = await _context.Transactions
+                    .Where(t => t.PropertyId == id && t.Status != "Completed")
+                    .ToListAsync();
+                    
+                if (nonCompletedTransactions.Any())
+                {
+                    _context.Transactions.RemoveRange(nonCompletedTransactions);
+                    await _context.SaveChangesAsync();
+                }
+
+                // Delete associated inquiries to avoid foreign key constraint violation
+                var inquiries = await _context.Inquiries
+                    .Where(i => i.PropertyId == id)
+                    .ToListAsync();
+                    
+                if (inquiries.Any())
+                {
+                    // First, delete all inquiry messages for these inquiries
+                    var inquiryIds = inquiries.Select(i => i.Id).ToList();
+                    var inquiryMessages = await _context.InquiryMessages
+                        .Where(m => inquiryIds.Contains(m.InquiryId))
+                        .ToListAsync();
+                        
+                    if (inquiryMessages.Any())
+                    {
+                        _context.InquiryMessages.RemoveRange(inquiryMessages);
+                        await _context.SaveChangesAsync();
+                    }
+                    
+                    // Now delete the inquiries
+                    _context.Inquiries.RemoveRange(inquiries);
+                    await _context.SaveChangesAsync();
+                }
 
                 // Delete all associated images from file system
                 int imagesDeleted = 0;
@@ -1087,7 +1139,141 @@ namespace EstateEase.Areas.Agent.Controllers
             }
         }
 
+        // GET: Agent/Property/Delete/5
+        public async Task<IActionResult> DeleteConfirmation(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            var property = await _context.Properties
+                .Include(p => p.PropertyImages)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (property == null)
+            {
+                TempData["Error"] = "Property not found";
+                return RedirectToAction(nameof(PropertyList));
+            }
+
+            // Ensure the property belongs to the current agent
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var agent = await _context.Agents.FirstOrDefaultAsync(a => a.UserId == userId);
+            
+            if (agent == null || property.AgentId != agent.Id)
+            {
+                TempData["Error"] = "You do not have permission to delete this property.";
+                return RedirectToAction(nameof(PropertyList));
+            }
+
+            // Check if property has dependencies
+            if (property.Status == "Sold" || property.Status == "Rented")
+            {
+                TempData["Error"] = $"Cannot delete property with status '{property.Status}'. Use the deactivate option instead.";
+                return RedirectToAction(nameof(PropertyList));
+            }
+
+            // Check if property has completed transactions
+            bool hasCompletedTransactions = await _context.Transactions
+                .AnyAsync(t => t.PropertyId == id && t.Status == "Completed");
+
+            if (hasCompletedTransactions)
+            {
+                TempData["Error"] = "Cannot delete property with completed transactions. Use the deactivate option instead.";
+                return RedirectToAction(nameof(PropertyList));
+            }
+            
+            // Check for any non-completed transactions
+            var nonCompletedTransactionsCount = await _context.Transactions
+                .CountAsync(t => t.PropertyId == id && t.Status != "Completed");
+                
+            ViewBag.HasNonCompletedTransactions = nonCompletedTransactionsCount > 0;
+            ViewBag.NonCompletedTransactionsCount = nonCompletedTransactionsCount;
+            
+            // Check for any associated inquiries
+            var inquiriesCount = await _context.Inquiries
+                .CountAsync(i => i.PropertyId == id);
+                
+            ViewBag.HasInquiries = inquiriesCount > 0;
+            ViewBag.InquiriesCount = inquiriesCount;
+
+            // Property can be deleted, show the confirmation view
+            ViewBag.HasDependencies = false;
+            return View(property);
+        }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request)
+        {
+            if (string.IsNullOrEmpty(request.PropertyId) || string.IsNullOrEmpty(request.Status))
+            {
+                return Json(new { success = false, message = "Invalid request data" });
+            }
+
+            try
+            {
+                var property = await _context.Properties.FindAsync(request.PropertyId);
+                
+                if (property == null)
+                {
+                    return Json(new { success = false, message = "Property not found" });
+                }
+                
+                // Ensure the property belongs to the current agent
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var agent = await _context.Agents.FirstOrDefaultAsync(a => a.UserId == userId);
+                
+                if (agent == null || property.AgentId != agent.Id)
+                {
+                    return Json(new { success = false, message = "You do not have permission to update this property." });
+                }
+                
+                // Check if the property has any active transactions that would prevent status change
+                if (request.Status == "Inactive")
+                {
+                    var hasActiveTransactions = await _context.Transactions
+                        .AnyAsync(t => t.PropertyId == request.PropertyId && 
+                                     (t.Status == "Pending" || t.Status == "Processing"));
+                                     
+                    if (hasActiveTransactions)
+                    {
+                        return Json(new { 
+                            success = false, 
+                            message = "Cannot deactivate property with pending transactions" 
+                        });
+                    }
+                }
+                
+                // Update the property status
+                property.Status = request.Status;
+                property.UpdatedAt = DateTime.Now;
+                
+                await _context.SaveChangesAsync();
+                
+                return Json(new { 
+                    success = true, 
+                    message = $"Property status updated to {request.Status}" 
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { 
+                    success = false, 
+                    message = $"An error occurred: {ex.Message}" 
+                });
+            }
+        }
+        
+        public class UpdateStatusRequest
+        {
+            public string PropertyId { get; set; }
+            public string Status { get; set; }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteImage([FromBody] DeleteImageRequest request)
         {
             if (string.IsNullOrEmpty(request.ImageId))

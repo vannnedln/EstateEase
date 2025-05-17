@@ -88,16 +88,7 @@
                                                 </div>
                                             </td>
                                             <td>@payment.TransactionDate.ToString("MMM dd, yyyy")</td>
-                                            <td>
-                                                <div class="action-buttons">
-                                                    <a asp-action="Details" asp-route-id="@payment.Id" class="btn btn-sm btn-light rounded-circle" title="View Details">
-                                                        <i class="bi bi-eye"></i>
-                                                    </a>
-                                                    <a asp-action="Download" asp-route-id="@payment.Id" class="btn btn-sm btn-primary rounded-circle" title="Download Invoice">
-                                                        <i class="bi bi-download"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
+                                            
                                         </tr>
                                     }
                                 }

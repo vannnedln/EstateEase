@@ -1,0 +1,86 @@
+@using EstateEase.Models.Entities
+@{
+    ViewData["Title"] = "Check User Properties";
+    Layout = "_Layout";
+    
+    var userProperties = ViewBag.UserProperties as List<EstateEase.Models.Entities.UserProperty>;
+    var ownedCount = ViewBag.OwnedCount ?? 0;
+    var rentedCount = ViewBag.RentedCount ?? 0;
+    var missingOwnershipCount = ViewBag.MissingOwnershipCount ?? 0;
+    var userId = ViewBag.UserId;
+}
+
+<div class="container py-4">
+    <h1 class="mb-4">User Properties Test</h1>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>User Information</h5>
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item">User ID: <strong>@userId</strong></li>
+                @if (TempData["DebugUserIdOriginalCase"] != null)
+                {
+                    <li class="list-group-item">User ID (Original Case): <strong>@TempData["DebugUserIdOriginalCase"]</strong></li>
+                }
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-md-4">Owned Properties: <span class="badge bg-success">@ownedCount</span></div>
+                        <div class="col-md-4">Rented Properties: <span class="badge bg-primary">@rentedCount</span></div>
+                        <div class="col-md-4">Missing Ownership: <span class="badge bg-warning">@missingOwnershipCount</span></div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Properties List</h5>
+        </div>
+        <div class="card-body">
+            @if (userProperties != null && userProperties.Any())
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Property ID</th>
+                            <th>Title</th>
+                            <th>User ID</th>
+                            <th>Ownership Type</th>
+                            <th>Relationship Type</th>
+                            <th>Acquisition Date</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var property in userProperties)
+                        {
+                            <tr>
+                                <td>@property.PropertyId</td>
+                                <td>@(property.Property?.Title ?? "N/A")</td>
+                                <td>@property.UserId</td>
+                                <td>@(string.IsNullOrEmpty(property.OwnershipType) ? "Missing" : property.OwnershipType)</td>
+                                <td>@(string.IsNullOrEmpty(property.RelationshipType) ? "Missing" : property.RelationshipType)</td>
+                                <td>@property.AcquisitionDate.ToString("yyyy-MM-dd")</td>
+                                <td>@property.CreatedAt.ToString("yyyy-MM-dd")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    No properties found for this user.
+                </div>
+            }
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="@Url.Action("CreateTestProperty", "Test")" class="btn btn-primary">Create Test Properties</a>
+        <a href="@Url.Action("Index", "Dashboard", new { area = "User" })" class="btn btn-secondary">Go to Dashboard</a>
+    </div>
+</div> 

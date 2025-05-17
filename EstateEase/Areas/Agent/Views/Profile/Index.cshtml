@@ -39,8 +39,6 @@
                             <label for="profilePicture" class="btn btn-sm btn-light rounded-circle p-2 cursor-pointer">
                                 <i class="bi bi-pencil"></i>
                             </label>
-                            <input type="file" id="profilePicture" name="ProfilePicture" accept="image/*" class="d-none" 
-                                   onchange="previewImage(this)">
                         </div>
                     </div>
                     <h5 class="fw-bold mb-1 text-white">@($"{Model.FirstName} {Model.LastName}")</h5>
@@ -135,7 +133,9 @@
                     <h5 class="mb-0 fw-bold">Edit Profile Information</h5>
                 </div>
                 <div class="card-body p-4">
-                    <form asp-action="Index" method="post" enctype="multipart/form-data">
+                    <form asp-action="Index" method="post" enctype="multipart/form-data" id="profileForm">
+                        <input type="hidden" asp-for="Email" value="@Model.Email" />
+                        <input type="file" id="profilePicture" name="ProfilePicture" accept="image/*" style="display:none;" onchange="previewImage(this)">
                         <div class="row g-4">
                             <!-- Personal Information Section -->
                             <div class="col-12">
@@ -148,27 +148,27 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="FirstName" class="form-control rounded-3" placeholder="Enter first name" />
+                                            <input asp-for="FirstName" class="form-control rounded-3 filled" value="@Model.FirstName" placeholder="Enter first name" />
                                             <label asp-for="FirstName">First Name</label>
                                             <span asp-validation-for="FirstName" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="LastName" class="form-control rounded-3" placeholder="Enter last name" />
+                                            <input asp-for="LastName" class="form-control rounded-3 filled" value="@Model.LastName" placeholder="Enter last name" />
                                             <label asp-for="LastName">Last Name</label>
                                             <span asp-validation-for="LastName" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="Email" class="form-control rounded-3" placeholder="Enter email" readonly />
+                                            <input asp-for="Email" class="form-control rounded-3 filled" value="@Model.Email" placeholder="Enter email" readonly />
                                             <label asp-for="Email">Email</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="PhoneNumber" class="form-control rounded-3" placeholder="Enter phone number" />
+                                            <input asp-for="PhoneNumber" class="form-control rounded-3 filled" value="@Model.PhoneNumber" placeholder="Enter phone number" />
                                             <label asp-for="PhoneNumber">Phone Number</label>
                                             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                                         </div>
@@ -187,35 +187,35 @@
                                 <div class="row g-3">
                                     <div class="col-12">
                                         <div class="form-floating">
-                                            <input asp-for="AddressLine1" class="form-control rounded-3" placeholder="Enter street address" />
+                                            <input asp-for="AddressLine1" class="form-control rounded-3 filled" value="@Model.AddressLine1" placeholder="Enter street address" />
                                             <label asp-for="AddressLine1">Street Address</label>
                                             <span asp-validation-for="AddressLine1" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="Barangay" class="form-control rounded-3" placeholder="Enter barangay" />
+                                            <input asp-for="Barangay" class="form-control rounded-3 filled" value="@Model.Barangay" placeholder="Enter barangay" />
                                             <label asp-for="Barangay">Barangay</label>
                                             <span asp-validation-for="Barangay" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="City" class="form-control rounded-3" placeholder="Enter city" />
+                                            <input asp-for="City" class="form-control rounded-3 filled" value="@Model.City" placeholder="Enter city" />
                                             <label asp-for="City">City</label>
                                             <span asp-validation-for="City" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="PostalCode" class="form-control rounded-3" placeholder="Enter postal code" />
+                                            <input asp-for="PostalCode" class="form-control rounded-3 filled" value="@Model.PostalCode" placeholder="Enter postal code" />
                                             <label asp-for="PostalCode">Postal Code</label>
                                             <span asp-validation-for="PostalCode" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="Country" class="form-control rounded-3" placeholder="Enter country" value="Philippines" />
+                                            <input asp-for="Country" class="form-control rounded-3 filled" value="@(string.IsNullOrEmpty(Model.Country) ? "Philippines" : Model.Country)" placeholder="Enter country" />
                                             <label asp-for="Country">Country</label>
                                             <span asp-validation-for="Country" class="text-danger"></span>
                                         </div>
@@ -234,7 +234,7 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input asp-for="LicenseNumber" class="form-control rounded-3" placeholder="Enter license number" />
+                                            <input asp-for="LicenseNumber" class="form-control rounded-3 filled" value="@Model.LicenseNumber" placeholder="Enter license number" />
                                             <label asp-for="LicenseNumber">License Number</label>
                                             <span asp-validation-for="LicenseNumber" class="text-danger"></span>
                                         </div>
@@ -251,7 +251,7 @@
                                     <h6 class="fw-bold mb-0">Bio Information</h6>
                                 </div>
                                 <div class="form-floating">
-                                    <textarea asp-for="Bio" class="form-control rounded-3" style="height: 120px" placeholder="Enter your bio"></textarea>
+                                    <textarea asp-for="Bio" class="form-control rounded-3 filled" style="height: 120px" placeholder="Enter your bio">@Model.Bio</textarea>
                                     <label asp-for="Bio">Bio</label>
                                     <span asp-validation-for="Bio" class="text-danger"></span>
                                 </div>
@@ -369,6 +369,7 @@
         .form-floating > .form-control-plaintext ~ label,
         .form-floating > .form-control:focus ~ label,
         .form-floating > .form-control:not(:placeholder-shown) ~ label,
+        .form-floating > .form-control.filled ~ label,
         .form-floating > .form-select ~ label {
             color: rgba(41, 55, 240, 0.85);
             transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
@@ -444,6 +445,14 @@
                     element.classList.add('show');
                 });
             }, 100);
+            
+            // Ensure form values are populated and labels are positioned correctly
+            const formElements = document.querySelectorAll('form input, form textarea');
+            formElements.forEach(el => {
+                if (el.value && el.value.trim() !== '') {
+                    el.classList.add('filled');
+                }
+            });
         });
 
         function previewImage(input) {
@@ -451,7 +460,8 @@
                 var reader = new FileReader();
                 
                 reader.onload = function(e) {
-                    $(input).closest('.profile-image-container').find('img').attr('src', e.target.result);
+                    document.querySelector('.profile-image').src = e.target.result;
+                    
                     const toast = new bootstrap.Toast(document.getElementById('uploadToast'));
                     toast.show();
                 }

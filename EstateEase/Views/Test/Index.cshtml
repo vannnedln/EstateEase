@@ -20,18 +20,51 @@
                     <span class="badge bg-primary rounded-pill">@ViewBag.Agents</span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    UserProperties
+                    User Properties
                     <span class="badge bg-primary rounded-pill">@ViewBag.UserProperties</span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Appointments
-                    <span class="badge bg-primary rounded-pill">@ViewBag.Appointments</span>
+                    Transactions
+                    <span class="badge bg-primary rounded-pill">@ViewBag.Transactions</span>
                 </li>
             </ul>
         </div>
     </div>
     
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Test Actions</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header bg-success text-white">
+                            <h6 class="mb-0">Property Tests</h6>
+                        </div>
+                        <div class="card-body">
+                            <a href="@Url.Action("CreateTestProperty", "Test")" class="btn btn-success mb-2 w-100">Create Test Properties</a>
+                            <a href="@Url.Action("CheckUserProperties", "Test")" class="btn btn-outline-success mb-2 w-100">Check User Properties</a>
+                            <a href="@Url.Action("CheckAllUserProperties", "Test")" class="btn btn-outline-success w-100">Check All User Properties</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">Transaction Tests</h6>
+                        </div>
+                        <div class="card-body">
+                            <a href="@Url.Action("CheckAllTransactions", "Test")" class="btn btn-info w-100">Check All Transactions</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <div class="mt-4">
-        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Back to Home</a>
+        <a href="@Url.Action("Index", "Dashboard", new { area = "User" })" class="btn btn-primary">Go to Dashboard</a>
+        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Go to Home</a>
     </div>
 </div> 

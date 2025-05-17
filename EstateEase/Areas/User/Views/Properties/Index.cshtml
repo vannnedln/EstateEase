@@ -11,7 +11,7 @@
             <p class="text-muted">Manage and view all your real estate assets in one place</p>
         </div>
         <div class="col-md-4 text-md-end">
-            <a href="#" class="btn btn-primary rounded-pill">
+            <a href="@Url.Action("Properties", "Home", new { area = "" })" class="btn btn-primary rounded-pill">
                 <i class="bi bi-search me-2"></i> Browse New Properties
             </a>
         </div>
@@ -107,9 +107,7 @@
                                       style="background: linear-gradient(45deg, @(property.OwnershipType == "Bought" ? "#f59e0b, #f97316" : "#4f5aff, #9f1ae2"));">
                                     @(property.OwnershipType == "Bought" ? "Owned" : "Rented")
                                 </span>
-                                <button class="btn btn-sm btn-light rounded-circle shadow-sm" data-bs-toggle="tooltip" title="Add to favorites">
-                                    <i class="bi bi-heart"></i>
-                                </button>
+                               
                             </div>
                         </div>
                         <div class="p-4">
@@ -160,18 +158,129 @@
                             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                 <div class="fw-semibold fs-5" style="color: var(--primary);">₱@property.Price.ToString("N0")</div>
                                 <div class="btn-group">
-                                    <a asp-action="Details" asp-route-id="@property.Id" class="btn btn-primary">
+                                    <button class="btn btn-primary" onclick="window.location='/Property/Details/@property.PropertyId'">
                                         <i class="bi bi-eye me-1"></i> Details
-                                    </a>
-                                    <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span class="visually-hidden">Toggle Dropdown</span>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item" href="#"><i class="bi bi-pencil me-2"></i>Edit</a></li>
-                                        <li><a class="dropdown-item" href="#"><i class="bi bi-calendar-check me-2"></i>Schedule Visit</a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>Remove</a></li>
-                                    </ul>
+                                    @if (property.OwnershipType == "Rented")
+                                    {
+                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#payRentModal-@property.PropertyId">
+                                            <i class="bi bi-credit-card me-1"></i> Pay Rent
+                                        </button>
+                                        
+                                        <!-- Pay Rent Modal -->
+                                        <div class="modal fade" id="payRentModal-@property.PropertyId" tabindex="-1" aria-labelledby="payRentModalLabel-@property.PropertyId" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content rounded-4 shadow">
+                                                    <div class="modal-header border-0">
+                                                        <h5 class="modal-title fw-bold" id="payRentModalLabel-@property.PropertyId">
+                                                            Pay Rent for @property.Title
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="alert alert-info rounded-3">
+                                                            <div class="d-flex">
+                                                                <div class="me-3">
+                                                                    <i class="bi bi-house-check fs-3"></i>
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="fw-bold mb-1">Rental Information</h6>
+                                                                    <p class="mb-0">
+                                                                        <span>Monthly payment: <strong>₱@property.Price.ToString("N0")</strong></span>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <form method="post" action="@Url.Action("CreateRentCheckout", "Payment", new { area = "" })">
+                                                            <input type="hidden" name="propertyId" value="@property.PropertyId" />
+                                                            
+                                                            <div class="mb-4">
+                                                                <label class="form-label fw-medium">Rental Duration</label>
+                                                                <select class="form-select rounded-3 mb-2" name="rentalDuration" id="rentalDuration-@property.PropertyId" 
+                                                                        onchange="updateTotalPayment('@property.PropertyId', @property.Price)">
+                                                                    <option value="1">1 month</option>
+                                                                    <option value="3">3 months</option>
+                                                                    <option value="6">6 months</option>
+                                                                    <option value="12" selected>12 months (1 year)</option>
+                                                                    <option value="24">24 months (2 years)</option>
+                                                                    <option value="36">36 months (3 years)</option>
+                                                                    <option value="custom">Custom end date</option>
+                                                                </select>
+                                                                
+                                                                <div id="customDateContainer-@property.PropertyId" class="mt-3" style="display: none;">
+                                                                    <label class="form-label fw-medium">Select end date</label>
+                                                                    <input type="date" id="customEndDate-@property.PropertyId" name="customEndDate" class="form-control rounded-3" 
+                                                                           min="@DateTime.Now.AddMonths(1).ToString("yyyy-MM-dd")" />
+                                                                    <small class="text-muted">Minimum rental period is 1 month</small>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="mb-4">
+                                                                <label for="notes-@property.PropertyId" class="form-label fw-medium">Additional Information</label>
+                                                                <textarea class="form-control rounded-3" id="notes-@property.PropertyId" name="notes" rows="2" 
+                                                                          placeholder="Special requirements, etc."></textarea>
+                                                            </div>
+                                                            
+                                                            <div class="mb-4">
+                                                                <div class="alert alert-light rounded-3">
+                                                                    <div class="d-flex">
+                                                                        <div class="me-3">
+                                                                            <i class="bi bi-info-circle fs-3"></i>
+                                                                        </div>
+                                                                        <div>
+                                                                            <h6 class="fw-bold mb-1">Payment Information</h6>
+                                                                            <p class="mb-2">
+                                                                                Monthly Rent: <strong>₱@property.Price.ToString("N0")</strong>
+                                                                            </p>
+                                                                            <p class="mb-2">
+                                                                                Duration: <strong id="durationText-@property.PropertyId">12 months</strong>
+                                                                            </p>
+                                                                            <p class="mb-2">
+                                                                                Total Payment: <strong id="totalPayment-@property.PropertyId">₱@((property.Price * 12).ToString("N0"))</strong>
+                                                                            </p>
+                                                                            <p class="mb-0 small">
+                                                                                By proceeding, you'll be redirected to our secure payment provider PayMongo to complete your transaction.
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="text-end">
+                                                                <button type="button" class="btn btn-outline-secondary rounded-3 px-4 py-2" data-bs-dismiss="modal">Cancel</button>
+                                                                <button type="submit" class="btn btn-success rounded-3 px-4 py-2">
+                                                                    <i class="bi bi-credit-card me-1"></i> Proceed with Payment
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        @if (property.ExpiryDate.HasValue)
+                                        {
+                                            var daysRemaining = (property.ExpiryDate.Value - DateTime.Now).TotalDays;
+                                            
+                                            @if (daysRemaining <= 30)
+                                            {
+                                                <div class="w-100 mt-2">
+                                                    <div class="alert alert-warning py-2 px-3 mb-0 small">
+                                                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                                        @if (daysRemaining <= 0)
+                                                        {
+                                                            <span>Rental has expired! Please renew now.</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>Expires in @Math.Ceiling(daysRemaining) days</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -205,7 +314,7 @@
             </div>
             <h4>No Properties Found</h4>
             <p class="text-muted mb-4">You don't have any properties in this category yet.</p>
-            <a href="#" class="btn btn-primary rounded-pill">
+            <a href="@Url.Action("Properties", "Home", new { area = "" })" class="btn btn-primary rounded-pill">
                 <i class="bi bi-search me-2"></i> Browse Properties
             </a>
         </div>
@@ -220,7 +329,74 @@
             tooltips.forEach(tooltip => {
                 new bootstrap.Tooltip(tooltip);
             });
+            
+            // Initialize rental duration selectors
+            const durationSelectors = document.querySelectorAll('select[id^="rentalDuration-"]');
+            durationSelectors.forEach(selector => {
+                selector.addEventListener('change', function() {
+                    const propertyId = this.id.split('-')[1];
+                    const price = parseFloat(this.getAttribute('onchange').match(/(\d+)/)[0]);
+                    
+                    if (this.value === 'custom') {
+                        document.getElementById(`customDateContainer-${propertyId}`).style.display = 'block';
+                    } else {
+                        document.getElementById(`customDateContainer-${propertyId}`).style.display = 'none';
+                        updateTotalPayment(propertyId, price);
+                    }
+                });
+            });
+            
+            // Initialize custom date inputs
+            const customDateInputs = document.querySelectorAll('input[id^="customEndDate-"]');
+            customDateInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const propertyId = this.id.split('-')[1];
+                    const selector = document.getElementById(`rentalDuration-${propertyId}`);
+                    const price = parseFloat(selector.getAttribute('onchange').match(/(\d+)/)[0]);
+                    
+                    updateTotalPaymentCustomDate(propertyId, price, this.value);
+                });
+            });
         });
+        
+        function updateTotalPayment(propertyId, price) {
+            const selector = document.getElementById(`rentalDuration-${propertyId}`);
+            const duration = parseInt(selector.value);
+            const totalPayment = price * duration;
+            
+            document.getElementById(`durationText-${propertyId}`).textContent = 
+                duration === 1 ? '1 month' : 
+                (duration === 12 ? '12 months (1 year)' : 
+                 duration === 24 ? '24 months (2 years)' : 
+                 duration === 36 ? '36 months (3 years)' : 
+                 `${duration} months`);
+            
+            document.getElementById(`totalPayment-${propertyId}`).textContent = `₱${totalPayment.toLocaleString('en-US')}`;
+        }
+        
+        function updateTotalPaymentCustomDate(propertyId, price, endDateString) {
+            const startDate = new Date();
+            const endDate = new Date(endDateString);
+            
+            // Calculate months difference
+            let months = (endDate.getFullYear() - startDate.getFullYear()) * 12;
+            months += endDate.getMonth() - startDate.getMonth();
+            
+            // Add 1 month if end day is greater than start day (for partial months)
+            if (endDate.getDate() > startDate.getDate()) {
+                months += 1;
+            }
+            
+            // Ensure minimum 1 month
+            months = Math.max(1, months);
+            
+            const totalPayment = price * months;
+            
+            document.getElementById(`durationText-${propertyId}`).textContent = 
+                `${months} month${months === 1 ? '' : 's'} (until ${endDate.toLocaleDateString()})`;
+            
+            document.getElementById(`totalPayment-${propertyId}`).textContent = `₱${totalPayment.toLocaleString('en-US')}`;
+        }
     </script>
 }
 

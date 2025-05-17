@@ -10,7 +10,7 @@
             <div class="d-md-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="mb-1 fw-bold">My Profile</h4>
-                    <p class="text-muted">View your account information</p>
+                    <p class="text-muted">Manage your personal information and profile settings</p>
                 </div>
             </div>
         </div>
@@ -28,110 +28,430 @@
     }
 
     <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden h-100">
-                <div class="card-header text-white p-4 position-relative" style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
-                    <h5 class="fw-bold mb-1">Profile Information</h5>
-                    <p class="mb-0 opacity-75 small">Your personal details</p>
-                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
-                        <i class="bi bi-person-circle display-1 text-white"></i>
+        <div class="col-lg-4 mb-4">
+            <!-- Profile Card -->
+            <div class="card border-0 shadow-sm rounded-4 fade-in">
+                <div class="card-header gradient-primary text-white p-4 text-center position-relative">
+                    <div class="profile-image-container mb-3">
+                        <img src="@(string.IsNullOrEmpty(Model.ProfilePictureUrl) ? "/images/avatar-01.png" : Model.ProfilePictureUrl)" 
+                             alt="Profile Picture" class="rounded-circle profile-image">
+                        <div class="profile-image-edit">
+                            <label for="profilePictureUpload" class="btn btn-sm btn-light rounded-circle p-2 cursor-pointer">
+                                <i class="bi bi-pencil"></i>
+                            </label>
+                            <input type="file" id="profilePictureUpload" accept="image/*" class="d-none" 
+                                   onchange="previewImage(this)">
+                        </div>
                     </div>
+                    <h5 class="fw-bold mb-1 text-white">@($"{Model.FirstName} {Model.LastName}")</h5>
+                    <p class="text-white-50 mb-0">User</p>
+                    
+                    
                 </div>
+                
                 <div class="card-body p-4">
-                    <div class="text-center mb-4">
-                        <div class="d-inline-block rounded-circle border border-3 border-primary p-1" style="border-style: dashed !important;">
-                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white" style="width: 100px; height: 100px; font-size: 2.5rem;">
-                                @{
-                                    var initials = "U";
-                                    if (!string.IsNullOrEmpty(Model.FirstName) && !string.IsNullOrEmpty(Model.LastName))
-                                    {
-                                        initials = Model.FirstName[0].ToString() + Model.LastName[0].ToString();
-                                    }
-                                    else if (!string.IsNullOrEmpty(Model.FirstName))
-                                    {
-                                        initials = Model.FirstName[0].ToString();
-                                    }
-                                    else if (!string.IsNullOrEmpty(Model.Email))
-                                    {
-                                        initials = Model.Email[0].ToString().ToUpper();
-                                    }
-                                }
-                                @initials
+                    <div class="user-stats mb-4">
+                        <div class="row g-2 text-center">
+                            <div class="col-6">
+                                <div class="p-3 rounded-4 bg-light">
+                                    <h5 class="mb-0 fw-bold text-primary">@Model.InquiriesCount</h5>
+                                    <small class="text-muted">Inquiries</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-4 bg-light">
+                                    <h5 class="mb-0 fw-bold text-info">@Model.MessagesCount</h5>
+                                    <small class="text-muted">Messages</small>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
+                    <h6 class="fw-bold mb-3 border-bottom pb-2">Contact Information</h6>
                     <div class="mb-3">
-                        <h6 class="text-muted mb-1 small">Full Name</h6>
-                        <p class="mb-0 fw-semibold">@(string.IsNullOrEmpty(Model.FirstName) ? "-" : $"{Model.FirstName} {Model.LastName}")</p>
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-sm rounded-circle gradient-primary text-center p-2 me-3 d-flex align-items-center justify-content-center">
+                                <i class="bi bi-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Email</small>
+                                <span class="fw-medium">@Model.Email</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-sm rounded-circle gradient-info text-center p-2 me-3 d-flex align-items-center justify-content-center">
+                                <i class="bi bi-telephone text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Phone</small>
+                                <span class="fw-medium">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "-" : Model.PhoneNumber)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-sm rounded-circle gradient-success text-center p-2 me-3 d-flex align-items-center justify-content-center">
+                                <i class="bi bi-geo-alt text-white"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Location</small>
+                                <span class="fw-medium">
+                                    @if (!string.IsNullOrEmpty(Model.AddressLine2) && !string.IsNullOrEmpty(Model.City))
+                                    {
+                                        @($"{Model.AddressLine2}, {Model.City}")
+                                    }
+                                    else if (!string.IsNullOrEmpty(Model.City))
+                                    {
+                                        @Model.City
+                                    }
+                                    else
+                                    {
+                                        @("-")
+                                    }
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     
-                    <div class="mb-3">
-                        <h6 class="text-muted mb-1 small">Email</h6>
-                        <p class="mb-0 fw-semibold">@Model.Email</p>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <h6 class="text-muted mb-1 small">Phone Number</h6>
-                        <p class="mb-0 fw-semibold">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "-" : Model.PhoneNumber)</p>
-                    </div>
-
-                    <div class="d-grid gap-2 mt-4">
-                        <a asp-area="User" asp-controller="Settings" asp-action="Index" class="btn btn-outline-primary rounded-pill">
-                            <i class="bi bi-gear me-2"></i>Edit Profile
-                        </a>
-                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Bio))
+                    {
+                        <h6 class="fw-bold mb-3 border-bottom pb-2 mt-4">About Me</h6>
+                        <p class="text-muted mb-0">@Model.Bio</p>
+                    }
                 </div>
             </div>
         </div>
         
-        <div class="col-md-8">
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
-                <div class="card-header text-white p-4 position-relative" style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
-                    <h5 class="fw-bold mb-1">Address Information</h5>
-                    <p class="mb-0 opacity-75 small">Your address details</p>
-                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
-                        <i class="bi bi-geo-alt display-1 text-white"></i>
-                    </div>
+        <div class="col-lg-8">
+            <!-- Profile Form Card -->
+            <div class="card border-0 shadow-sm rounded-4 fade-in">
+                <div class="card-header gradient-primary text-white p-4">
+                    <h5 class="mb-0 fw-bold">Edit Profile Information</h5>
                 </div>
                 <div class="card-body p-4">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <h6 class="text-muted mb-1 small">Address</h6>
-                            <p class="mb-0 fw-semibold">@(string.IsNullOrEmpty(Model.AddressLine1) ? "-" : Model.AddressLine1)</p>
+                    <form id="profileForm" asp-controller="Profile" asp-action="Index" asp-area="User" method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Email" value="@Model.Email" />
+                        <input type="file" id="profilePicture" name="ProfilePicture" style="display:none;">
+                        <div class="row g-4">
+                            <!-- Personal Information Section -->
+                            <div class="col-12">
+                                <div class="section-header d-flex align-items-center mb-3">
+                                    <div class="avatar-sm rounded-circle gradient-primary text-center p-2 me-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-person text-white"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-0">Personal Information</h6>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="FirstName" class="form-control rounded-3 filled" value="@Model.FirstName" placeholder="Enter first name" />
+                                            <label asp-for="FirstName">First Name</label>
+                                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="LastName" class="form-control rounded-3 filled" value="@Model.LastName" placeholder="Enter last name" />
+                                            <label asp-for="LastName">Last Name</label>
+                                            <span asp-validation-for="LastName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="Email" class="form-control rounded-3 filled" value="@Model.Email" placeholder="Enter email" readonly />
+                                            <label asp-for="Email">Email</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="PhoneNumber" class="form-control rounded-3 filled" value="@Model.PhoneNumber" placeholder="Enter phone number" />
+                                            <label asp-for="PhoneNumber">Phone Number</label>
+                                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Address Information Section -->
+                            <div class="col-12">
+                                <div class="section-header d-flex align-items-center mb-3">
+                                    <div class="avatar-sm rounded-circle gradient-info text-center p-2 me-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-geo-alt text-white"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-0">Address Information</h6>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <input asp-for="AddressLine1" class="form-control rounded-3 filled" value="@Model.AddressLine1" placeholder="Enter street address" />
+                                            <label asp-for="AddressLine1">Street Address</label>
+                                            <span asp-validation-for="AddressLine1" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="AddressLine2" class="form-control rounded-3 filled" value="@Model.AddressLine2" placeholder="Enter barangay" />
+                                            <label asp-for="AddressLine2">Barangay</label>
+                                            <span asp-validation-for="AddressLine2" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="City" class="form-control rounded-3 filled" value="@Model.City" placeholder="Enter city" />
+                                            <label asp-for="City">City</label>
+                                            <span asp-validation-for="City" class="text-danger"></span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <h6 class="text-muted mb-1 small">Address Line 2</h6>
-                            <p class="mb-0 fw-semibold">@(string.IsNullOrEmpty(Model.AddressLine2) ? "-" : Model.AddressLine2)</p>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <h6 class="text-muted mb-1 small">City</h6>
-                            <p class="mb-0 fw-semibold">@(string.IsNullOrEmpty(Model.City) ? "-" : Model.City)</p>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="PostalCode" class="form-control rounded-3 filled" value="@Model.PostalCode" placeholder="Enter postal code" />
+                                            <label asp-for="PostalCode">Postal Code</label>
+                                            <span asp-validation-for="PostalCode" class="text-danger"></span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <h6 class="text-muted mb-1 small">Postal Code</h6>
-                            <p class="mb-0 fw-semibold">@(string.IsNullOrEmpty(Model.PostalCode) ? "-" : Model.PostalCode)</p>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <h6 class="text-muted mb-1 small">Country</h6>
-                            <p class="mb-0 fw-semibold">@(string.IsNullOrEmpty(Model.Country) ? "-" : Model.Country)</p>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="Country" class="form-control rounded-3 filled" value="@Model.Country" placeholder="Enter country" />
+                                            <label asp-for="Country">Country</label>
+                                            <span asp-validation-for="Country" class="text-danger"></span>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-                <div class="card-header text-white p-4 position-relative" style="background: linear-gradient(45deg, #2937f0, #9f1ae2);">
-                    <h5 class="fw-bold mb-1">About Me</h5>
-                    <p class="mb-0 opacity-75 small">Your personal bio</p>
-                    <div class="position-absolute top-50 end-0 translate-middle-y me-4 opacity-25">
-                        <i class="bi bi-file-person display-1 text-white"></i>
+                            <!-- Bio Information Section -->
+                            <div class="col-12">
+                                <div class="section-header d-flex align-items-center mb-3">
+                                    <div class="avatar-sm rounded-circle gradient-success text-center p-2 me-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-file-person text-white"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-0">Bio Information</h6>
+                                </div>
+                                <div class="form-floating">
+                                    <textarea asp-for="Bio" class="form-control rounded-3 filled" style="height: 120px" placeholder="Enter your bio">@Model.Bio</textarea>
+                                    <label asp-for="Bio">Bio</label>
+                                    <span asp-validation-for="Bio" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-3">
+                                <button type="submit" class="btn btn-primary rounded-pill px-4 py-2">
+                                    <i class="bi bi-check-lg me-2"></i>Save Changes
+                                </button>
                     </div>
                 </div>
-                <div class="card-body p-4">
-                    <p class="mb-0">@(string.IsNullOrEmpty(Model.Bio) ? "No bio information provided yet." : Model.Bio)</p>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div> 
+
+<!-- Toast notification for profile picture update -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="uploadToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header gradient-primary text-white">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Profile picture updated. Click Save Changes to apply.
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Gradient colors */
+        .gradient-primary {
+            background: linear-gradient(135deg, #2937f0 0%, #9f1ae2 100%);
+        }
+        
+        .gradient-success {
+            background: linear-gradient(135deg, #0cbc87 0%, #09845f 100%);
+        }
+        
+        .gradient-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #0f798c 100%);
+        }
+        
+        .gradient-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        }
+        
+        /* Card styling */
+        .card {
+            overflow: hidden;
+            border-radius: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .card-header {
+            border-bottom: 0;
+        }
+        
+        .rounded-4 {
+            border-radius: 16px !important;
+        }
+        
+        /* Profile image */
+        .profile-image-container {
+            position: relative;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .profile-image-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+        
+        /* Avatar styling */
+        .avatar-sm {
+            width: 40px;
+            height: 40px;
+        }
+        
+        /* Form styling */
+        .form-control {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+        }
+        
+        .form-control:focus {
+            border-color: #2937f0;
+            box-shadow: 0 0 0 0.25rem rgba(41, 55, 240, 0.25);
+        }
+        
+        .form-floating > .form-control {
+            height: calc(3.5rem + 2px);
+            line-height: 1.25;
+        }
+        
+        .form-floating > .form-control-plaintext ~ label,
+        .form-floating > .form-control:focus ~ label,
+        .form-floating > .form-control:not(:placeholder-shown) ~ label,
+        .form-floating > .form-control.filled ~ label,
+        .form-floating > .form-select ~ label {
+            color: rgba(41, 55, 240, 0.85);
+            transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+        }
+        
+        .form-floating > label {
+            padding: 1rem 0.75rem;
+        }
+        
+        /* Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Button styling */
+        .btn-primary {
+            background: linear-gradient(135deg, #2937f0, #9f1ae2);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2431d8, #8516bd);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(41, 55, 240, 0.3);
+        }
+        
+        /* Alert styling */
+        .alert {
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .alert-success {
+            border-left-color: #0cbc87;
+        }
+        
+        /* Cursor */
+        .cursor-pointer {
+            cursor: pointer;
+        }
+        
+        /* Toast styling */
+        .toast {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        /* Section spacing */
+        .section-header {
+            margin-bottom: 1.25rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add animation class after page loads
+            setTimeout(() => {
+                const fadeElements = document.querySelectorAll('.fade-in');
+                fadeElements.forEach(element => {
+                    element.classList.add('show');
+                });
+            }, 100);
+            
+            // Ensure form values are populated and labels are positioned correctly
+            const formElements = document.querySelectorAll('form input, form textarea');
+            formElements.forEach(el => {
+                if (el.value && el.value.trim() !== '') {
+                    el.classList.add('filled');
+                }
+            });
+        });
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    document.querySelector('.profile-image').src = e.target.result;
+                    
+                    // Transfer the file to the form's hidden input
+                    const formFileInput = document.getElementById('profilePicture');
+                    formFileInput.files = input.files;
+                    
+                    // Show the toast notification
+                    const toast = new bootstrap.Toast(document.getElementById('uploadToast'));
+                    toast.show();
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+} 

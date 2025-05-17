@@ -17,8 +17,8 @@
             <div class="col-lg-6 fade-in" style="animation-delay: 0.1s;">
                 <h1 class="hero-title">Discover Your <span style="background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; color: transparent;">Perfect</span> Property</h1>
                 <p class="hero-text">Browse through our extensive collection of premium properties ranging from modern apartments to luxurious villas</p>
-                
-                
+            </div>
+            
             <div class="col-lg-6 fade-in" style="animation-delay: 0.3s;">
                 <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa" alt="Modern Properties" class="hero-image">
             </div>
@@ -31,21 +31,11 @@
     <div class="container">
         <div class="section-header mb-4">
             <h2 class="section-title fade-in">Available Properties</h2>
-            <div class="dropdown fade-in">
-                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-sort-down me-1"></i> Sort By
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                    <li><a class="dropdown-item" href="#">Price (Low to High)</a></li>
-                    <li><a class="dropdown-item" href="#">Price (High to Low)</a></li>
-                    <li><a class="dropdown-item" href="#">Newest First</a></li>
-                    <li><a class="dropdown-item" href="#">Most Popular</a></li>
-                </ul>
-            </div>
+            
         </div>
 
         <div class="row">
-            @foreach (var property in Model)
+            @foreach (var property in Model.Where(p => p.Status == "Available"))
             {
                 <div class="col-lg-4 col-md-6 mb-4 fade-in">
                     <div class="property-card">
@@ -84,7 +74,7 @@
                                 </div>
                             </div>
                             <div class="property-actions">
-                                <a asp-controller="Property" asp-action="Details" asp-route-id="@property.Id" class="btn-view">View Details</a>
+                                <a asp-controller="Property" asp-action="Details" asp-route-id="@property.Id" class="btn-view w-100 text-center">View Details</a>
                                
                             </div>
                         </div>

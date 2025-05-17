@@ -20,6 +20,8 @@ namespace EstateEase.Models.ViewModels
         public string OwnershipType { get; set; }  // "Bought" or "Rented"
         public DateTime AcquisitionDate { get; set; }
         public string ImageUrl { get; set; }
+        public string PropertyId { get; set; }
+        public DateTime? ExpiryDate { get; set; }
     }
 
     public class UserPropertiesViewModel

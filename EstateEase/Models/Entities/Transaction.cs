@@ -51,6 +51,9 @@ namespace EstateEase.Models.Entities
         
         public DateTime? EndDate { get; set; }
         
+        // Rental duration in months
+        public int? RentalDuration { get; set; }
+        
         // For purchase transactions
         public bool IsReservation { get; set; } = false; // Whether this is a reservation payment for purchase
         

@@ -61,6 +61,8 @@
                         </div>
                     }
 
+                    @Html.AntiForgeryToken()
+
                     <table id="myTable" class="table">
                         <thead>
                             <tr>
@@ -86,7 +88,9 @@
                                     <td>@item.Price.ToString("N2")</td>
                                     <td>@item.Size.ToString("N2")</td>
                                     <td>
-                                        <span class="badge bg-@(item.Status.ToLower() == "available" ? "success" : "warning")">
+                                        <span class="badge bg-@(item.Status.ToLower() == "available" ? "success" : 
+                                                               item.Status.ToLower() == "inactive" ? "secondary" : 
+                                                               item.Status.ToLower() == "sold" ? "danger" : "warning")">
                                             @item.Status
                                         </span>
                                     </td>
@@ -98,6 +102,18 @@
                                             <a asp-action="ViewProperty" asp-route-id="@item.Id" asp-area="Admin" class="btn btn-dark btn-sm">
                                                 <i class="bi bi-eye"></i> View
                                             </a>
+                                            @if (item.Status.ToLower() == "inactive")
+                                            {
+                                                <a href="#" onclick="updateStatus('@item.Id', 'Available')" class="btn btn-success btn-sm">
+                                                    <i class="bi bi-check-circle"></i> Activate
+                                                </a>
+                                            }
+                                            else if (item.Status.ToLower() == "available")
+                                            {
+                                                <a href="#" onclick="updateStatus('@item.Id', 'Inactive')" class="btn btn-secondary btn-sm">
+                                                    <i class="bi bi-pause-circle"></i> Deactivate
+                                                </a>
+                                            }
                                             <a asp-action="Delete" asp-route-id="@item.Id" asp-area="Admin" class="btn btn-danger btn-sm">
                                                 <i class="bi bi-trash"></i> Delete
                                             </a>
@@ -253,5 +269,35 @@
                 });
             }, 100);
         });
+
+        // Function to update property status
+        function updateStatus(propertyId, newStatus) {
+            if (confirm('Are you sure you want to ' + (newStatus === 'Inactive' ? 'deactivate' : 'activate') + ' this property?')) {
+                fetch('/Admin/Property/UpdateStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ 
+                        propertyId: propertyId, 
+                        status: newStatus 
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Reload the page to see the updated status
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating status:', error);
+                    alert('An error occurred while updating the property status.');
+                });
+            }
+        }
     </script>
 } 
